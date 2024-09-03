@@ -1,4 +1,6 @@
-from typing import List, Dict
+import asyncio
+import datetime
+from typing import List, Dict, Tuple
 from uuid import UUID
 
 from fastapi import Depends, HTTPException
@@ -43,6 +45,18 @@ class DAOContact(DAO):
         await self.db.commit()
         return m_contact
 
+    # async def _extract_data_from_str_log(self, log_data: str) -> Tuple[str, list] | None:
+    #     lines = log_data.strip().split("\n")
+    #     if len(lines) < 2:
+    #         return None
+    #     name = lines[0].strip()
+    #     data = [s.strip() for s in lines[1:]]
+    #     return name, data
+    #
+    # async def _add_str_to_log(self, old_log: str, log_data: str):
+    #     name, data = self._extract_data_from_str_log(log_data)
+    #     old_log = "\n".join([old_log, data])
+
     async def get_log(self, contact_id: UUID) -> str:
         query = select(MContact).where(MContact.id == contact_id)
         m_contact = (await self.db.execute(query)).scalar_one_or_none()
@@ -55,12 +69,40 @@ class DAOContact(DAO):
         m_contact = (await self.db.execute(query)).scalar_one_or_none()
         if not m_contact:
             raise HTTPException(status_code=404, detail="Contact not found")
-        log = m_contact.log if m_contact.log else ""
-        new_log = log + '\n' + log_data if log != "" else log_data
+        old_log = m_contact.log
+        new_log = old_log + '\n' + log_data if old_log != "" else log_data
         setattr(m_contact, 'log', new_log)
         await self.db.commit()
         return {
-            'old_log': log,
-            'new_log': new_log,
+            'old_log': old_log,
+            'new_log': m_contact.log,
             'log_data': log_data
         }
+
+    async def replace_log(self, contact_id: UUID, new_log: str) -> Dict[str, str]:
+        query = select(MContact).where(MContact.id == contact_id)
+        m_contact = (await self.db.execute(query)).scalar_one_or_none()
+        if not m_contact:
+            raise HTTPException(status_code=404, detail="Contact not found")
+        old_log = m_contact.log
+        setattr(m_contact, 'log', new_log)
+        await self.db.commit()
+        return {
+            'old_log': old_log,
+            'new_log': m_contact.log,
+        }
+
+    async def remove_log(self, contact_id: UUID) -> Dict[str, str]:
+        return await self.replace_log(contact_id, "")
+
+
+# async def main():
+#     with open('log_data.txt', 'r') as f:
+#         log_data = f.read()
+#     dao = DAOContact()
+#     res = await dao._extract_data_from_str_log(log_data)
+#     print(res)
+#
+#
+# if __name__ == "__main__":
+#     asyncio.run(main())

@@ -14,4 +14,4 @@ class MContact(Base):
     telegram = Column(String)
     birthday = Column(Date)
     area = Column(String)
-    log = Column(String)
+    log = Column(String, nullable=False, default="")
