@@ -1,0 +1,17 @@
+fastapi==0.112.1
+uvicorn
+pydantic
+pydantic-settings
+SQLAlchemy==2.0.32
+python-dotenv
+alembic
+psycopg2-binary
+pytest
+asyncpg==0.29.0
+httpx
+pytest-asyncio==0.18.3
+greenlet
+python-dotenv
+python-jose[cryptography]
+python-multipart
+passlib[bcrypt]
