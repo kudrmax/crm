@@ -15,7 +15,7 @@ router = APIRouter(
 async def get_all_contacts(
         dao: DAOContact = Depends()
 ):
-    return await dao.get_all_contacts()
+    return await dao.get_all()
 
 
 @router.get("/{contact_id}")

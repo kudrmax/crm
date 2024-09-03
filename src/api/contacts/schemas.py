@@ -4,16 +4,6 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class SContact(BaseModel):
-    id: UUID
-    name: str
-    phone: str
-    telegram: str
-    birthday: datetime.date
-    area: str
-    log: str
-
-
 class SContactCreate(BaseModel):
     name: str
 

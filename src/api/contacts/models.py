@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import UUID, Column, String, Date
+from sqlalchemy import UUID, Column, String, Date, Integer, ForeignKey
 
 from src.database import Base
 

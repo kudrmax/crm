@@ -8,20 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate
+from src.api.dao_base import DAO
 from src.database import get_db
 
 
-class DAOContact:
-    def __init__(self, db=Depends(get_db)):
-        self.db: AsyncSession = db
-
-    async def get_all_contacts(self) -> List[MContact]:
-        query = select(MContact)
-        return list((await self.db.execute(query)).scalars().all())
-
-    async def get_one_or_none(self, id: UUID) -> MContact | None:
-        query = select(MContact).where(MContact.id == id)
-        return (await self.db.execute(query)).scalar_one_or_none()
+class DAOContact(DAO):
+    model = MContact
 
     async def create(self, s_contact_create: SContactCreate) -> MContact:
         m_contact = MContact(**s_contact_create.model_dump(exclude_unset=True))
