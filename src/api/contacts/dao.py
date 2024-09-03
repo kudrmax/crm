@@ -27,8 +27,7 @@ class DAOContact(DAO):
             raise HTTPException(status_code=500, detail=e)
 
     async def delete(self, id: UUID) -> MContact | None:
-        query = select(MContact).where(MContact.id == id)
-        m_contact = (await self.db.execute(query)).scalar_one_or_none()
+        m_contact = await self.get_one_or_none_by_id(id)
         if not m_contact:
             return None
         await self.db.delete(m_contact)
@@ -36,10 +35,7 @@ class DAOContact(DAO):
         return m_contact
 
     async def update(self, id: int, update_contact: SContactUpdate):
-        query = select(MContact).where(MContact.id == id)
-        m_contact = (await self.db.execute(query)).scalar_one_or_none()
-        if not m_contact:
-            raise HTTPException(status_code=404, detail="Contact not found")
+        m_contact = await self.get_one_by_id(id)
         for key, val in update_contact.model_dump(exclude_unset=True).items():
             setattr(m_contact, key, val)
         await self.db.commit()
@@ -58,17 +54,11 @@ class DAOContact(DAO):
     #     old_log = "\n".join([old_log, data])
 
     async def get_log(self, contact_id: UUID) -> str:
-        query = select(MContact).where(MContact.id == contact_id)
-        m_contact = (await self.db.execute(query)).scalar_one_or_none()
-        if not m_contact:
-            raise HTTPException(status_code=404, detail="Contact not found")
+        m_contact = await self.get_one_by_id(contact_id)
         return m_contact.log if m_contact.log else ""
 
     async def add_data_to_log(self, contact_id: UUID, log_data: str) -> Dict[str, str]:
-        query = select(MContact).where(MContact.id == contact_id)
-        m_contact = (await self.db.execute(query)).scalar_one_or_none()
-        if not m_contact:
-            raise HTTPException(status_code=404, detail="Contact not found")
+        m_contact = await self.get_one_by_id(contact_id)
         old_log = m_contact.log
         new_log = old_log + '\n' + log_data if old_log != "" else log_data
         setattr(m_contact, 'log', new_log)
@@ -80,10 +70,7 @@ class DAOContact(DAO):
         }
 
     async def replace_log(self, contact_id: UUID, new_log: str) -> Dict[str, str]:
-        query = select(MContact).where(MContact.id == contact_id)
-        m_contact = (await self.db.execute(query)).scalar_one_or_none()
-        if not m_contact:
-            raise HTTPException(status_code=404, detail="Contact not found")
+        m_contact = await self.get_one_by_id(contact_id)
         old_log = m_contact.log
         setattr(m_contact, 'log', new_log)
         await self.db.commit()
@@ -94,7 +81,6 @@ class DAOContact(DAO):
 
     async def remove_log(self, contact_id: UUID) -> Dict[str, str]:
         return await self.replace_log(contact_id, "")
-
 
 # async def main():
 #     with open('log_data.txt', 'r') as f:

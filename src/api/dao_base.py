@@ -21,6 +21,12 @@ class DAO:
         query = select(self.model)
         return list((await self.db.execute(query)).scalars().all())
 
-    async def get_one_or_none(self, id: UUID) -> Optional[model]:
+    async def get_one_or_none_by_id(self, id) -> Optional[model]:
         query = select(self.model).where(self.model.id == id)
         return (await self.db.execute(query)).scalar_one_or_none()
+
+    async def get_one_by_id(self, id):
+        obj = await self.get_one_or_none_by_id(id)
+        if not obj:
+            raise HTTPException(status_code=404, detail=f"Object with {id = } not found in databse {self.model}.")
+        return obj

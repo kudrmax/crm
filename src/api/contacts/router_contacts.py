@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from src.api.contacts.dao import DAOContact
-from src.api.contacts.schemas import SContactCreate, SContactUpdate
+from src.api.contacts.schemas import SContactCreate, SContactUpdate, SContactRead
 
 router = APIRouter(
     prefix="/contacts",
@@ -23,14 +23,14 @@ async def get_one_or_none_contacts(
         contact_id: UUID,
         dao: DAOContact = Depends()
 ):
-    return await dao.get_one_or_none(contact_id)
+    return await dao.get_one_or_none_by_id(contact_id)
 
 
 @router.post("/")
 async def add_contact(
         new_contact: SContactCreate,
         dao: DAOContact = Depends()
-):
+) -> SContactRead:
     return await dao.create(new_contact)
 
 
