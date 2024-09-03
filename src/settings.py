@@ -35,8 +35,8 @@ class Settings(BaseSettings):
 
 
 settings = Settings(
-    _env_file='.env',
-    _env_file_encoding='utf-8',
+    # _env_file='.env',
+    # _env_file_encoding='utf-8',
 )
 
 # DB_URL = "postgresql+asyncpg://postgres:postgres@0.0.0.0:5432/postgres"
