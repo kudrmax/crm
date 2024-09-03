@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from uuid import UUID
 
 from fastapi import Depends, HTTPException
@@ -42,3 +42,25 @@ class DAOContact(DAO):
             setattr(m_contact, key, val)
         await self.db.commit()
         return m_contact
+
+    async def get_log(self, contact_id: UUID) -> str:
+        query = select(MContact).where(MContact.id == contact_id)
+        m_contact = (await self.db.execute(query)).scalar_one_or_none()
+        if not m_contact:
+            raise HTTPException(status_code=404, detail="Contact not found")
+        return m_contact.log if m_contact.log else ""
+
+    async def add_data_to_log(self, contact_id: UUID, log_data: str) -> Dict[str, str]:
+        query = select(MContact).where(MContact.id == contact_id)
+        m_contact = (await self.db.execute(query)).scalar_one_or_none()
+        if not m_contact:
+            raise HTTPException(status_code=404, detail="Contact not found")
+        log = m_contact.log if m_contact.log else ""
+        new_log = log + '\n' + log_data if log != "" else log_data
+        setattr(m_contact, 'log', new_log)
+        await self.db.commit()
+        return {
+            'old_log': log,
+            'new_log': new_log,
+            'log_data': log_data
+        }

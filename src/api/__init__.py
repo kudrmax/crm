@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from src.api.contacts.router import router as contacts_router
-from src.api.logs.router import router as logs_router
+from src.api.contacts.router_contacts import router as contacts_router
+from src.api.contacts.router_logs import router as logs_router
 
 router = APIRouter()
 router.include_router(contacts_router)

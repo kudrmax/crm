@@ -49,3 +49,5 @@ async def update_contact(
         dao: DAOContact = Depends()
 ):
     return await dao.update(contact_id, update_contact)
+
+
