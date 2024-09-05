@@ -1,13 +1,9 @@
 import asyncio
-import logging
-from enum import Enum
 
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-from aiogram.filters.command import Command
+from aiogram import Bot, Dispatcher
 from decouple import config
-from handlers import questions, different_types, users
+
+from handlers.main import router as main_router
 
 TOKEN = config("BOT_TOKEN")
 
@@ -15,6 +11,7 @@ TOKEN = config("BOT_TOKEN")
 async def main():
     bot = Bot(token=TOKEN)
     dp = Dispatcher()
+    dp.include_router(main_router)
     # dp.include_router(questions.router)
     # dp.include_router(different_types.router)
     # dp.include_router(users.router)
