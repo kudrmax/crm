@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
+def get_row_keyboard_by_list(items: list[str]) -> ReplyKeyboardMarkup:
     """
     Создаёт реплай-клавиатуру с кнопками в один ряд
     :param items: список текстов для кнопок
