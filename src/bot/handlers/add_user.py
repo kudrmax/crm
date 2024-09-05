@@ -15,13 +15,25 @@ router = Router()
 
 class AddUserState(StatesGroup):
     waiting_for_name = State()
-    waiting_for_edit_or_finish = State()
+    waiting_for_choosing_edit_or_finish = State()
+    waiting_for_edit = State()
 
 
-def make_user_options_menu():
+def make_edit_or_finish_user_menu():
     return make_row_keyboard_by_list([
-        'Редактировать имя',
+        'Редактировать пользователя',
         'Завершить',
+    ])
+
+
+def make_edit_user_menu():
+    return make_row_keyboard_by_list([
+        'Имя',
+        'Telegram',
+        'Телефон',
+        'Email',
+        'Дату рождения',
+        'Отменить',
     ])
 
 
@@ -31,29 +43,61 @@ async def add_user(message: types.Message, state: FSMContext):
     await state.set_state(AddUserState.waiting_for_name)
 
 
+# @router.message(AddUserState.waiting_for_name)
+# async def process_name(message: types.Message, state: FSMContext):
+#     name = message.text
+#     old_name = (await state.get_data()).get('name')
+#     await state.update_data(name=name)
+#     if old_name:
+#         await message.answer(f"Вы изменили имя с {old_name} на {name}")
+#     else:
+#         await message.answer(f"Имя пользователя установлено: {name}")
+#
+#     await message.answer("Выберите действие:", reply_markup=make_user_options_menu())
+#     await state.set_state(AddUserState.waiting_for_choosing_edit_or_finish)
+
 @router.message(AddUserState.waiting_for_name)
 async def process_name(message: types.Message, state: FSMContext):
     name = message.text
-    old_name = (await state.get_data()).get('name')
     await state.update_data(name=name)
-    if old_name:
-        await message.answer(f"Вы изменили имя с {old_name} на {name}")
-    else:
-        await message.answer(f"Имя пользователя установлено: {name}")
-
-    await message.answer("Выберите действие:", reply_markup=make_user_options_menu())
-    await state.set_state(AddUserState.waiting_for_edit_or_finish)
+    await message.answer(f"Добавлен пользователь: {name}", reply_markup=make_edit_or_finish_user_menu())
+    await state.set_state(AddUserState.waiting_for_choosing_edit_or_finish)
 
 
-@router.message(AddUserState.waiting_for_edit_or_finish)
+@router.message(AddUserState.waiting_for_choosing_edit_or_finish)
 async def process_user_option(message: types.Message, state: FSMContext):
     button_text = message.text
     name = (await state.get_data()).get('name')
 
-    if button_text == 'Редактировать имя':
-        await message.answer("Введите новое имя пользователя:", reply_markup=ReplyKeyboardRemove())
-        await state.set_state(AddUserState.waiting_for_name)
-    elif button_text == 'Завершить':
-        await message.answer(f"Вы добавили пользователя по имени {name}")
+    if button_text == 'Редактировать пользователя':
+        await message.answer("Выбарите что вы хотите редактировать:", reply_markup=make_edit_user_menu())
+        await state.set_state(AddUserState.waiting_for_edit)
+        return
+    if button_text == 'Завершить':
+        await message.answer(f"Вы добавили пользователя по имени {name} ДОПИСАТЬ ВСЕ ДАННЫЕ")
         await message.answer("Выберите действие:", reply_markup=make_main_menu())
         await state.clear()
+        return
+
+
+# @router.message(AddUserState.waiting_for_choosing_edit_or_finish)
+# async def edit_user(message: types.Message, state: FSMContext):
+#     button_text = message.text
+#     name = (await state.get_data()).get('name')
+#
+#     """
+#     'Имя',
+#     'Telegram',
+#     'Телефон',
+#     'Email',
+#     'Дату рождения',
+#     'Отменить',
+#     """
+#
+#     if button_text == 'Имя':
+#         pass
+#         return
+#
+#
+# async def edit_user_field(message: types.Message, field, field_name):
+#     await message.answer(f"Введите {field_name}:", reply_markup=ReplyKeyboardRemove())
