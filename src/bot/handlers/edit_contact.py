@@ -8,7 +8,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from decouple import config
 
-from src.bot.common import contact_fields, BASE_URL, print_contact_by_name
+from src.bot.common import contact_fields, BASE_URL, print_contact_by_name, get_similar_contacts
 from src.bot.handlers.main import make_main_menu
 from src.bot.keyboards.simple_row_by_list import make_row_keyboard_by_list
 
@@ -43,6 +43,7 @@ async def edit_contact(message: types.Message, state: FSMContext):
     await state.update_data(id=res_json.get('id'))
     await state.set_state(EditContactState.waiting_for_choosing_what_to_edit)
     await message.answer(f'Find contact {name} with data:\n' + print_contact_by_name(name))
+    await message.answer(f'Similar names:\n' + '\n'.join(get_similar_contacts(name, name_count=5)))
     await message.answer('Choose what to edit', reply_markup=make_edit_user_menu())
 
 
