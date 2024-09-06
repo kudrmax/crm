@@ -23,32 +23,17 @@ class AddUserState(StatesGroup):
     waiting_new_field_value = State()
 
 
-# class UserFieldEnum(Enum):
-#     name = 'Имя'
-#     telegram = 'Telegram'
-#     phone = 'Телефон'
-#     birthday = 'Дата рождения'
-
-
-from_button_text_to_database_fields = {
-    'Имя': 'name',
-    'Telegram': 'telegram',
-    'Телефон': 'phone',
-    'Дата рождения': 'birthday',
-}
-
-
-# user_fields = [
-#     ('name', 'Имя'),
-#     ('telegram', 'Telegram'),
-#     ('phone', 'Телефон'),
-#     ('birthday', 'Дата рождения'),
-# ]
+from_button_text_to_database_fields = [
+    'name',
+    'telegram',
+    'phone',
+    'birthday',
+]
 
 
 def make_edit_or_finish_user_menu():
     return make_row_keyboard_by_list([
-        'Редактировать пользователя',
+        'Edit user',
         'Завершить',
     ])
 
