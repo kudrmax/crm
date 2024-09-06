@@ -18,16 +18,15 @@ router = Router()
 class AddUserState(StatesGroup):
     waiting_for_name = State()
     waiting_for_choosing_edit_or_finish = State()
-    waiting_for_choosing_what_to_edit = State()
     waiting_for_edit = State()
+    waiting_new_field_value = State()
+
 
 class UserFieldEnum(Enum):
     name = 'Имя'
     telegram = 'Telegram'
     phone = 'Телефон'
-    name = 'Имя'
-    name = 'Имя'
-    name = 'Имя'
+    birthday = 'Дата рождения'
 
 
 def make_edit_or_finish_user_menu():
@@ -39,11 +38,7 @@ def make_edit_or_finish_user_menu():
 
 def make_edit_user_menu():
     return make_row_keyboard_by_list([
-        'Имя',
-        'Telegram',
-        'Телефон',
-        'Email',
-        'Дату рождения',
+        *[obj.value for obj in UserFieldEnum],
         'Отменить',
     ])
 
@@ -58,7 +53,10 @@ async def add_user(message: types.Message, state: FSMContext):
 async def process_name(message: types.Message, state: FSMContext):
     name = message.text
     await state.update_data(name=name)
-    await message.answer(f"Добавлен пользователь: {name}", reply_markup=make_edit_or_finish_user_menu())
+    await message.answer(
+        f"Добавлен пользователь: {name}",
+        reply_markup=make_edit_or_finish_user_menu()
+    )
     await state.set_state(AddUserState.waiting_for_choosing_edit_or_finish)
 
 
@@ -66,11 +64,17 @@ async def process_name(message: types.Message, state: FSMContext):
 async def process_user_option(message: types.Message, state: FSMContext):
     button_text = message.text
     user_data = await state.get_data()
-    name = user_data.get('name')
+    # name = user_data.get('name')
 
     if button_text == 'Редактировать пользователя':
-        await message.answer("Выберите, что вы хотите редактировать:", reply_markup=make_edit_user_menu())
-        await state.set_state(AddUserState.waiting_for_choosing_what_to_edit)
+        await message.answer(
+            "Выберите, что вы хотите редактировать:",
+            reply_markup=make_row_keyboard_by_list([
+                *[obj.value for obj in UserFieldEnum],
+                'Отменить',
+            ])
+        )
+        await state.set_state(AddUserState.waiting_for_edit)
         return
 
     if button_text == 'Завершить':
@@ -83,33 +87,38 @@ async def process_user_option(message: types.Message, state: FSMContext):
         return
 
 
-@router.message(AddUserState.waiting_for_choosing_what_to_edit)
+@router.message(AddUserState.waiting_for_edit)
 async def edit_user(message: types.Message, state: FSMContext):
-    field = message.text
+    button_text = message.text
 
-    if field == 'Отменить':
+    if button_text == 'Отменить':
         await message.answer("Редактирование отменено.", reply_markup=make_edit_or_finish_user_menu())
         await state.set_state(AddUserState.waiting_for_choosing_edit_or_finish)
         return
 
-    if field in ['Имя', 'Telegram', 'Телефон', 'Email', 'Дату рождения']:
-        await message.answer(f"Введите новый {field.lower()}:", reply_markup=ReplyKeyboardRemove())
-        await state.update_data(current_field=field.lower())
-        await state.set_state(AddUserState.waiting_for_edit)
+    if button_text in [obj.value for obj in UserFieldEnum]:
+        await message.answer(
+            f"Введите новый {button_text.lower()}:",
+            reply_markup=ReplyKeyboardRemove()
+        )
+        await state.update_data(current_field=button_text.lower())
+        await state.set_state(AddUserState.waiting_new_field_value)
         return
 
     await message.answer("Неверный выбор. Пожалуйста, выберите опцию из меню.", reply_markup=make_edit_user_menu())
 
 
-@router.message(AddUserState.waiting_for_edit)
+@router.message(AddUserState.waiting_new_field_value)
 async def update_field_value(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     current_field = user_data.get('current_field')
 
     if current_field:
         await state.update_data(**{current_field: message.text})
-        await message.answer(f"{current_field.capitalize()} обновлен на {message.text}.",
-                             reply_markup=make_edit_or_finish_user_menu())
+        await message.answer(
+            f"{current_field.capitalize()} обновлен на {message.text}.",
+            reply_markup=make_edit_or_finish_user_menu()
+        )
         await state.set_state(AddUserState.waiting_for_choosing_edit_or_finish)
         return
 
