@@ -19,11 +19,19 @@ async def get_all_contacts(
 
 
 @router.get("/{contact_id}")
-async def get_one_or_none_contacts(
+async def get_one_or_none_contacts_by_id(
         contact_id: UUID,
         dao: DAOContact = Depends()
 ):
     return await dao.get_one_or_none_by_id(contact_id)
+
+
+@router.get("/name/{name}")
+async def get_one_or_none_contacts_by_name(
+        name: str,
+        dao: DAOContact = Depends()
+):
+    return await dao.get_one_or_none_with_filter(name=name)
 
 
 @router.post("/")
@@ -49,5 +57,3 @@ async def update_contact(
         dao: DAOContact = Depends()
 ):
     return await dao.update(contact_id, update_contact)
-
-
