@@ -9,14 +9,13 @@ router = Router()
 
 def make_main_menu():
     return make_row_keyboard_by_list([
-        'Добавить лог',
-        'Добавить пользователя',
-        'Редактировать пользователя',
-        'Получить статистику',
+        'Add log',
+        'Add contact',
+        'Edit contact',
+        'Get stats',
     ])
 
 
 @router.message(StateFilter(None), Command("start"))
 async def start_command(message: Message):
-    # await message.answer("Выберите действие:", reply_markup=make_main_menu())
-    await message.answer("Выберите действие:", reply_markup=make_main_menu())
+    await message.answer("Choose option:", reply_markup=make_main_menu())
