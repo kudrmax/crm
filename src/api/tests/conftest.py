@@ -17,7 +17,7 @@ from src.database import get_db, Base
 from src.main import app
 
 CLEAN_TABLES = [
-    "users",
+    "contacts",
 ]
 
 
@@ -92,13 +92,14 @@ async def get_db_test() -> Generator:
 #         pass
 
 
-# @pytest.fixture(scope="function", autouse=True)
-# async def clean_tables():
-#     session_test: AsyncSession = AsyncSessionLocalTest()
-#     async with async_session_test() as session:
-# async with session_test.begin():
-#     for table_for_cleaning in CLEAN_TABLES:
-#         await session_test.execute(text(f"""TRUNCATE TABLE {table_for_cleaning};"""))
+@pytest.fixture(scope="function", autouse=True)
+async def clean_tables():
+    engine = create_async_engine(settings.db_test.url, future=True, echo=False)
+    AsyncSessionLocalTest = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    session_test: AsyncSession = AsyncSessionLocalTest()
+    async with session_test.begin():
+        for table_for_cleaning in CLEAN_TABLES:
+            await session_test.execute(text(f"""TRUNCATE TABLE {table_for_cleaning};"""))
 
 
 @pytest.fixture(scope="session")
