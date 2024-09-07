@@ -1,26 +1,17 @@
-from datetime import datetime
+import datetime as dt
 from uuid import UUID
 
-from pydantic import BaseModel
-
-
-# class SLogData(BaseModel):
-#     log_str: str
-#     date: datetime.date
+from pydantic import BaseModel, Field
+from pydantic.v1 import validator
 
 
 class SLogRead(BaseModel):
     id: int
     contact_id: UUID
-    datetime: datetime
+    datetime: dt.datetime
     log: str
 
 
 class SLogCreate(BaseModel):
     contact_id: UUID
-    datetime: datetime
     log: str
-
-class SLogGetByDate(BaseModel):
-    contact_id: UUID
-    datetime: datetime

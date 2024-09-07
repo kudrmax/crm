@@ -1,3 +1,4 @@
+import datetime
 from typing import Dict
 from uuid import UUID
 
@@ -16,14 +17,16 @@ class DAOLog(DAO):
 
     async def create(self, log_create: SLogCreate):
         m_log = MLog(**log_create.model_dump(exclude_unset=True))
+        m_log.datetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
         try:
             self.db.add(m_log)
             await self.db.flush()
         except IntegrityError as e:
+            print(e)
             await self.db.rollback()
             raise HTTPException(
                 status_code=409,
-                detail=f'Не удолось добавить лог: {log_create.model_dump(exclude_unset=True)}'
+                detail=f'Не удолось добавить лог: {log_create.model_dump(exclude_unset=True)}. Вероятно пользователя не существует с id={log_create.contact_id}'
             )
         else:
             await self.db.commit()

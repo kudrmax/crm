@@ -25,6 +25,10 @@ class DAO:
         query = select(self.model).where(self.model.id == id)
         return (await self.db.execute(query)).scalar_one_or_none()
 
+    async def get_all_with_filter(self, *args, **kwargs) -> List[model]:
+        query = select(self.model).filter_by(**kwargs)
+        return list((await self.db.execute(query)).scalars().all())
+
     async def get_one_or_none_with_filter(self, *args, **kwargs) -> Optional[model]:
         query = select(self.model).filter_by(**kwargs)
         return (await self.db.execute(query)).scalar_one_or_none()
