@@ -22,10 +22,13 @@ class DAOContact(DAO):
         m_contact = MContact(**s_contact_create.model_dump(exclude_unset=True))
         try:
             self.db.add(m_contact)
+            await self.db.flush()
+        except IntegrityError as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=409, detail=f'Конаткт с именем {s_contact_create.name} уже существует')
+        else:
             await self.db.commit()
             return m_contact
-        except IntegrityError as e:
-            raise HTTPException(status_code=500, detail=e)
 
     async def delete(self, id: UUID) -> MContact | None:
         m_contact = await self.get_one_or_none_by_id(id)
@@ -35,7 +38,10 @@ class DAOContact(DAO):
         await self.db.commit()
         return m_contact
 
-    async def update(self, id: int, update_contact: SContactUpdate):
+    async def update(self, id: UUID, update_contact: SContactUpdate) -> MContact:
+        if update_contact.name:
+            if await self.get_one_or_none_with_filter(name=update_contact.name):
+                raise HTTPException(status_code=409, detail=f'Конаткт с именем {update_contact.name} уже существует')
         m_contact = await self.get_one_by_id(id)
         for key, val in update_contact.model_dump(exclude_unset=True).items():
             setattr(m_contact, key, val)

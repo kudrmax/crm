@@ -1,8 +1,10 @@
+from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
 from src.api.contacts.dao import DAOContact
+from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate, SContactRead
 
 router = APIRouter(
@@ -22,7 +24,7 @@ async def get_all_contacts(
 async def get_one_or_none_contacts_by_id(
         contact_id: UUID,
         dao: DAOContact = Depends()
-):
+) -> SContactRead | None:
     return await dao.get_one_or_none_by_id(contact_id)
 
 
@@ -30,7 +32,7 @@ async def get_one_or_none_contacts_by_id(
 async def get_one_or_none_contacts_by_name(
         name: str,
         dao: DAOContact = Depends()
-):
+) -> SContactRead | None:
     return await dao.get_one_or_none_with_filter(name=name)
 
 
@@ -46,7 +48,7 @@ async def add_contact(
 async def delete_contact(
         contact_id: UUID,
         dao: DAOContact = Depends()
-):
+) -> SContactRead | None:
     return await dao.delete(contact_id)
 
 
@@ -55,13 +57,14 @@ async def update_contact(
         contact_id: UUID,
         update_contact: SContactUpdate,
         dao: DAOContact = Depends()
-):
+) -> SContactRead:
     return await dao.update(contact_id, update_contact)
+
 
 @router.get("/search/{name}")
 async def search_contact(
         name: str,
         name_count: int = 6,
         dao: DAOContact = Depends()
-):
+) -> List[SContactRead]:
     return await dao.search(name, name_count)
