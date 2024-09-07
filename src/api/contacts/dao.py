@@ -88,6 +88,6 @@ class DAOContact(DAO):
         # if m_contact:
         #     return [m_contact]
         m_contacts = await self.get_all()
-        names = [contact.name for contact in m_contacts]
-        close_names = difflib.get_close_matches(name, names, n=name_count)
-        return [contact for contact in m_contacts if contact.name in close_names]
+        names = [contact.name.lower() for contact in m_contacts]
+        close_names = difflib.get_close_matches(name.lower(), names, n=name_count)
+        return [contact for contact in m_contacts if contact.name.lower() in close_names]
