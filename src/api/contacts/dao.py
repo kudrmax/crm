@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import difflib
 from typing import List, Dict, Tuple
 from uuid import UUID
 
@@ -82,13 +83,11 @@ class DAOContact(DAO):
     async def remove_log(self, contact_id: UUID) -> Dict[str, str]:
         return await self.replace_log(contact_id, "")
 
-# async def main():
-#     with open('log_data.txt', 'r') as f:
-#         log_data = f.read()
-#     dao = DAOContact()
-#     res = await dao._extract_data_from_str_log(log_data)
-#     print(res)
-#
-#
-# if __name__ == "__main__":
-#     asyncio.run(main())
+    async def search(self, name: str, name_count: int = 3) -> List[MContact]:
+        # m_contact = await self.get_one_or_none_with_filter(name=name)
+        # if m_contact:
+        #     return [m_contact]
+        m_contacts = await self.get_all()
+        names = [contact.name for contact in m_contacts]
+        close_names = difflib.get_close_matches(name, names, n=name_count)
+        return [contact for contact in m_contacts if contact.name in close_names]

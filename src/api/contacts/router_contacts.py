@@ -57,3 +57,11 @@ async def update_contact(
         dao: DAOContact = Depends()
 ):
     return await dao.update(contact_id, update_contact)
+
+@router.get("/search/{name}")
+async def search_contact(
+        name: str,
+        name_count: int = 6,
+        dao: DAOContact = Depends()
+):
+    return await dao.search(name, name_count)

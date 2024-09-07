@@ -20,7 +20,7 @@ def print_contact_by_name(name: str):
     ])
 
 
-def get_similar_contacts(target_name: str, name_count: int = 3) -> List[str]:
-    contacts = requests.get(f'{BASE_URL}/contacts/').json()
-    names = [contact['name'] for contact in contacts]
-    return difflib.get_close_matches(target_name, names, n=name_count)
+# def get_similar_contacts(target_name: str, name_count: int = 3) -> List[str]:
+#     contacts = requests.get(f'{BASE_URL}/contacts/').json()
+#     names = [contact['name'] for contact in contacts]
+#     return difflib.get_close_matches(target_name, names, n=name_count)
