@@ -12,6 +12,7 @@ def make_main_menu():
         'Add log',
         'Add contact',
         'Edit contact',
+        'Get logs',
         'Get stats',
     ])
 

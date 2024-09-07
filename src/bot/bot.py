@@ -6,6 +6,7 @@ from decouple import config
 from handlers.main import router as main_router
 from handlers.add_contact import router as add_contact_router
 from handlers.edit_contact import router as edit_contact_router
+from handlers.get_logs import router as logs_router
 
 TOKEN = config("BOT_TOKEN")
 
@@ -17,6 +18,7 @@ async def main():
         main_router,
         add_contact_router,
         edit_contact_router,
+        logs_router,
     )
 
     await bot.delete_webhook(drop_pending_updates=True)
