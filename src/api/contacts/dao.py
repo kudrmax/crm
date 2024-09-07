@@ -48,47 +48,6 @@ class DAOContact(DAO):
         await self.db.commit()
         return m_contact
 
-    # async def _extract_data_from_str_log(self, log_data: str) -> Tuple[str, list] | None:
-    #     lines = log_data.strip().split("\n")
-    #     if len(lines) < 2:
-    #         return None
-    #     name = lines[0].strip()
-    #     data = [s.strip() for s in lines[1:]]
-    #     return name, data
-    #
-    # async def _add_str_to_log(self, old_log: str, log_data: str):
-    #     name, data = self._extract_data_from_str_log(log_data)
-    #     old_log = "\n".join([old_log, data])
-
-    async def get_log(self, contact_id: UUID) -> str:
-        m_contact = await self.get_one_by_id(contact_id)
-        return m_contact.log if m_contact.log else ""
-
-    async def add_data_to_log(self, contact_id: UUID, log_data: str) -> Dict[str, str]:
-        m_contact = await self.get_one_by_id(contact_id)
-        old_log = m_contact.log
-        new_log = old_log + '\n' + log_data if old_log != "" else log_data
-        setattr(m_contact, 'log', new_log)
-        await self.db.commit()
-        return {
-            'old_log': old_log,
-            'new_log': m_contact.log,
-            'log_data': log_data
-        }
-
-    async def replace_log(self, contact_id: UUID, new_log: str) -> Dict[str, str]:
-        m_contact = await self.get_one_by_id(contact_id)
-        old_log = m_contact.log
-        setattr(m_contact, 'log', new_log)
-        await self.db.commit()
-        return {
-            'old_log': old_log,
-            'new_log': m_contact.log,
-        }
-
-    async def remove_log(self, contact_id: UUID) -> Dict[str, str]:
-        return await self.replace_log(contact_id, "")
-
     async def search(self, name: str, name_count: int = 3) -> List[MContact]:
         # m_contact = await self.get_one_or_none_with_filter(name=name)
         # if m_contact:
