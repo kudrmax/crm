@@ -8,7 +8,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from decouple import config
 
-from src.bot.common import contact_fields, BASE_URL, print_contact_by_name, get_similar_contacts
+from src.bot.common import contact_fields, BASE_URL, print_contact_by_name
 from src.bot.handlers.main import make_main_menu
 from src.bot.keyboards.simple_row_by_list import make_row_keyboard_by_list
 
@@ -16,7 +16,8 @@ router = Router()
 
 
 class EditContactState(StatesGroup):
-    waiting_for_name = State()
+    waiting_for_typing_name = State()
+    waiting_for_choosing_name = State()
     waiting_for_choosing_what_to_edit = State()
     waiting_for_data = State()
 
@@ -31,20 +32,32 @@ def make_edit_user_menu():
 @router.message(StateFilter(None), F.text == 'Edit contact')
 async def get_contact_name(message: types.Message, state: FSMContext):
     await message.answer("Type contact name:", reply_markup=ReplyKeyboardRemove())
-    await state.set_state(EditContactState.waiting_for_name)
+    await state.set_state(EditContactState.waiting_for_typing_name)
 
 
-@router.message(EditContactState.waiting_for_name)
+@router.message(EditContactState.waiting_for_typing_name)
 async def edit_contact(message: types.Message, state: FSMContext):
     name = message.text
-    res = requests.get(f'{BASE_URL}/contacts/name/{name}')
-    res_json = res.json()
+    contacts = (requests.get(f'{BASE_URL}/contacts/search/{name}')).json()
+    contact_names = [contact['name'] for contact in contacts]
+    await message.answer(
+        'Choose contact',
+        reply_markup=make_row_keyboard_by_list(contact_names)
+    )
+    await state.set_state(EditContactState.waiting_for_choosing_name)
+
+
+@router.message(EditContactState.waiting_for_choosing_name)
+async def edit_contact(message: types.Message, state: FSMContext):
+    name = message.text
+    contact = requests.get(f'{BASE_URL}/contacts/name/{name}')
     await state.update_data(name=name)
-    await state.update_data(id=res_json.get('id'))
+    await state.update_data(id=contact.json().get('id'))
+    await message.answer(
+        f'You are editing {name}:\n' + print_contact_by_name(name),
+        reply_markup=make_edit_user_menu()
+    )
     await state.set_state(EditContactState.waiting_for_choosing_what_to_edit)
-    await message.answer(f'Find contact {name} with data:\n' + print_contact_by_name(name))
-    await message.answer(f'Similar names:\n' + '\n'.join(get_similar_contacts(name, name_count=5)))
-    await message.answer('Choose what to edit', reply_markup=make_edit_user_menu())
 
 
 @router.message(EditContactState.waiting_for_choosing_what_to_edit)
@@ -72,10 +85,13 @@ async def edit_contact(message: types.Message, state: FSMContext):
 
     await message.answer("Error. Choose menu option.", reply_markup=make_edit_user_menu())
 
+
 @router.message(EditContactState.waiting_for_data)
 async def update_field_value(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     field_to_update: str = user_data.get('field_to_update')
+    if field_to_update == 'name':
+        await state.update_data(name=message.text)
 
     if field_to_update:
         id = user_data.get('id')
