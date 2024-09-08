@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from src.bot.contact_helper import ContactHelper
-from src.bot.handlers.contacts.keyboards import make_process_contact_kb, make_edit_contact_kb, contact_fields
-from src.bot.handlers.contacts.states import ProcessContactState, EditContactState
+from src.bot.keyboards.keyboards import make_process_contact_kb, make_edit_contact_kb, contact_fields
+from src.bot.states.states import ProcessContactState, EditContactState
 
 router = Router()
 

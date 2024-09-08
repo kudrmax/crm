@@ -1,7 +1,6 @@
 from typing import List
 
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from src.bot.keyboards.simple_row_by_list import make_row_keyboard_by_list
 
 
 def make_process_contact_kb():
@@ -40,3 +39,13 @@ contact_fields: List[str] = [
     'phone',
     'birthday',
 ]
+
+
+def make_row_keyboard_by_list(items: list[str]) -> ReplyKeyboardMarkup:
+    """
+    Создаёт реплай-клавиатуру с кнопками в один ряд
+    :param items: список текстов для кнопок
+    :return: объект реплай-клавиатуры
+    """
+    row = [KeyboardButton(text=item) for item in items]
+    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)

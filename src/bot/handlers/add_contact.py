@@ -1,11 +1,11 @@
 from aiogram import F, Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 
 from src.bot.contact_helper import ContactHelper
-from src.bot.handlers.contacts.keyboards import make_contacts_menu_kb
-from src.bot.handlers.contacts.states import AddContactState
+from src.bot.keyboards.keyboards import make_contacts_menu_kb, make_row_keyboard_by_list
+from src.bot.states.states import AddContactState
 
 router = Router()
 
@@ -14,9 +14,18 @@ router = Router()
 async def create_contact(message: Message, state: FSMContext):
     await message.answer(
         'Type name:',
-        reply_markup=ReplyKeyboardRemove()
+        reply_markup=make_row_keyboard_by_list(['Cancel'])
     )
     await state.set_state(AddContactState.name)
+
+
+@router.message(AddContactState.name, F.text == 'Cancel')
+async def cancel(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer(
+        "Canceled",
+        reply_markup=make_contacts_menu_kb()
+    )
 
 
 @router.message(AddContactState.name)

@@ -17,3 +17,8 @@ class EditContactState(StatesGroup):
 
 class AddContactState(StatesGroup):
     name = State()
+
+
+class AddLog(StatesGroup):
+    name = State()
+    log_menu = State()

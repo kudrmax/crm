@@ -2,9 +2,9 @@ from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.contacts.keyboards import make_edit_contact_kb
-from src.bot.handlers.contacts.states import ProcessContactState, EditContactState
-from src.bot.handlers.main_menu import make_main_menu
+from src.bot.keyboards.keyboards import make_edit_contact_kb
+from src.bot.states.states import ProcessContactState, EditContactState
+from src.bot.handlers.menu_main import make_main_menu
 
 router = Router()
 
