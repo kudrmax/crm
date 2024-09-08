@@ -3,10 +3,11 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from decouple import config
 
-from handlers.main import router as main_router
-from handlers.add_contact import router as add_contact_router
-from handlers.edit_contact import router as edit_contact_router
-from handlers.get_logs import router as logs_router
+from src.bot.handlers.main_menu import router as main_router
+from src.bot.handlers.contacts import router as contact_router
+# from src.bot_old.handlers.add_contact import router as add_contact_router
+# from src.bot_old.handlers.edit_contact import router as edit_contact_router
+# from src.bot_old.handlers.get_logs import router as logs_router
 
 TOKEN = config("BOT_TOKEN")
 
@@ -16,9 +17,7 @@ async def main():
     dp = Dispatcher()
     dp.include_routers(
         main_router,
-        add_contact_router,
-        edit_contact_router,
-        logs_router,
+        contact_router,
     )
 
     await bot.delete_webhook(drop_pending_updates=True)
