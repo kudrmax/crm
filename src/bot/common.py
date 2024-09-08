@@ -3,13 +3,6 @@ from typing import List
 
 import requests
 
-contact_fields: List[str] = [
-    'name',
-    'telegram',
-    'phone',
-    'birthday',
-]
-
 BASE_URL = 'http://0.0.0.0:8000'
 
 
