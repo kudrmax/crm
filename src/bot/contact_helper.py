@@ -59,3 +59,14 @@ class ContactHelper:
         for key, value in contact.items():
             answer += f"{key}: {value}\n"
         return answer
+
+    @classmethod
+    async def get_all_logs(cls, name: str) -> str | None:
+        try:
+            contact = requests.get(f'{BASE_URL}/contacts/name/{name}')
+            id = contact.json().get('id')
+
+            logs = requests.get(f'{BASE_URL}/logs/{id}')
+            return '\n'.join(['- ' + log['log'] for log in logs.json()])
+        except Exception as e:
+            return None

@@ -49,3 +49,16 @@ def make_row_keyboard_by_list(items: list[str]) -> ReplyKeyboardMarkup:
     """
     row = [KeyboardButton(text=item) for item in items]
     return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
+
+
+def make_log_menu_kb():
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(text="Start logging"),
+                KeyboardButton(text="Get log"),
+                KeyboardButton(text="Exit"),
+            ]
+        ],
+        resize_keyboard=True,
+    )

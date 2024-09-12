@@ -20,5 +20,6 @@ class AddContactState(StatesGroup):
 
 
 class AddLog(StatesGroup):
-    name = State()
-    log_menu = State()
+    menu = State()
+    logging = State()
+
