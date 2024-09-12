@@ -31,13 +31,12 @@ async def cancel(message: Message, state: FSMContext):
 @router.message(AddContactState.name)
 async def set_name(message: Message, state: FSMContext):
     name = message.text
-    if not await ContactHelper.add_new_contact(name):
-        await message.answer(
-            f'Contact {name} already exists. Type another name:',
-        )
-    else:
-        await message.answer(
-            f'Contact {name} was added',
-            reply_markup=make_contacts_menu_kb()
-        )
-        await state.clear()
+    if not await ContactHelper.create_contact(name):
+        await message.answer(f'Contact {name} already exists. Type another name:')
+        return
+
+    await message.answer(
+        f'Contact {name} was added',
+        reply_markup=make_contacts_menu_kb()
+    )
+    await state.clear()

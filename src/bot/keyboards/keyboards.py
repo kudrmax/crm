@@ -56,8 +56,8 @@ def make_log_menu_kb():
         keyboard=[
             [
                 KeyboardButton(text="Start logging"),
-                KeyboardButton(text="Get log"),
-                KeyboardButton(text="Exit"),
+                KeyboardButton(text="Get logs"),
+                KeyboardButton(text="Go to main menu"),
             ]
         ],
         resize_keyboard=True,

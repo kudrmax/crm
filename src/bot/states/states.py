@@ -6,8 +6,8 @@ class ProcessContactState(StatesGroup):
 
 
 class FindContactState(StatesGroup):
-    type_name = State()
-    choose_name = State()
+    typing_name = State()
+    choosing_name = State()
 
 
 class EditContactState(StatesGroup):

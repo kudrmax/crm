@@ -8,14 +8,11 @@ from src.bot.common import BASE_URL
 
 class ContactHelper:
     @classmethod
-    async def add_new_contact(cls, name: str) -> bool | None:
-        try:
-            res = requests.post(BASE_URL + '/contacts', data=json.dumps({"name": name}))
-            if res.status_code == 409:
-                return None
-            return True
-        except Exception as e:
-            return None
+    async def create_contact(cls, name: str) -> bool | None:
+        response = requests.post(BASE_URL + '/contacts', data=json.dumps({"name": name}))
+        if response.status_code == 409:
+            return False
+        return True
 
     @classmethod
     async def find_contact_by_name(cls, name: str) -> List[str] | None:
@@ -68,5 +65,18 @@ class ContactHelper:
 
             logs = requests.get(f'{BASE_URL}/logs/{id}')
             return '\n'.join(['- ' + log['log'] for log in logs.json()])
+        except Exception as e:
+            return None
+
+    @classmethod
+    async def add_log(cls, log_str: str, name: str):
+        try:
+            contact = requests.get(f'{BASE_URL}/contacts/name/{name}')
+            contact_id = contact.json().get('id')
+            requests.post(f'{BASE_URL}/logs/', json={
+                'contact_id': contact_id,
+                'log': log_str
+            })
+            return True
         except Exception as e:
             return None
