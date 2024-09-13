@@ -43,7 +43,7 @@ class DAOContact(DAO):
             if await self.get_one_or_none_with_filter(name=update_contact.name):
                 raise HTTPException(
                     status_code=409,
-                    detail=f'Контакт с именем {update_contact.name} уже существует. Нельзя поменять имя на данной имя.'
+                    detail=f'Нельзя поменять имя на имя {update_contact.name}, так как контакт с именем {update_contact.name} уже существует.'
                 )
         m_contact = await self.get_one_or_none_with_filter(name=name)
         if not m_contact:

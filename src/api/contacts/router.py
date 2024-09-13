@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from src.api.contacts.dao import DAOContact
 from src.api.contacts.models import MContact
@@ -21,11 +21,14 @@ async def get_all_contacts(
 
 
 @router.get("/{name}")
-async def get_one_or_none_contacts_by_name(
+async def get_contact_by_name(
         name: str,
         dao: DAOContact = Depends()
 ) -> SContactRead | None:
-    return await dao.get_one_or_none_with_filter(name=name)
+    contact = await dao.get_one_or_none_with_filter(name=name)
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found.")
+    return contact
 
 
 @router.post("/new", response_model=SContactRead)
