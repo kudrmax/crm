@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.common.search_contact import search_contact
-from src.bot.keyboards.keyboards import make_process_contact_kb, make_contacts_menu_kb
-from src.bot.states.states import ProcessContactState
+from src.bot.keyboards.keyboards import make_contact_profile_kb, make_contacts_menu_kb
+from src.bot.states.states import ContactProfileState
 
 router = Router()
 
@@ -17,6 +17,6 @@ async def find_contact(message: Message, state: FSMContext):
         state=state,
         start_state=None,
         start_reply_markup=make_contacts_menu_kb(),
-        final_state=ProcessContactState.choose_action,
-        final_reply_markup=make_process_contact_kb(),
+        final_state=ContactProfileState.choose_action,
+        final_reply_markup=make_contact_profile_kb(),
     )

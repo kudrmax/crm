@@ -1,7 +1,7 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class ProcessContactState(StatesGroup):
+class ContactProfileState(StatesGroup):
     choose_action = State()
 
 

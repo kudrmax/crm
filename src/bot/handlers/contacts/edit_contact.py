@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from src.bot.contact_helper import ContactHelper
-from src.bot.keyboards.keyboards import make_process_contact_kb, make_edit_contact_kb, contact_fields
-from src.bot.states.states import ProcessContactState, EditContactState
+from src.bot.keyboards.keyboards import make_contact_profile_kb, make_edit_contact_kb, contact_fields
+from src.bot.states.states import ContactProfileState, EditContactState
 
 router = Router()
 
@@ -22,9 +22,9 @@ async def choose_action(message: Message, state: FSMContext):
     contact_for_print = await ContactHelper.print_contact_data(contact_data)
     await message.answer(
         f'Updated contact {name}\n' + contact_for_print,
-        reply_markup=make_process_contact_kb(),
+        reply_markup=make_contact_profile_kb(),
     )
-    await state.set_state(ProcessContactState.choose_action)
+    await state.set_state(ContactProfileState.choose_action)
 
 
 @router.message(EditContactState.choose_what_edit)

@@ -5,8 +5,8 @@ from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
 from src.bot.contact_helper import ContactHelper
-from src.bot.keyboards.keyboards import make_process_contact_kb, make_contacts_menu_kb, make_row_keyboard_by_list
-from src.bot.states.states import ProcessContactState, FindContactState
+from src.bot.keyboards.keyboards import make_contact_profile_kb, make_contacts_menu_kb, make_row_keyboard_by_list
+from src.bot.states.states import ContactProfileState, FindContactState
 from src.bot.handlers.menu_main import make_main_menu
 
 router = Router()

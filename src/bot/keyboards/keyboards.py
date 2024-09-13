@@ -3,13 +3,13 @@ from typing import List
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-def make_process_contact_kb():
+def make_contact_profile_kb():
     return make_row_keyboard_by_list([
-        'Get log ❌',
-        'Add log ❌',
+        'Start logging',
+        'Get logs',
         'Edit contact',
-        'Delete contact ❌',
-        'Exit',
+        'Delete contact',
+        'Go to main menu',
     ])
 
 
