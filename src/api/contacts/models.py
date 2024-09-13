@@ -13,4 +13,3 @@ class MContact(Base):
     phone = Column(String)
     telegram = Column(String)
     birthday = Column(Date)
-    log = Column(String, nullable=False, default="")
