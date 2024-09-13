@@ -3,6 +3,7 @@ from typing import Dict
 from uuid import UUID
 
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from src.api.contacts.dao import DAOContact
@@ -15,8 +16,18 @@ from src.api.logs.schemas import SLogCreate
 class DAOLog(DAO):
     model = MLog
 
+    async def _get_one_or_none_contact_by_id(self, contact_id: UUID) -> MContact:
+        query = select(MContact).where(MContact.id == contact_id)
+        contact = await self.db.execute(query)
+        contact = contact.scalar_one_or_none()
+        return contact
+
     async def create(self, log_create: SLogCreate):
-        m_log = MLog(**log_create.model_dump(exclude_unset=True))
+        contact = await self._get_one_or_none_contact_by_id(log_create.contact_id)
+        m_log = MLog(
+            contact_id=contact.id,
+            log=log_create.log
+        )
         m_log.datetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
         try:
             self.db.add(m_log)
@@ -31,6 +42,18 @@ class DAOLog(DAO):
         else:
             await self.db.commit()
             return m_log
+
+    async def get_all_by_name(self, name):
+        query = select(MContact).where(MContact.name == name)
+        contact = await self.db.execute(query)
+        contact = contact.scalar_one_or_none()
+        if not contact:
+            raise HTTPException(
+                status_code=404,
+                detail=f'Контакт с именем {name} не найден.'
+            )
+        contact_id = contact.id
+        return await self.get_all_with_filter(contact_id=contact_id)
 
 # class DAOLog(DAOContact):
 #     model = MContact

@@ -15,25 +15,17 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post("/new")
 async def add_log(
-        log_create: SLogCreate,
+        log: SLogCreate,
         dao: DAOLog = Depends()
 ) -> SLogRead:
-    return await dao.create(log_create)
+    return await dao.create(log)
 
 
-@router.get("/{contact_id}")
+@router.get("/{name}")
 async def get_all_logs(
-        contact_id: UUID,
+        name: str,
         dao: DAOLog = Depends()
 ) -> List[SLogRead]:
-    return await dao.get_all_with_filter(contact_id=contact_id)
-
-#
-# @router.post("/by_date")
-# async def get_log_by_date(
-#         log_get_by_date: SLogGetByDate,
-#         dao: DAOLog = Depends()
-# ) -> List[SLogRead]:
-#     return await dao.get_log_by_date(log_get_by_date)
+    return await dao.get_all_by_name(name)

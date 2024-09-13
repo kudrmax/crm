@@ -13,5 +13,5 @@ class SLogRead(BaseModel):
 
 
 class SLogCreate(BaseModel):
-    contact_id: UUID
+    name: str
     log: str

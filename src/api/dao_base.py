@@ -36,5 +36,5 @@ class DAO:
     async def get_one_by_id(self, id):
         obj = await self.get_one_or_none_by_id(id)
         if not obj:
-            raise HTTPException(status_code=404, detail=f"Object with {id = } not found in databse {self.model}.")
+            raise HTTPException(status_code=404, detail=f"Object with {id = } not found in database {self.model}.")
         return obj
