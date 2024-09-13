@@ -9,7 +9,7 @@ from src.bot.common import BASE_URL
 class ContactHelper:
     @classmethod
     async def create_contact(cls, name: str) -> bool | None:
-        response = requests.post(BASE_URL + '/contacts', data=json.dumps({"name": name}))
+        response = requests.post(BASE_URL + '/contacts/new', data=json.dumps({"name": name}))
         if response.status_code == 409:
             return False
         return True
@@ -17,7 +17,7 @@ class ContactHelper:
     @classmethod
     async def find_contact_by_name(cls, name: str) -> List[str] | None:
         try:
-            contacts = (requests.get(f'{BASE_URL}/contacts/search/{name}')).json()
+            contacts = (requests.get(f'{BASE_URL}/contacts/{name}/search')).json()
             contact_names = [contact['name'] for contact in contacts]
             return contact_names
         except Exception as e:
@@ -28,10 +28,9 @@ class ContactHelper:
         field_to_update = field_to_update.lower()
         try:
             print(name, field_to_update, new_value)
-            contact = (requests.get(f'{BASE_URL}/contacts/name/{name}')).json()
-            id = contact['id']
+            contact = (requests.get(f'{BASE_URL}/contacts/{name}')).json()
             requests.put(
-                f'{BASE_URL}/contacts/{id}',
+                f'{BASE_URL}/contacts/{name}',
                 data=json.dumps({field_to_update: new_value})
             )
             return {
@@ -45,7 +44,7 @@ class ContactHelper:
     @classmethod
     async def get_contact_data_by_name(cls, name: str) -> Dict[str, str] | None:
         try:
-            contact = (requests.get(f'{BASE_URL}/contacts/name/{name}')).json()
+            contact = (requests.get(f'{BASE_URL}/contacts/{name}')).json()
             return contact
         except Exception as e:
             return None
@@ -60,10 +59,7 @@ class ContactHelper:
     @classmethod
     async def get_all_logs(cls, name: str) -> str | None:
         try:
-            contact = requests.get(f'{BASE_URL}/contacts/name/{name}')
-            id = contact.json().get('id')
-
-            logs = requests.get(f'{BASE_URL}/logs/{id}')
+            logs = requests.get(f'{BASE_URL}/logs/{name}')
             return '\n'.join(['- ' + log['log'] for log in logs.json()])
         except Exception as e:
             return None
@@ -71,7 +67,7 @@ class ContactHelper:
     @classmethod
     async def add_log(cls, log_str: str, name: str):
         try:
-            contact = requests.get(f'{BASE_URL}/contacts/name/{name}')
+            contact = requests.get(f'{BASE_URL}/contacts/{name}')
             contact_id = contact.json().get('id')
             requests.post(f'{BASE_URL}/logs/', json={
                 'contact_id': contact_id,
