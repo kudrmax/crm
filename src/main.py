@@ -2,9 +2,9 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
-from src.api import router
+from src.api.routers import router
 
-app = FastAPI(title='CRMz')
+app = FastAPI(title='CRM')
 app.include_router(router)
 
 
