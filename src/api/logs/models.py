@@ -10,6 +10,6 @@ class MLog(Base):
     __tablename__ = "logs"
 
     id = Column(Integer, primary_key=True)
-    contact_id = Column(UUID(as_uuid=True), ForeignKey('contacts.id'), nullable=False)
+    contact_id = Column(UUID(as_uuid=True), ForeignKey('contacts.id', ondelete="CASCADE"), nullable=False)
     datetime = Column(DateTime, nullable=False)
     log = Column(String, nullable=False, default="")
