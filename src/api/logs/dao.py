@@ -16,14 +16,16 @@ from src.api.logs.schemas import SLogCreate
 class DAOLog(DAO):
     model = MLog
 
-    async def _get_one_or_none_contact_by_id(self, contact_id: UUID) -> MContact:
-        query = select(MContact).where(MContact.id == contact_id)
+    async def _get_one_or_none_contact_by_name(self, name: str) -> MContact:
+        query = select(MContact).where(MContact.name == name)
         contact = await self.db.execute(query)
         contact = contact.scalar_one_or_none()
         return contact
 
     async def create(self, log_create: SLogCreate):
-        contact = await self._get_one_or_none_contact_by_id(log_create.contact_id)
+        contact = await self._get_one_or_none_contact_by_name(log_create.name)
+        if not contact:
+            raise HTTPException(status_code=404, detail="Contact not found.")
         m_log = MLog(
             contact_id=contact.id,
             log=log_create.log
