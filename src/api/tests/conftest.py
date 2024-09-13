@@ -7,7 +7,7 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from starlette.testclient import TestClient
@@ -17,6 +17,7 @@ from src.database import get_db, Base
 from src.main import app
 
 CLEAN_TABLES = [
+    'logs'
     "contacts",
 ]
 
@@ -92,15 +93,33 @@ async def get_db_test() -> Generator:
 #         pass
 
 
+# @pytest.fixture(scope="function", autouse=True)
+# async def clean_tables():
+#     """Old"""
+#     engine = create_async_engine(settings.db_test.url, future=True, echo=False)
+#     AsyncSessionLocalTest = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+#     session_test: AsyncSession = AsyncSessionLocalTest()
+#     async with session_test.begin():
+#         for table_for_cleaning in CLEAN_TABLES:
+#             await session_test.execute(text(f"""TRUNCATE TABLE {table_for_cleaning};"""))
+
+
 @pytest.fixture(scope="function", autouse=True)
 async def clean_tables():
+    """New"""
+    # Создание асинхронного двигателя для тестовой базы данных
     engine = create_async_engine(settings.db_test.url, future=True, echo=False)
-    AsyncSessionLocalTest = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-    session_test: AsyncSession = AsyncSessionLocalTest()
-    async with session_test.begin():
-        for table_for_cleaning in CLEAN_TABLES:
-            await session_test.execute(text(f"""TRUNCATE TABLE {table_for_cleaning};"""))
+    AsyncSessionLocalTest = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
+    async with AsyncSessionLocalTest() as session_test:
+        async with session_test.begin():
+            # Отключение проверок внешних ключей для SQLite
+            # Очистка всех таблиц
+            for table in reversed(Base.metadata.sorted_tables):
+                await session_test.execute(table.delete())
+            # Включение проверок внешних ключей
+
+            await session_test.commit()
 
 @pytest.fixture(scope="session")
 async def asyncpg_pool():
