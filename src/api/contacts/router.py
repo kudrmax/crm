@@ -20,15 +20,7 @@ async def get_all_contacts(
     return await dao.get_all()
 
 
-@router.get("/{contact_id}")
-async def get_one_or_none_contacts_by_id(
-        contact_id: UUID,
-        dao: DAOContact = Depends()
-) -> SContactRead | None:
-    return await dao.get_one_or_none_by_id(contact_id)
-
-
-@router.get("/name/{name}")
+@router.get("/{name}")
 async def get_one_or_none_contacts_by_name(
         name: str,
         dao: DAOContact = Depends()
@@ -36,7 +28,7 @@ async def get_one_or_none_contacts_by_name(
     return await dao.get_one_or_none_with_filter(name=name)
 
 
-@router.post("/")
+@router.post("/new", response_model=SContactRead)
 async def add_contact(
         new_contact: SContactCreate,
         dao: DAOContact = Depends()
@@ -44,24 +36,24 @@ async def add_contact(
     return await dao.create(new_contact)
 
 
-@router.delete("/{contact_id}")
+@router.delete("/{name}")
 async def delete_contact(
-        contact_id: UUID,
+        name: str,
         dao: DAOContact = Depends()
 ) -> SContactRead | None:
-    return await dao.delete(contact_id)
+    return await dao.delete(name)
 
 
-@router.put("/{contact_id}")
+@router.put("/{name}")
 async def update_contact(
-        contact_id: UUID,
+        name: str,
         update_contact: SContactUpdate,
         dao: DAOContact = Depends()
 ) -> SContactRead:
-    return await dao.update(contact_id, update_contact)
+    return await dao.update(name, update_contact)
 
 
-@router.get("/search/{name}")
+@router.get("/{name}/search")
 async def search_contact(
         name: str,
         name_count: int = 6,

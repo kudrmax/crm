@@ -25,24 +25,32 @@ class DAOContact(DAO):
             await self.db.flush()
         except IntegrityError as e:
             await self.db.rollback()
-            raise HTTPException(status_code=409, detail=f'Конаткт с именем {s_contact_create.name} уже существует')
+            raise HTTPException(status_code=409, detail=f'Контакт с именем {s_contact_create.name} уже существует.')
         else:
             await self.db.commit()
             return m_contact
 
-    async def delete(self, id: UUID) -> MContact | None:
-        m_contact = await self.get_one_or_none_by_id(id)
+    async def delete(self, name: str) -> MContact | None:
+        m_contact = await self.get_one_or_none_with_filter(name=name)
         if not m_contact:
             return None
         await self.db.delete(m_contact)
         await self.db.commit()
         return m_contact
 
-    async def update(self, id: UUID, update_contact: SContactUpdate) -> MContact:
+    async def update(self, name: str, update_contact: SContactUpdate) -> MContact:
         if update_contact.name:
             if await self.get_one_or_none_with_filter(name=update_contact.name):
-                raise HTTPException(status_code=409, detail=f'Конаткт с именем {update_contact.name} уже существует')
-        m_contact = await self.get_one_by_id(id)
+                raise HTTPException(
+                    status_code=409,
+                    detail=f'Контакт с именем {update_contact.name} уже существует. Нельзя поменять имя на данной имя.'
+                )
+        m_contact = await self.get_one_or_none_with_filter(name=name)
+        if not m_contact:
+            raise HTTPException(
+                status_code=404,
+                detail=f'Контакт с именем {name} не найден.'
+            )
         for key, val in update_contact.model_dump(exclude_unset=True).items():
             setattr(m_contact, key, val)
         await self.db.commit()
