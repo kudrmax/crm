@@ -1,34 +1,29 @@
-import asyncio
-import datetime
 import difflib
-from typing import List, Dict, Tuple
-from uuid import UUID
-
-from fastapi import Depends, HTTPException
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
 
 from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate
 from src.api.dao_base import DAO
-from src.database import get_db
+from src.api.errors.errors import *
 
 
 class DAOContact(DAO):
     model = MContact
 
+    async def get_contact(self, name: str) -> MContact:
+        contact = await self.get_one_or_none_with_filter(name=name)
+        if not contact:
+            raise ContactNotFoundError(name=name)
+        return contact
+
     async def create(self, s_contact_create: SContactCreate) -> MContact:
         m_contact = MContact(**s_contact_create.model_dump(exclude_unset=True))
-        try:
-            self.db.add(m_contact)
-            await self.db.flush()
-        except IntegrityError as e:
-            await self.db.rollback()
-            raise HTTPException(status_code=409, detail=f'Контакт с именем {s_contact_create.name} уже существует.')
-        else:
-            await self.db.commit()
-            return m_contact
+        if await self.get_one_or_none_with_filter(name=s_contact_create.name):
+            raise ContactAlreadyExistsError(name=s_contact_create.name)
+        self.db.add(m_contact)
+        await self.db.commit()
+        await self.db.refresh(m_contact)
+        return m_contact
 
     async def delete(self, name: str) -> MContact | None:
         m_contact = await self.get_one_or_none_with_filter(name=name)
@@ -41,25 +36,17 @@ class DAOContact(DAO):
     async def update(self, name: str, update_contact: SContactUpdate) -> MContact:
         if update_contact.name:
             if await self.get_one_or_none_with_filter(name=update_contact.name):
-                raise HTTPException(
-                    status_code=409,
-                    detail=f'Нельзя поменять имя на имя {update_contact.name}, так как контакт с именем {update_contact.name} уже существует.'
-                )
+                raise ContactAlreadyExistsError(name=update_contact.name)
         m_contact = await self.get_one_or_none_with_filter(name=name)
         if not m_contact:
-            raise HTTPException(
-                status_code=404,
-                detail=f'Контакт с именем {name} не найден.'
-            )
+            raise ContactNotFoundError(name=name)
         for key, val in update_contact.model_dump(exclude_unset=True).items():
             setattr(m_contact, key, val)
         await self.db.commit()
+        await self.db.refresh(m_contact)
         return m_contact
 
     async def search(self, name: str, name_count: int = 3) -> List[MContact]:
-        # m_contact = await self.get_one_or_none_with_filter(name=name)
-        # if m_contact:
-        #     return [m_contact]
         m_contacts = await self.get_all()
         names = [contact.name.lower() for contact in m_contacts]
         close_names = difflib.get_close_matches(name.lower(), names, n=name_count)
