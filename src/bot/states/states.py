@@ -23,3 +23,6 @@ class AddLog(StatesGroup):
     menu = State()
     logging = State()
 
+
+class DeleteContactState(StatesGroup):
+    waiting_confirmation = State()

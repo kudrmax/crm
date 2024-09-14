@@ -4,9 +4,11 @@ from aiogram.types import Message
 
 from src.bot.handlers.common.get_logs import get_logs
 from src.bot.handlers.common.logging import start_logging
-from src.bot.keyboards.keyboards import make_edit_contact_kb, make_contact_profile_kb
-from src.bot.states.states import ContactProfileState, EditContactState
+from src.bot.helper.contact_helper import ContactHelper
+from src.bot.keyboards.keyboards import make_edit_contact_kb, make_contact_profile_kb, make_row_keyboard_by_list
+from src.bot.states.states import ContactProfileState, EditContactState, DeleteContactState
 from src.bot.handlers.menu_main import make_main_menu_kb
+from src.errors.errors import ContactNotFoundError
 
 router = Router()
 
@@ -35,9 +37,15 @@ async def edit_contact(message: Message, state: FSMContext):
     await state.set_state(EditContactState.choose_what_edit)
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Delete contact log')
+@router.message(ContactProfileState.choose_action, F.text == 'Delete contact')
 async def delete_contact(message: Message, state: FSMContext):
-    pass
+    data = await state.get_data()
+    name = data['name']
+    await state.set_state(DeleteContactState.waiting_confirmation)
+    await message.answer(
+        f'Type "I want to delete contact {name}" to delete contact {name}.',
+        reply_markup=make_row_keyboard_by_list(['Cancel'])
+    )
 
 
 @router.message(ContactProfileState.choose_action, F.text == 'Go to main menu')

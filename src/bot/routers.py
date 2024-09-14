@@ -7,6 +7,7 @@ from src.bot.handlers.contacts.create_contact import router as add_contact_route
 from src.bot.handlers.contacts.find_contact import router as find_contact_router
 from src.bot.handlers.contacts.process_contact import router as process_contact_router
 from src.bot.handlers.contacts.edit_contact import router as edit_contact_router
+from src.bot.handlers.contacts.delete_contact import router as delete_router
 from src.bot.handlers.logs.menu_logs import router as menu_logs_router
 from src.bot.handlers.logs.get_logs import router as get_logs_router
 from src.bot.handlers.logs.logging import router as logging_router
@@ -27,4 +28,5 @@ router.include_routers(
     get_logs_router,
     logging_router,
     logging_common_router,
+    delete_router,
 )

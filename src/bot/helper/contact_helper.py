@@ -102,3 +102,9 @@ class ContactHelper:
     async def raise_if_500(cls, response):
         if response.status_code == 500:
             raise InternalServerError
+
+    @classmethod
+    async def delete(cls, name: str):
+        response = requests.delete(f'{BASE_URL_REQUESTS}/contacts/{name}')
+        if response.status_code == 404:
+            raise ContactNotFoundError
