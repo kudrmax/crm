@@ -6,6 +6,7 @@ from aiogram.types import Message
 from src.bot.helper.contact_helper import ContactHelper
 from src.bot.keyboards.keyboards import make_row_keyboard_by_list
 from src.bot.states.states import FindContactState
+from src.errors.errors import ContactNotFoundError
 
 router = Router()
 
@@ -80,10 +81,11 @@ async def cancel(message: Message, state: FSMContext):
 @router.message(FindContactState.choosing_name)
 async def contact(message: Message, state: FSMContext):
     name = message.text
-    contact_data = await ContactHelper.get_contact_data_by_name(name)
-
-    if not contact_data:
-        await set_start_state(message, state, 'Something went wrong. Error with contact data.')
+    try:
+        contact_data = await ContactHelper.get_contact_data_by_name(name)
+    except ContactNotFoundError:
+        await message.answer(f"Contact with name {name} not found")
+        raise
 
     state_data = await state.get_data()
     final_state = state_data.get('final_state')

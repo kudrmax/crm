@@ -13,13 +13,12 @@ router = Router()
 @router.message(EditContactState.choose_what_edit, F.text == 'Finish')
 async def choose_action(message: Message, state: FSMContext):
     name = (await state.get_data()).get('name')
-    print(f'{name = }')
-    contact_data = await ContactHelper.get_contact_data_by_name(name)
-    if not contact_data:
-        await message.answer(
-            f'Something went wrong'
-        )
-        return
+    try:
+        contact_data = await ContactHelper.get_contact_data_by_name(name)
+    except ContactNotFoundError:
+        await message.answer(f"Contact with name {name} not found")
+        raise
+
     contact_for_print = await ContactHelper.print_contact_data(contact_data)
     await message.answer(
         f'Updated contact {name}\n' + contact_for_print,
@@ -50,7 +49,7 @@ async def update_field_value(message: Message, state: FSMContext):
         if field_to_update == 'name':
             await state.update_data(name=message.text)
         await message.answer(
-            f'You changed filed {updated_data['field']} from {updated_data['old_value']} to {updated_data['new_value']}',
+            f'You changed filed "{updated_data['field']}" from "{updated_data['old_value']}" to "{updated_data['new_value']}"',
             reply_markup=make_edit_contact_kb()
         )
         await state.set_state(EditContactState.choose_what_edit)
