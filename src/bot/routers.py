@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from src.bot.errors.error_handlers import router as errors_router
+from src.bot.error_handlers import router as errors_router
 
 from src.bot.handlers.contacts.menu_contacts import router as contacts_router
 from src.bot.handlers.contacts.create_contact import router as add_contact_router
