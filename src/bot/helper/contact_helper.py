@@ -62,34 +62,33 @@ class ContactHelper:
 
     @classmethod
     async def get_all_logs(cls, name: str) -> str | None:
-        try:
-            logs = requests.get(f'{BASE_URL_REQUESTS}/logs/{name}')
-            result_list = []
-            date_set = set()
-            for log in logs.json():
-                log_str = log['log']
-                log_datetime_str: datetime = log['datetime']
-                log_datetime_obj = datetime.strptime(log_datetime_str, "%Y-%m-%dT%H:%M:%S.%f")
-                log_date_str = f"{log_datetime_obj.date().strftime("%d-%m-%Y")}:"
-                if log_date_str not in date_set:
-                    result_list.append(log_date_str)
-                    date_set.add(log_date_str)
-                result_list.append('- ' + log_str)
-            return '\n'.join(result_list)
-        except Exception as e:
-            print(e)
-            return None
+        response = requests.get(f'{BASE_URL_REQUESTS}/logs/{name}')
+        if response.status_code == 404:
+            raise ContactNotFoundError
+        await cls.raise_if_500(response)
+
+        logs = response.json()
+        result_list = []
+        date_set = set()
+        for log in logs:
+            log_str = log['log']
+            log_datetime_str = log['datetime']
+            log_datetime_obj = datetime.strptime(log_datetime_str, "%Y-%m-%dT%H:%M:%S.%f")
+            log_date_str = f"{log_datetime_obj.date().strftime("%d-%m-%Y")}:"
+            if log_date_str not in date_set:
+                result_list.append(log_date_str)
+                date_set.add(log_date_str)
+            result_list.append('- ' + log_str)
+        return '\n'.join(result_list)
 
     @classmethod
     async def add_log(cls, log_str: str, name: str):
-        try:
-            requests.post(f'{BASE_URL_REQUESTS}/logs/new', json={
-                'name': name,
-                'log': log_str
-            })
-            return True
-        except Exception as e:
-            return None
+        response = requests.post(f'{BASE_URL_REQUESTS}/logs/new', json={
+            'name': name,
+            'log': log_str
+        })
+        if response.status_code == 404:
+            raise ContactNotFoundError
 
     @classmethod
     async def get_contact_data_by_name(cls, name: str) -> Dict[str, str] | None:

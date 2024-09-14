@@ -6,6 +6,7 @@ from aiogram.types import Message
 from src.bot.helper.contact_helper import ContactHelper
 from src.bot.keyboards.keyboards import make_row_keyboard_by_list
 from src.bot.states.states import AddLog
+from src.errors.errors import ContactNotFoundError
 
 router = Router()
 
@@ -36,7 +37,10 @@ async def stop_logging(message: Message, state: FSMContext):
 async def add_log(message: Message, state: FSMContext):
     data = await state.get_data()
     new_log = message.text
-    if await ContactHelper.add_log(log_str=new_log, name=data['name']):
+    try:
+        await ContactHelper.add_log(log_str=new_log, name=data['name'])
         await message.reply('✅')
-        return
-    await message.reply('❌')
+    except ContactNotFoundError:
+        await message.reply('❌')
+        await message.answer(f"Contact with name {data['name']} not found. Aborted.")
+        raise
