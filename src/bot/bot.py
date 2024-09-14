@@ -4,10 +4,7 @@ from aiogram import Bot, Dispatcher
 from decouple import config
 
 from src.bot.handlers.menu_main import router as main_router
-from src.bot.handlers import router as contact_router
-# from src.bot_old.handlers.add_contact import router as add_contact_router
-# from src.bot_old.handlers.edit_contact import router as edit_contact_router
-# from src.bot_old.handlers.get_logs import router as logs_router
+from src.bot.handlers.routers import router as contact_router
 
 TOKEN = config("BOT_TOKEN")
 

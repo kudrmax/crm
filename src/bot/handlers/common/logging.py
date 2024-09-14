@@ -1,11 +1,10 @@
 from aiogram import Router, F
-from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
-from src.bot.contact_helper import ContactHelper
-from src.bot.keyboards.keyboards import make_row_keyboard_by_list, make_log_menu_kb
+from src.bot.helper.contact_helper import ContactHelper
+from src.bot.keyboards.keyboards import make_row_keyboard_by_list
 from src.bot.states.states import AddLog
 
 router = Router()

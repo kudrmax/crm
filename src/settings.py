@@ -43,3 +43,4 @@ settings = Settings(
 # DB_URL_FOR_ALEMBIC = "postgresql://postgres:postgres@0.0.0.0:5432/postgres"
 # DB_URL_TEST = "postgresql+asyncpg://postgres_test:postgres_test@0.0.0.0:5433/postgres_test"
 # DB_URL_FOR_ALEMBIC_TEST = "postgresql://postgres_test:postgres_test@0.0.0.0:5433/postgres_test"
+BASE_URL_REQUESTS = 'http://0.0.0.0:8000/api/v1'

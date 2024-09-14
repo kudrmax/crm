@@ -1,7 +1,7 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.contact_helper import ContactHelper
+from src.bot.helper.contact_helper import ContactHelper
 
 
 async def get_logs(message: Message, state: FSMContext):
