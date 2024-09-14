@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from decouple import config
 
 from src.bot.handlers.menu_main import router as main_router
-from src.bot.handlers.routers import router as contact_router
+from src.bot.routers import router as contact_router
 
 TOKEN = config("BOT_TOKEN")
 
@@ -16,7 +16,6 @@ async def main():
         main_router,
         contact_router,
     )
-
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 

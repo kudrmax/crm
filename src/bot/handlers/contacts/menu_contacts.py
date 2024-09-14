@@ -15,4 +15,3 @@ async def menu_contacts(message: Message, state: FSMContext):
         'Choose action:',
         reply_markup=make_contacts_menu_kb()
     )
-    await state.update_data(state_after_search=ContactProfileState.choose_action)

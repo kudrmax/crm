@@ -6,7 +6,7 @@ from src.bot.handlers.common.get_logs import get_logs
 from src.bot.handlers.common.logging import start_logging
 from src.bot.keyboards.keyboards import make_edit_contact_kb, make_contact_profile_kb
 from src.bot.states.states import ContactProfileState, EditContactState
-from src.bot.handlers.menu_main import make_main_menu
+from src.bot.handlers.menu_main import make_main_menu_kb
 
 router = Router()
 
@@ -45,5 +45,5 @@ async def main_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
         'Choose option:',
-        reply_markup=make_main_menu()
+        reply_markup=make_main_menu_kb()
     )

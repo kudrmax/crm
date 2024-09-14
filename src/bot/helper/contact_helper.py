@@ -4,16 +4,19 @@ from datetime import datetime
 import requests
 from typing import List, Dict, Any
 
+from src.errors.errors import *
 from src.settings import BASE_URL_REQUESTS
 
 
 class ContactHelper:
     @classmethod
-    async def create_contact(cls, name: str) -> bool | None:
+    async def create_contact(cls, name: str):
         response = requests.post(BASE_URL_REQUESTS + '/contacts/new', data=json.dumps({"name": name}))
         if response.status_code == 409:
-            return False
-        return True
+            raise ContactAlreadyExistsError(name)
+        if response.status_code == 200:
+            return True
+        await cls.raise_if_500(response)
 
     @classmethod
     async def find_contact_by_name(cls, name: str) -> List[str] | None:
@@ -87,3 +90,8 @@ class ContactHelper:
             return True
         except Exception as e:
             return None
+
+    @classmethod
+    async def raise_if_500(cls, response):
+        if response.status_code == 500:
+            raise InternalServerError

@@ -6,6 +6,7 @@ from aiogram.types import Message
 from src.bot.helper.contact_helper import ContactHelper
 from src.bot.keyboards.keyboards import make_contacts_menu_kb, make_row_keyboard_by_list
 from src.bot.states.states import AddContactState
+from src.errors.errors import ContactAlreadyExistsError, InternalServerError
 
 router = Router()
 
@@ -31,12 +32,12 @@ async def cancel(message: Message, state: FSMContext):
 @router.message(AddContactState.name)
 async def set_name(message: Message, state: FSMContext):
     name = message.text
-    if not await ContactHelper.create_contact(name):
+    try:
+        await ContactHelper.create_contact(name)
+        await message.answer(
+            f'Contact {name} was added',
+            reply_markup=make_contacts_menu_kb()
+        )
+        await state.clear()
+    except ContactAlreadyExistsError:
         await message.answer(f'Contact {name} already exists. Type another name:')
-        return
-
-    await message.answer(
-        f'Contact {name} was added',
-        reply_markup=make_contacts_menu_kb()
-    )
-    await state.clear()

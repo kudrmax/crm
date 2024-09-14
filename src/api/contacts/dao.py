@@ -4,7 +4,7 @@ from typing import List
 from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate
 from src.api.dao_base import DAO
-from src.api.errors.errors import *
+from src.errors.errors import *
 
 
 class DAOContact(DAO):
