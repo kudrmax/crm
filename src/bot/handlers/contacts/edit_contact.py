@@ -5,6 +5,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from src.bot.helper.contact_helper import ContactHelper
 from src.bot.keyboards.keyboards import make_contact_profile_kb, make_edit_contact_kb, contact_fields
 from src.bot.states.states import ContactProfileState, EditContactState
+from src.errors.errors import *
 
 router = Router()
 
@@ -44,16 +45,18 @@ async def update_field_value(message: Message, state: FSMContext):
     field_to_update = user_data.get('field_to_update')
     name = user_data.get('name')
     new_data = message.text
-
-    updated_data = await ContactHelper.update_contact(name, field_to_update, new_data)
-    if not updated_data:
-        await message.answer("Error. Can't change this field.")
-    if field_to_update == 'name':
-        name = message.text
-        await state.update_data(name=name)
-
-    await message.answer(
-        f'You changed filed {updated_data['field']} from {updated_data['old_value']} to {updated_data['new_value']}',
-        reply_markup=make_edit_contact_kb()
-    )
-    await state.set_state(EditContactState.choose_what_edit)
+    try:
+        updated_data = await ContactHelper.update_contact(name, field_to_update, new_data)
+        if field_to_update == 'name':
+            await state.update_data(name=message.text)
+        await message.answer(
+            f'You changed filed {updated_data['field']} from {updated_data['old_value']} to {updated_data['new_value']}',
+            reply_markup=make_edit_contact_kb()
+        )
+        await state.set_state(EditContactState.choose_what_edit)
+    except ContactNotFoundError:
+        await message.answer(f'Contact with name {name} not found. Aborted.')
+        raise Exception
+    except ContactAlreadyExistsError:
+        await message.answer(f"Contact with name {message.text} already exists. Type another name:")
+        return
