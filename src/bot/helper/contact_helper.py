@@ -73,7 +73,7 @@ class ContactHelper:
         for log in logs:
             log_str = log['log']
             log_datetime_str = log['datetime']
-            log_datetime_obj = datetime.strptime(log_datetime_str, "%Y-%m-%dT%H:%M:%S.%f")
+            log_datetime_obj = datetime.strptime(log_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
             log_date_str = f"{log_datetime_obj.date().strftime("%d-%m-%Y")}:"
             if log_date_str not in date_set:
                 result_list.append(log_date_str)
