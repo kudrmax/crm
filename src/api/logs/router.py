@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from src.api.logs.dao import DAOLog
 from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate, SContactRead
-from src.api.logs.schemas import SLogCreate, SLogRead
+from src.api.logs.schemas import SLogCreate, SLogRead, SEmptyLogCreate
 
 router = APIRouter(
     prefix="/logs",
@@ -23,12 +23,12 @@ async def add_log(
     return await dao.create(log)
 
 
-@router.post("/empty_log")
+@router.post("/add_empty_log")
 async def add_empty_log(
-        name: str,
+        empty_log: SEmptyLogCreate,
         dao: DAOLog = Depends()
 ) -> SLogRead:
-    return await dao.create_empty_log(name)
+    return await dao.create_empty_log(empty_log)
 
 
 @router.get("/{name}")

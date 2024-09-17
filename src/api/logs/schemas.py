@@ -15,3 +15,7 @@ class SLogRead(BaseModel):
 class SLogCreate(BaseModel):
     name: str
     log: str
+
+
+class SEmptyLogCreate(BaseModel):
+    name: str
