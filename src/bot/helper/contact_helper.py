@@ -93,6 +93,14 @@ class ContactHelper:
             raise ContactNotFoundError
 
     @classmethod
+    async def add_empty_log(cls, name: str):
+        response = requests.post(f'{settings.server.api_url}/logs/add_empty_log', json={
+            'name': name,
+        })
+        if response.status_code == 404:
+            raise ContactNotFoundError
+
+    @classmethod
     async def get_contact_data_by_name(cls, name: str) -> Dict[str, str] | None:
         response = requests.get(f'{settings.server.api_url}/contacts/{name}')
         if response.status_code == 404:

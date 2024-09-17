@@ -7,6 +7,7 @@ def make_contact_profile_kb():
     return make_row_keyboard_by_list([
         'Start logging',
         'Get logs',
+        'Add empty log',
         'Edit contact',
         'Delete contact',
         'Go to main menu',

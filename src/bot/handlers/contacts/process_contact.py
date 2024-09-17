@@ -4,9 +4,11 @@ from aiogram.types import Message
 
 from src.bot.handlers.common.get_logs import get_logs
 from src.bot.handlers.common.logging import start_logging
+from src.bot.helper.contact_helper import ContactHelper
 from src.bot.keyboards.keyboards import make_edit_contact_kb, make_contact_profile_kb, make_row_keyboard_by_list
 from src.bot.states.states import ContactProfileState, EditContactState, DeleteContactState
 from src.bot.handlers.menu_main import make_main_menu_kb
+from src.errors import ContactNotFoundError
 
 router = Router()
 
@@ -24,6 +26,17 @@ async def add_log(message: Message, state: FSMContext):
         final_state=ContactProfileState.choose_action,
         final_reply_markup=make_contact_profile_kb(),
     )
+
+
+@router.message(ContactProfileState.choose_action, F.text == 'Add empty log')
+async def add_empty_log(message: Message, state: FSMContext):
+    data = await state.get_data()
+    try:
+        await ContactHelper.add_empty_log(name=data['name'])
+        await message.answer('Interaction was added.')
+    except ContactNotFoundError:
+        await message.answer(f"Contact with name {data['name']} not found. Aborted.")
+        raise
 
 
 @router.message(ContactProfileState.choose_action, F.text == 'Edit contact')
