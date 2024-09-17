@@ -23,6 +23,14 @@ async def add_log(
     return await dao.create(log)
 
 
+@router.post("/empty_log")
+async def add_empty_log(
+        name: str,
+        dao: DAOLog = Depends()
+) -> SLogRead:
+    return await dao.create_empty_log(name)
+
+
 @router.get("/{name}")
 async def get_all_logs(
         name: str,

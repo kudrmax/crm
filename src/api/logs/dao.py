@@ -35,3 +35,11 @@ class DAOLog(DAO):
             raise ContactNotFoundError
         contact_id = contact.id
         return await self.get_all_with_filter(contact_id=contact_id)
+
+    async def create_empty_log(self, name: str):
+        return await self.create(
+            SLogCreate(
+                name=name,
+                log="",
+            )
+        )
