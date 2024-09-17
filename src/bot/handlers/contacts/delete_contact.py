@@ -6,7 +6,7 @@ from src.bot.handlers.menu_main import make_main_menu_kb
 from src.bot.helper.contact_helper import ContactHelper
 from src.bot.keyboards.keyboards import make_contact_profile_kb
 from src.bot.states.states import DeleteContactState, ContactProfileState
-from src.errors.errors import ContactNotFoundError
+from src.errors import ContactNotFoundError
 
 router = Router()
 

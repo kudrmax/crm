@@ -2,10 +2,9 @@ from aiogram import Router
 from aiogram.filters import ExceptionTypeFilter
 from aiogram.fsm.context import FSMContext
 
-from aiogram.types import Message, ErrorEvent, Update
+from aiogram.types import ErrorEvent
 
 from src.bot.handlers.menu_main import make_main_menu_kb
-from src.errors.errors import *
 
 from requests.exceptions import ConnectionError
 

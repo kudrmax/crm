@@ -6,7 +6,6 @@ import asyncpg
 import pytest
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,7 +13,7 @@ from starlette.testclient import TestClient
 
 from src.settings import settings
 from src.database import get_db, Base
-from src.main import app
+from main import app
 
 CLEAN_TABLES = [
     'logs'

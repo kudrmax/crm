@@ -2,7 +2,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.helper.contact_helper import ContactHelper
-from src.errors.errors import ContactNotFoundError
+from src.errors import ContactNotFoundError
 
 
 async def get_logs(message: Message, state: FSMContext):

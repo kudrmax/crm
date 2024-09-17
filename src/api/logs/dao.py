@@ -1,17 +1,10 @@
-import datetime
-from typing import Dict
-from uuid import UUID
-
-from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 
-from src.api.contacts.dao import DAOContact
 from src.api.contacts.models import MContact
 from src.api.dao_base import DAO
 from src.api.logs.models import MLog
 from src.api.logs.schemas import SLogCreate
-from src.errors.errors import ContactNotFoundError
+from src.errors import ContactNotFoundError
 
 
 class DAOLog(DAO):

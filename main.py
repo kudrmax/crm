@@ -4,9 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
-from src.errors.errors import *
 from src.api.errors.error_handlers import *
-from src.api.errors.errors_global import *
 from src.api.errors.errors_global import global_exception_handler
 from src.api.routers import router
 from src.settings import settings

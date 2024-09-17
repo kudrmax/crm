@@ -4,7 +4,7 @@ from datetime import datetime
 import requests
 from typing import List, Dict, Any
 
-from src.errors.errors import *
+from src.errors import *
 from src.settings import BASE_URL_REQUESTS
 
 

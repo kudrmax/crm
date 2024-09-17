@@ -7,7 +7,7 @@ from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate
 from src.api.dao_base import DAO
 from src.api.logs.models import MLog
-from src.errors.errors import *
+from src.errors import *
 
 
 class DAOContact(DAO):
