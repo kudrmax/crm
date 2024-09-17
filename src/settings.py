@@ -15,8 +15,8 @@ class DatabaseBase:
             scheme="postgresql+asyncpg",
             username=self.user,
             password=self.password,
-            host=self.host_port,
-            port=self.port,
+            host=self.host,
+            port=self.host_port,
             path=self.database,
         ))
 
@@ -26,8 +26,8 @@ class DatabaseBase:
             scheme="postgresql",
             username=self.user,
             password=self.password,
-            host=self.host_port,
-            port=self.port,
+            host=self.host,
+            port=self.host_port,
             path=self.database,
         ))
 
