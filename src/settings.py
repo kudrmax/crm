@@ -43,6 +43,7 @@ class MyBaseSettings(BaseSettings):
 class Server(MyBaseSettings):
     host: str = '0.0.0.0'
     port: int = 8000
+    api_url: str = f'http://{host}:{port}/api/v1'
 
     class Config:
         env_prefix = 'SERVER_'
