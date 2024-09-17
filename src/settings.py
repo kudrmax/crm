@@ -1,4 +1,5 @@
 import os
+from typing import Dict
 
 from dotenv import load_dotenv
 from pydantic import PostgresDsn, BaseModel
@@ -79,7 +80,10 @@ class PostgresTest(MyBaseSettings, DatabaseBase):
 
 
 class App(BaseSettings):
-    title: str = 'CRM'
+    title: str = 'Contact CRM by kudrmax'
+    description: str = 'API, которое позволяет управлять контактами (создавать, удалять редактировать), вести "лог" взаимодействий с контактами, например зафиксировать что было на встрече, а также получать статистику по взаимодействиям, например как давно вы виделись с контактом.'
+    version: str = "0.0.1"
+    contact: Dict[str, str] = {"name": "Max Kudryashov", "email": "mdkudryashov@edu.hse.ru"}
 
 
 class Settings(BaseModel):

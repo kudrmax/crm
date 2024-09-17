@@ -9,7 +9,11 @@ from src.api.errors.errors_global import global_exception_handler
 from src.api.routers import router
 from src.settings import settings
 
-app = FastAPI(title=settings.app.title)
+app = FastAPI(
+    title=settings.app.title,
+    description=settings.app.description,
+    version=settings.app.version,
+)
 app.include_router(router)
 
 logging.basicConfig(level=logging.ERROR)
