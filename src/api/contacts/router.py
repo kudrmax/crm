@@ -18,12 +18,12 @@ async def get_all_contacts(
     return await dao.get_all()
 
 
-@router.get("/{name}")
-async def get_contact_by_name(
-        name: str,
+@router.get("/get_last_contacts")
+async def get_last_contacts(
+        contact_count: int = 5,
         dao: DAOContact = Depends()
-) -> SContactRead | None:
-    return await dao.get_contact(name)
+) -> List[SContactRead]:
+    return await dao.get_last_contacts(contact_count)
 
 
 @router.post("/new", response_model=SContactRead)
@@ -32,6 +32,14 @@ async def add_contact(
         dao: DAOContact = Depends()
 ) -> SContactRead:
     return await dao.create(new_contact)
+
+
+@router.get("/{name}")
+async def get_contact_by_name(
+        name: str,
+        dao: DAOContact = Depends()
+) -> SContactRead | None:
+    return await dao.get_contact(name)
 
 
 @router.delete("/{name}")
