@@ -1,46 +1,94 @@
-from pydantic_settings import BaseSettings
+import os
+
+from dotenv import load_dotenv
+from pydantic import PostgresDsn, BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 
-class DBSettingsBase:
-    @property
-    def url(self):
-        return f'postgresql+asyncpg://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}'
+class MyBaseSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        extra='ignore',
+        env_file_encoding='utf-8',
+        case_sensitive=False,
+    )
 
-    @property
-    def url_alembic(self):
-        return f'postgresql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}'
 
-
-class DBSettings(BaseSettings, DBSettingsBase):
+class Server(MyBaseSettings):
     host: str = '0.0.0.0'
-    port: int = 5500
-    username: str = 'postgres'
-    password: str = 'postgres'
-    database: str = 'crm'
+    port: int = 8000
+
+    class Config:
+        env_prefix = 'SERVER_'
 
 
-class DBTestSettings(BaseSettings, DBSettingsBase):
-    host: str = '0.0.0.0'
-    port: int = 5501
-    username: str = 'postgres_test'
-    password: str = 'postgres_test'
-    database: str = 'crm_test'
+class Telegram(MyBaseSettings):
+    token: str
+
+    class Config:
+        env_prefix = 'BOT_'
 
 
-class Settings(BaseSettings):
-    server_host: str = '0.0.0.0'
-    server_port: int = 8000
-    db: DBSettings = DBSettings()
-    db_test: DBTestSettings = DBTestSettings()
+class PostgresProd(MyBaseSettings):
+    host: str
+    port: int
+    user: str
+    password: str
+    database: str
+
+    @property
+    def url(self) -> str:
+        return str(PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            username=self.user,
+            password=self.password,
+            host=self.host,
+            port=self.port,
+            path=f"/{self.database}",
+        ))
+
+    class Config:
+        env_prefix = 'POSTGRES_'
 
 
-settings = Settings(
-    # _env_file='.env',
-    # _env_file_encoding='utf-8',
-)
+class PostgresTest(MyBaseSettings):
+    host: str
+    port: int
+    user: str
+    password: str
+    database: str
 
-# DB_URL = "postgresql+asyncpg://postgres:postgres@0.0.0.0:5432/postgres"
-# DB_URL_FOR_ALEMBIC = "postgresql://postgres:postgres@0.0.0.0:5432/postgres"
-# DB_URL_TEST = "postgresql+asyncpg://postgres_test:postgres_test@0.0.0.0:5433/postgres_test"
-# DB_URL_FOR_ALEMBIC_TEST = "postgresql://postgres_test:postgres_test@0.0.0.0:5433/postgres_test"
-BASE_URL_REQUESTS = 'http://0.0.0.0:8000/api/v1'
+    @property
+    def url(self) -> str:
+        return PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            username=self.user,
+            password=self.password,
+            host=self.host,
+            port=self.port,
+            path=f"/{self.database}",
+        )
+
+    class Config:
+        env_prefix = 'POSTGRES_TEST_'
+
+
+class App(BaseSettings):
+    title: str = 'CRM'
+
+
+class Settings(BaseModel):
+    server: Server = Server()
+    telegram_bot: Telegram = Telegram()
+    db_prod: PostgresProd = PostgresProd()
+    db_test: PostgresTest = PostgresTest()
+    app: App = App()
+
+
+settings = Settings()
+
+if __name__ == '__main__':
+    json = settings.model_dump()
+    print(json)

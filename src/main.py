@@ -9,8 +9,9 @@ from src.api.errors.error_handlers import *
 from src.api.errors.errors_global import *
 from src.api.errors.errors_global import global_exception_handler
 from src.api.routers import router
+from src.settings import settings
 
-app = FastAPI(title='CRM')
+app = FastAPI(title=settings.app.title)
 app.include_router(router)
 
 logging.basicConfig(level=logging.ERROR)
@@ -26,4 +27,9 @@ def root():
 
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', host='0.0.0.0', port=8000, reload=True)
+    uvicorn.run(
+        'main:app',
+        host=settings.server.host,
+        port=settings.server.port,
+        reload=True
+    )
