@@ -7,7 +7,7 @@ class ContactProfileState(StatesGroup):
 
 class FindContactState(StatesGroup):
     typing_name = State()
-    choosing_name = State()
+    choosing_name_from_list = State()
 
 
 class EditContactState(StatesGroup):

@@ -108,3 +108,9 @@ class ContactHelper:
         response = requests.delete(f'{BASE_URL_REQUESTS}/contacts/{name}')
         if response.status_code == 404:
             raise ContactNotFoundError
+
+    @classmethod
+    async def get_last_contacts(cls):
+        response = requests.get(f'{BASE_URL_REQUESTS}/contacts/get_last_contacts')
+        await cls.raise_if_500(response)
+        return [contact['name'] for contact in response.json()]
