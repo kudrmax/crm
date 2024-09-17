@@ -7,6 +7,30 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 
+class DatabaseBase:
+    @property
+    def url(self) -> str:
+        return str(PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            username=self.user,
+            password=self.password,
+            host=self.host,
+            port=self.port,
+            path=self.database,
+        ))
+
+    @property
+    def url_alembic(self) -> str:
+        return str(PostgresDsn.build(
+            scheme="postgresql",
+            username=self.user,
+            password=self.password,
+            host=self.host,
+            port=self.port,
+            path=self.database,
+        ))
+
+
 class MyBaseSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file='.env',
@@ -31,45 +55,23 @@ class Telegram(MyBaseSettings):
         env_prefix = 'BOT_'
 
 
-class PostgresProd(MyBaseSettings):
+class PostgresProd(MyBaseSettings, DatabaseBase):
     host: str
     port: int
     user: str
     password: str
     database: str
-
-    @property
-    def url(self) -> str:
-        return str(PostgresDsn.build(
-            scheme="postgresql+asyncpg",
-            username=self.user,
-            password=self.password,
-            host=self.host,
-            port=self.port,
-            path=f"/{self.database}",
-        ))
 
     class Config:
         env_prefix = 'POSTGRES_'
 
 
-class PostgresTest(MyBaseSettings):
+class PostgresTest(MyBaseSettings, DatabaseBase):
     host: str
     port: int
     user: str
     password: str
     database: str
-
-    @property
-    def url(self) -> str:
-        return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
-            username=self.user,
-            password=self.password,
-            host=self.host,
-            port=self.port,
-            path=f"/{self.database}",
-        )
 
     class Config:
         env_prefix = 'POSTGRES_TEST_'
