@@ -1,0 +1,32 @@
+services:
+  db:
+    container_name: "crm"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=POSTGRES_DATABASE
+    ports:
+      - "${POSTGRES_HOST_PORT}:${POSTGRES_OUTER_PORT}"
+    env_file:
+      - .env
+    networks:
+      - custom
+  db_test:
+    container_name: "crm_test"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=POSTGRES_TEST_USER
+      - POSTGRES_PASSWORD=POSTGRES_TEST_PASSWORD
+      - POSTGRES_DB=POSTGRES_TEST_DATABASE
+    ports:
+      - "${POSTGRES_TEST_PORT}:${POSTGRES_TEST_OUTER_PORT}"
+    env_file:
+      - .env
+    networks:
+      - custom
+networks:
+  custom:
+    driver: bridge

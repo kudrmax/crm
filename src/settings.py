@@ -15,7 +15,7 @@ class DatabaseBase:
             scheme="postgresql+asyncpg",
             username=self.user,
             password=self.password,
-            host=self.host,
+            host=self.host_port,
             port=self.port,
             path=self.database,
         ))
@@ -26,7 +26,7 @@ class DatabaseBase:
             scheme="postgresql",
             username=self.user,
             password=self.password,
-            host=self.host,
+            host=self.host_port,
             port=self.port,
             path=self.database,
         ))
@@ -59,7 +59,7 @@ class Telegram(MyBaseSettings):
 
 class PostgresProd(MyBaseSettings, DatabaseBase):
     host: str
-    port: int
+    host_port: int
     user: str
     password: str
     database: str
@@ -70,7 +70,7 @@ class PostgresProd(MyBaseSettings, DatabaseBase):
 
 class PostgresTest(MyBaseSettings, DatabaseBase):
     host: str
-    port: int
+    host_port: int
     user: str
     password: str
     database: str
