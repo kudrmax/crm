@@ -60,6 +60,7 @@ class Telegram(MyBaseSettings):
 class PostgresProd(MyBaseSettings, DatabaseBase):
     host: str
     host_port: int
+    outer_port: int
     user: str
     password: str
     database: str
@@ -71,6 +72,7 @@ class PostgresProd(MyBaseSettings, DatabaseBase):
 class PostgresTest(MyBaseSettings, DatabaseBase):
     host: str
     host_port: int
+    outer_port: int
     user: str
     password: str
     database: str
