@@ -6,9 +6,9 @@
 # Определите переменные
 CONTAINER_NAME="crm"
 BACKUP_DIR="../backups"
-BACKUP_FILE=$(ls -t $BACKUP_DIR/crm_backup_*.dump | head -n 1)
+BACKUP_FILE=$(ls -t $BACKUP_DIR/*.dump | head -n 1)
 BACKUP_FILE_NAME=$(basename $BACKUP_FILE)
-BACKUP_DIR_IN_CONTAINER="/backup"
+BACKUP_DIR_IN_CONTAINER="/backups"
 
 # Проверьте, что бекап существует
 if [ -z "$BACKUP_FILE" ]; then
