@@ -27,11 +27,22 @@ services:
       - "${POSTGRES_TEST_HOST_PORT}:${POSTGRES_TEST_OUTER_PORT}"
   backup:
     container_name: "crm_backup"
-    image: alpine:latest
+    image: postgres:14.1-alpine
+    depends_on:
+      - db
     volumes:
-      - ./backup_scripts:/backup_scripts
       - ./backups:/backups
-      - ./backup_scripts/crontab:/etc/crontabs/root
-    entrypoint: ["crond", "-f"]
+    command: >
+      bash -c "while true; do
+        PGPASSWORD=$$POSTGRES_PASSWORD pg_dump -h db -U $$POSTGRES_USER -Fc $$POSTGRES_DB > /backups/$$(date +%Y-%m-%d-%H-%M-%S).dump
+        echo ""Backup done at $$(date +%Y-%m-%d_%H:%M:%S)""
+        ls -1 /backups/*.dump | head -n -2 | xargs rm -f
+        sleep $$BACKUP_DELTA
+      done"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - BACKUP_DELTA=120
 volumes:
   pgdata:
