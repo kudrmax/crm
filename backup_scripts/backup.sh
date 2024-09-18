@@ -6,7 +6,7 @@
 CONTAINER_NAME="crm"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 BACKUP_FILE="../backups/crm_backup_$TIMESTAMP.dump"
-BACKUP_DIR="/backup"
+BACKUP_DIR="/backups"
 
 # Создайте директорию для бекапов в контейнере
 docker exec -t $CONTAINER_NAME mkdir -p $BACKUP_DIR
