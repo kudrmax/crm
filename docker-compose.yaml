@@ -3,30 +3,35 @@ services:
     container_name: "crm"
     image: postgres:14.1-alpine
     restart: always
+    env_file:
+      - .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=POSTGRES_DATABASE
+      - POSTGRES_DB=${POSTGRES_DATABASE}
     ports:
       - "${POSTGRES_HOST_PORT}:${POSTGRES_OUTER_PORT}"
-    env_file:
-      - .env
-    networks:
-      - custom
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   db_test:
     container_name: "crm_test"
     image: postgres:14.1-alpine
     restart: always
-    environment:
-      - POSTGRES_USER=POSTGRES_TEST_USER
-      - POSTGRES_PASSWORD=POSTGRES_TEST_PASSWORD
-      - POSTGRES_DB=POSTGRES_TEST_DATABASE
-    ports:
-      - "${POSTGRES_TEST_PORT}:${POSTGRES_TEST_OUTER_PORT}"
     env_file:
       - .env
-    networks:
-      - custom
-networks:
-  custom:
-    driver: bridge
+    environment:
+      - POSTGRES_USER=${POSTGRES_TEST_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_TEST_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_TEST_DATABASE}
+    ports:
+      - "${POSTGRES_TEST_HOST_PORT}:${POSTGRES_TEST_OUTER_PORT}"
+  backup:
+    container_name: "crm_backup"
+    image: alpine:latest
+    volumes:
+      - ./backup_scripts:/backup_scripts
+      - ./backups:/backups
+      - ./backup_scripts/crontab:/etc/crontabs/root
+    entrypoint: ["crond", "-f"]
+volumes:
+  pgdata:
