@@ -3,7 +3,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.keyboards.keyboards import make_row_keyboard_by_list
+from src.bot.keyboards import make_row_keyboard_by_list
 
 router = Router()
 

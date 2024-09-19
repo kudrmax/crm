@@ -3,9 +3,9 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.helper.contact_helper import ContactHelper
-from src.bot.keyboards.keyboards import make_contacts_menu_kb, make_row_keyboard_by_list
-from src.bot.states.states import AddContactState
+from src.bot.helper import ContactHelper
+from src.bot.keyboards import make_contacts_menu_kb, make_row_keyboard_by_list
+from src.bot.states import AddContactState
 from src.errors import ContactAlreadyExistsError
 
 router = Router()

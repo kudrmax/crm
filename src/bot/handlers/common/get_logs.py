@@ -1,7 +1,7 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.helper.contact_helper import ContactHelper
+from src.bot.helper import ContactHelper
 from src.errors import ContactNotFoundError
 
 

@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.common.logging import start_logging
-from src.bot.keyboards.keyboards import make_log_menu_kb
-from src.bot.states.states import AddLog
+from src.bot.keyboards import make_log_menu_kb
+from src.bot.states import AddLog
 
 router = Router()
 

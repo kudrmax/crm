@@ -5,8 +5,8 @@ from aiogram.types import Message
 
 from src.bot.handlers.menu_main import make_main_menu_kb
 from src.bot.handlers.common.search_contact import search_contact
-from src.bot.states.states import AddLog
-from src.bot.keyboards.keyboards import make_log_menu_kb
+from src.bot.states import AddLog
+from src.bot.keyboards import make_log_menu_kb
 
 router = Router()
 
