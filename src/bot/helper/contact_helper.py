@@ -61,7 +61,7 @@ class ContactHelper:
         return answer
 
     @classmethod
-    async def get_all_logs(cls, name: str) -> str | None:
+    async def get_all_logs(cls, name: str) -> str:
         response = requests.get(f'{settings.server.api_url}/logs/{name}')
         if response.status_code == 404:
             raise ContactNotFoundError
@@ -70,6 +70,7 @@ class ContactHelper:
         logs = response.json()
         result_list = []
         date_set = set()
+        
         for log in logs:
             log_str = log['log']
             if log_str == "" or log_str is None:
@@ -81,7 +82,14 @@ class ContactHelper:
                 result_list.append(log_date_str)
                 date_set.add(log_date_str)
             result_list.append('- ' + log_str)
-        return '\n'.join(result_list)
+
+        result_str = ""
+        for row in result_list:
+            if row in date_set:
+                result_str += '\n'
+            result_str += row + '\n'
+        # return '\n'.join(result_list)
+        return result_str
 
     @classmethod
     async def add_log(cls, log_str: str, name: str):

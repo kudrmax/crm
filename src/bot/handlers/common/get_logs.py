@@ -9,7 +9,7 @@ async def get_logs(message: Message, state: FSMContext):
     data = await state.get_data()
     name = data.get('name')
     try:
-        all_logs = await ContactHelper.get_all_logs(name)
+        all_logs: str = await ContactHelper.get_all_logs(name)
         if not all_logs or all_logs == "":
             await message.answer(f'There is no logs for {name}')
             return
