@@ -8,5 +8,8 @@ class ContactAlreadyExistsError(Exception):
         self.name = name
 
 
+class LogNotFoundError(Exception):
+    pass
+
 class InternalServerError(Exception):
     pass
