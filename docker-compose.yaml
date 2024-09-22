@@ -45,5 +45,27 @@ services:
       - POSTGRES_DB=${POSTGRES_DATABASE}
       - BACKUP_DELTA=3600
       - MAX_BACKUP_COUNT=5
+  api:
+    container_name: "api"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/api
+    env_file:
+      - .env
+  bot:
+    container_name: "bot"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python3 bot.py
+    volumes:
+      - .:/bot
+    env_file:
+      - .env
 volumes:
   pgdata:
