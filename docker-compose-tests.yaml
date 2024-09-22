@@ -1,0 +1,15 @@
+services:
+  db_test:
+    container_name: "crm_test"
+    image: postgres:14.1-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${{ secrets.POSTGRES_TEST_USER }}
+      - POSTGRES_PASSWORD=${{ secrets.POSTGRES_TEST_PASSWORD }}
+      - POSTGRES_DB=${{ secrets.POSTGRES_TEST_DATABASE }}
+    ports:
+      - "${{ secrets.POSTGRES_TEST_HOST_PORT }}:${{ secrets.POSTGRES_TEST_OUTER_PORT }}"
+volumes:
+  pgdata:
