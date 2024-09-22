@@ -21,7 +21,7 @@ docker stop $CONTAINER_NAME
 docker rm $CONTAINER_NAME
 
 # Запустите новый контейнер с базой данных
-docker-compose up -d db
+docker compose up -d db
 
 # Создайте директорию для бекапов в контейнере
 docker exec -t $CONTAINER_NAME mkdir -p $BACKUP_DIR_IN_CONTAINER
