@@ -8,7 +8,7 @@ from alembic import context
 from src.database import Base
 from src.api.contacts.models import MContact
 from src.api.logs.models import MLog
-from src.api.users.models import MUser
+# from src.api.users.models import MUser
 from src.settings import settings
 
 # this is the Alembic Config object, which provides
