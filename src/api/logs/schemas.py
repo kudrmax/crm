@@ -19,3 +19,8 @@ class SLogCreate(BaseModel):
 
 class SEmptyLogCreate(BaseModel):
     name: str
+
+
+class SLogUpdate(BaseModel):
+    log: str | None = None
+    date: dt.datetime | None = None

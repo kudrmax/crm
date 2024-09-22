@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from src.api.logs.dao import DAOLog
 from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate, SContactRead
-from src.api.logs.schemas import SLogCreate, SLogRead, SEmptyLogCreate
+from src.api.logs.schemas import SLogCreate, SLogRead, SEmptyLogCreate, SLogUpdate
 
 router = APIRouter(
     prefix="/logs",
@@ -45,3 +45,11 @@ async def get_all_logs(
         dao: DAOLog = Depends()
 ) -> List[SLogRead]:
     return await dao.get_all_by_name(name)
+
+@router.put("/{log_id}")
+async def edit_log_by_id(
+        log_id: int,
+        log_update: SLogUpdate,
+        dao: DAOLog = Depends()
+) -> List[SLogRead]:
+    return await dao.edit_log_by_id(log_id, log_update)
