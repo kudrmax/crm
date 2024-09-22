@@ -3,26 +3,6 @@
 
 name: Unit tests
 
-env:
-  SERVER_HOST: 0.0.0.0
-  SERVER_PORT: 8000
-  
-  BOT_TOKEN: none
-  
-  POSTGRES_HOST: 0.0.0.0
-  POSTGRES_HOST_PORT: 5500
-  POSTGRES_OUTER_PORT: 5432
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DATABASE: crm
-  
-  POSTGRES_TEST_HOST: 0.0.0.0
-  POSTGRES_TEST_HOST_PORT: 5501
-  POSTGRES_TEST_OUTER_PORT: 5432
-  POSTGRES_TEST_USER: postgres_test
-  POSTGRES_TEST_PASSWORD: postgres_test
-  POSTGRES_TEST_DATABASE: crm_test
-
 on: push
 
 jobs:
@@ -33,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Test vars
+      run: echo "POSTGRES_DB is ${{ secrets.POSTGRES_DB }}"
     - name: Set up Python 3.12
       uses: actions/setup-python@v3
       with:
