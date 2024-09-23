@@ -16,10 +16,14 @@ class DAOLog(DAO):
         contact = contact.scalar_one_or_none()
         return contact
 
-    async def create(self, log_create: SLogCreate):
-        contact = await self._get_one_or_none_contact_by_name(log_create.name)
+    async def _get_contact_by_name(self, name: str) -> MContact:
+        contact = await self._get_one_or_none_contact_by_name(name)
         if not contact:
             raise ContactNotFoundError
+        return contact
+
+    async def create(self, log_create: SLogCreate):
+        contact = await self._get_contact_by_name(log_create.name)
         m_log = MLog(contact_id=contact.id, log=log_create.log)
         self.db.add(m_log)
         await self.db.commit()
@@ -27,11 +31,8 @@ class DAOLog(DAO):
         return m_log
 
     async def get_all_by_name(self, name):
-        contact = await self._get_one_or_none_contact_by_name(name)
-        if not contact:
-            raise ContactNotFoundError
-        contact_id = contact.id
-        return await self.get_all_with_filter(contact_id=contact_id)
+        contact = await self._get_contact_by_name(name)
+        return await self.get_all_with_filter(contact_id=contact.id)
 
     async def create_empty_log(self, empty_log: SEmptyLogCreate):
         return await self.create(
@@ -42,9 +43,7 @@ class DAOLog(DAO):
         )
 
     async def edit_log_by_id(self, log_id, log_update: SLogUpdate):
-        query = select(MLog).where(MLog.id == log_id)
-        m_log = await self.db.execute(query)
-        m_log = m_log.scalar_one_or_none()
+        m_log = self.get_one_or_none_by_id(log_id)
         if not m_log:
             raise LogNotFoundError
         if log_update.log:
