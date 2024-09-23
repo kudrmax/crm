@@ -1,9 +1,13 @@
+from collections import defaultdict
+from datetime import datetime
+from typing import List, Dict
+
 from sqlalchemy import select
 
 from src.api.contacts.models import MContact
 from src.api.dao_base import DAO
 from src.api.logs.models import MLog
-from src.api.logs.schemas import SLogCreate, SEmptyLogCreate, SLogUpdate
+from src.api.logs.schemas import SLogCreate, SEmptyLogCreate, SLogUpdate, SLogRead
 from src.errors import *
 
 
@@ -33,6 +37,35 @@ class DAOLog(DAO):
     async def get_all_logs_by_name(self, name):
         contact = await self._get_contact_by_name(name)
         return await self.get_all_with_filter(contact_id=contact.id)
+
+    async def get_all_logs_grouped_by_date(self, name: str):
+        logs: List[MLog] = await self.get_all_logs_by_name(name)
+
+        result_dict: Dict[str, List[SLogRead]] = defaultdict(list)
+        for log in logs:
+            log_str = log.log
+            if log_str == "" or log_str is None:
+                continue
+            log_datetime = log.datetime
+            result_dict[log_datetime.date().strftime("%Y-%m-%d")].append(SLogRead(
+                id=log.id,
+                contact_id=log.contact_id,
+                datetime=log.datetime,
+                log=log.log
+            ))
+        result_list = []
+        dates_sorted = sorted(list(result_dict.keys()))
+        for date in dates_sorted:
+            result_list.append({
+                'date': date,
+                'logs': sorted(result_dict[date], key=lambda x: x.datetime)
+            })
+        number = 1
+        for data in result_list:
+            for log in data['logs']:
+                log.number = number
+                number += 1
+        return result_list
 
     async def create_empty_log(self, empty_log: SEmptyLogCreate):
         return await self.create(
