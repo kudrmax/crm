@@ -30,7 +30,7 @@ class DAOLog(DAO):
         await self.db.refresh(m_log)
         return m_log
 
-    async def get_all_by_name(self, name):
+    async def get_all_logs_by_name(self, name):
         contact = await self._get_contact_by_name(name)
         return await self.get_all_with_filter(contact_id=contact.id)
 
