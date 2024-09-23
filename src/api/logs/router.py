@@ -51,5 +51,5 @@ async def edit_log_by_id(
         log_id: int,
         log_update: SLogUpdate,
         dao: DAOLog = Depends()
-) -> List[SLogRead]:
+) -> SLogRead:
     return await dao.edit_log_by_id(log_id, log_update)

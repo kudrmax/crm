@@ -52,11 +52,11 @@ class DAOLog(DAO):
             raise LogNotFoundError
         if log_update.log:
             setattr(m_log, 'log', log_update.log)
-        if log_update.date:
-            # я хочу взять все логи с MLog.contact_id == m_log.contact_id, потом из этих логов взять логи, с датой равной дате MLog.datetime (учти что MLog.datetime содержит и дату и время, а меня интересует только дата)
-            # и потом если такой лог нашелся, то поставить для данного лога (m_log) дату равную log_update.date, а время через 5 секунд после времени того лога, который мы нашли
-            # query = select(MLog).where(MLog.contact_id == m_log.contact_id).where(MLog.datetime.date)
-            pass
+        # if log_update.date:
+        #     я хочу взять все логи с MLog.contact_id == m_log.contact_id, потом из этих логов взять логи, с датой равной дате MLog.datetime (учти что MLog.datetime содержит и дату и время, а меня интересует только дата)
+        #     и потом если такой лог нашелся, то поставить для данного лога (m_log) дату равную log_update.date, а время через 5 секунд после времени того лога, который мы нашли
+        #     query = select(MLog).where(MLog.contact_id == m_log.contact_id).where(MLog.datetime.date)
+        #     pass
         await self.db.commit()
         await self.db.refresh(m_log)
         return m_log
