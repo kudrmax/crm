@@ -23,6 +23,14 @@ async def add_log(
     return await dao.create(log)
 
 
+@router.delete("/{log_id}")
+async def delete_log(
+        log_id: int,
+        dao: DAOLog = Depends()
+) -> SLogRead | None:
+    return await dao.delete(log_id)
+
+
 @router.post("/add_empty_log")
 async def add_empty_log(
         empty_log: SEmptyLogCreate,

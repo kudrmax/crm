@@ -4,7 +4,7 @@ from src.api.contacts.models import MContact
 from src.api.dao_base import DAO
 from src.api.logs.models import MLog
 from src.api.logs.schemas import SLogCreate, SEmptyLogCreate
-from src.errors import ContactNotFoundError
+from src.errors import *
 
 
 class DAOLog(DAO):
@@ -43,3 +43,11 @@ class DAOLog(DAO):
                 log="",
             )
         )
+
+    async def delete(self, log_id):
+        m_log = await self.get_one_or_none_with_filter(id=log_id)
+        if not m_log:
+            return None
+        await self.db.delete(m_log)
+        await self.db.commit()
+        return m_log
