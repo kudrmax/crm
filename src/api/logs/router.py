@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import List
 from uuid import UUID
 
@@ -47,13 +47,22 @@ async def get_all_logs_grouped_by_date(
     return await dao.get_all_logs_grouped_by_date(name)
 
 
-@router.put("/{log_id}")
+@router.put("/edit/{log_id}/")
 async def edit_log_by_id(
         log_id: int,
         log_update: SLogUpdate,
         dao: DAOLog = Depends()
 ) -> SLogRead:
     return await dao.edit_log_by_id(log_id, log_update)
+
+
+@router.put("/edit/{log_id}/date")
+async def edit_log_date_by_id(
+        log_id: int,
+        date_obj: datetime.date,
+        dao: DAOLog = Depends()
+) -> SLogRead:
+    return await dao.edit_log_date_by_id(log_id, date_obj)
 
 
 @router.delete("/{log_id}")

@@ -30,4 +30,4 @@ class SEmptyLogCreate(BaseModel):
 
 class SLogUpdate(BaseModel):
     log: str | None = None
-    # date: dt.datetime | None = None
+    datetime: dt.datetime | None = None
