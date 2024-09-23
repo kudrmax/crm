@@ -21,16 +21,13 @@ class DAOLog(DAO):
         if not contact:
             raise ContactNotFoundError
         m_log = MLog(contact_id=contact.id, log=log_create.log)
-        # m_log.datetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
         self.db.add(m_log)
         await self.db.commit()
         await self.db.refresh(m_log)
         return m_log
 
     async def get_all_by_name(self, name):
-        query = select(MContact).where(MContact.name == name)
-        contact = await self.db.execute(query)
-        contact = contact.scalar_one_or_none()
+        contact = await self._get_one_or_none_contact_by_name(name)
         if not contact:
             raise ContactNotFoundError
         contact_id = contact.id
