@@ -1,10 +1,12 @@
 import os
 
 import yadisk
+from dotenv import load_dotenv
 
-from src.settings import settings
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
-client = yadisk.Client(token=settings.yandex_disk.token)
+
+client = yadisk.Client(token=os.getenv('YANDEX_DISK_TOKEN'))
 
 
 def load_backup_file_to_disk(file_path: str):
@@ -16,6 +18,7 @@ def load_backup_file_to_disk(file_path: str):
     except Exception as e:
         print(f'Error with {file_path}.')
         print(e)
+        raise e
     print(f'File {file_path} has been uploaded')
 
 
@@ -33,4 +36,4 @@ def load_all_backup_files_to_disk(backups_dir: str):
 
 
 if __name__ == "__main__":
-    load_all_backup_files_to_disk('../../backups')
+    load_all_backup_files_to_disk('/backups')
