@@ -18,7 +18,6 @@ def load_backup_file_to_disk(file_path: str):
     except Exception as e:
         print(f'Error with {file_path}.')
         print(e)
-        raise e
     print(f'File {file_path} has been uploaded')
 
 
