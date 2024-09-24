@@ -18,3 +18,4 @@ passlib[bcrypt]
 aiogram==3.11.0
 python-decouple==3.8
 requests
+yadisk

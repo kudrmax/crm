@@ -45,6 +45,23 @@ services:
       - POSTGRES_DB=${POSTGRES_DATABASE}
       - BACKUP_DELTA=3600
       - MAX_BACKUP_COUNT=5
+  load_to_yandex:
+    container_name: "load_to_yandex"
+    build:
+      context: .
+      dockerfile: Dockerfile.backup
+    volumes:
+      - ./src/backup_to_yandex_disk:/yandex_disk/backup_to_yandex_disk
+      - ./src:/src
+      - ./backups:/backups
+    restart: unless-stopped
+    command: >
+      sh -c "while true; do
+        python3 /yandex_disk/backup_to_yandex_disk/yandex_disk_backup.py
+        sleep 3600
+      done"
+    env_file:
+      - .env
   api:
     container_name: "api"
     build:
