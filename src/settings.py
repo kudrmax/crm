@@ -86,11 +86,19 @@ class App(BaseSettings):
     contact: Dict[str, str] = {"name": "Max Kudryashov", "email": "mdkudryashov@edu.hse.ru"}
 
 
+class YandexDisk(MyBaseSettings):
+    token: str
+
+    class Config:
+        env_prefix = 'YANDEX_DISK_'
+
+
 class Settings(BaseModel):
     server: Server = Server()
     telegram_bot: Telegram = Telegram()
     db_prod: PostgresProd = PostgresProd()
     db_test: PostgresTest = PostgresTest()
+    yandex_disk: YandexDisk = YandexDisk()
     app: App = App()
 
 
