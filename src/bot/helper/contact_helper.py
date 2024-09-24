@@ -102,7 +102,7 @@ class ContactHelper:
 
     @classmethod
     async def add_empty_log(cls, name: str):
-        response = requests.post(f'{settings.server.api_url}/logs/add_empty_log', json={
+        response = requests.post(f'{settings.server.api_url}/logs/new/empty', json={
             'name': name,
         })
         if response.status_code == 404:

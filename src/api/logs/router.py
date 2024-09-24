@@ -23,7 +23,7 @@ async def add_log(
     return await dao.create(log)
 
 
-@router.post("/add_empty_log")
+@router.post("/new/empty")
 async def add_empty_log(
         empty_log: SEmptyLogCreate,
         dao: DAOLog = Depends()

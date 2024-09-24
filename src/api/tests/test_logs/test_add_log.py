@@ -38,7 +38,7 @@ async def test_add_empty_log(client):
     log_data = {
         "name": user_data['name'],
     }
-    log = client.post("api/v1/logs/add_empty_log/", json=log_data)
+    log = client.post("api/v1/logs/new/empty/", json=log_data)
     assert log.json()['log'] == ""
     assert log.status_code == 200
     assert 'datetime' in log.json()
