@@ -2,7 +2,7 @@ from collections import defaultdict
 import datetime
 from typing import List, Dict
 
-from sqlalchemy import select
+from sqlalchemy import select, Date, desc
 
 from src.api.contacts.models import MContact
 from src.api.dao_base import DAO
@@ -96,7 +96,15 @@ class DAOLog(DAO):
         return m_log
 
     async def edit_log_date_by_id(self, log_id: int, date: datetime.date):
-        #     я хочу взять все логи с MLog.contact_id == m_log.contact_id, потом из этих логов взять логи, с датой равной дате MLog.datetime (учти что MLog.datetime содержит и дату и время, а меня интересует только дата)
-        #     и потом если такой лог нашелся, то поставить для данного лога (m_log) дату равную log_update.date, а время через 5 секунд после времени того лога, который мы нашли
-        #     query = select(MLog).where(MLog.contact_id == m_log.contact_id).where(MLog.datetime.date)
-        pass
+        query = select(MLog).filter(MLog.datetime.cast(Date) == date).order_by(desc(MLog.datetime))
+        last_log = await self.db.execute(query)
+        last_log = last_log.scalar()
+        if last_log:
+            new_datetime = last_log.datetime + datetime.timedelta(microseconds=1)
+        else:
+            new_datetime = datetime.datetime.combine(date, datetime.time(0, 1))
+        log = await self.get_one_by_id(log_id)
+        setattr(log, 'datetime', new_datetime)
+        await self.db.commit()
+        await self.db.refresh(log)
+        return log

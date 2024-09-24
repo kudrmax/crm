@@ -56,12 +56,12 @@ async def edit_log_by_id(
     return await dao.edit_log_by_id(log_id, log_update)
 
 
-@router.put("/edit/{log_id}/date")
+@router.put("/edit/{log_id}/by_date")
 async def edit_log_date_by_id(
         log_id: int,
         date_obj: datetime.date,
         dao: DAOLog = Depends()
-) -> SLogRead:
+):
     return await dao.edit_log_date_by_id(log_id, date_obj)
 
 
