@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DATABASE}
     ports:
-      - "${POSTGRES_HOST_PORT}:${POSTGRES_OUTER_PORT}"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
   db_test:
@@ -24,7 +24,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_TEST_PASSWORD}
       - POSTGRES_DB=${POSTGRES_TEST_DATABASE}
     ports:
-      - "${POSTGRES_TEST_HOST_PORT}:${POSTGRES_TEST_OUTER_PORT}"
+      - "${POSTGRES_TEST_PORT}:5432"
   backup:
     container_name: "crm_backup"
     image: postgres:14.1-alpine

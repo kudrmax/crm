@@ -16,7 +16,7 @@ class DatabaseBase:
             username=self.user,
             password=self.password,
             host=self.host,
-            port=self.host_port,
+            port=self.docker_port,
             path=self.database,
         ))
 
@@ -27,7 +27,7 @@ class DatabaseBase:
             username=self.user,
             password=self.password,
             host=self.host,
-            port=self.host_port,
+            port=self.docker_port,
             path=self.database,
         ))
 
@@ -42,9 +42,7 @@ class MyBaseSettings(BaseSettings):
 
 
 class Server(MyBaseSettings):
-    host: str = '0.0.0.0'
-    port: int = 8000
-    api_url: str = f'http://{host}:{port}/api/v1'
+    api_url: str = f'http://api:8000/api/v1'
 
     class Config:
         env_prefix = 'SERVER_'
@@ -58,9 +56,9 @@ class Telegram(MyBaseSettings):
 
 
 class PostgresProd(MyBaseSettings, DatabaseBase):
-    host: str
-    host_port: int
-    outer_port: int
+    host: str = 'db'
+    port: int
+    docker_port: int = 5432
     user: str
     password: str
     database: str
@@ -70,9 +68,9 @@ class PostgresProd(MyBaseSettings, DatabaseBase):
 
 
 class PostgresTest(MyBaseSettings, DatabaseBase):
-    host: str
-    host_port: int
-    outer_port: int
+    host: str = 'db_test'
+    port: int
+    docker_port: int = 5432
     user: str
     password: str
     database: str
