@@ -62,34 +62,19 @@ class ContactHelper:
 
     @classmethod
     async def get_all_logs(cls, name: str) -> str:
-        response = requests.get(f'{settings.server.api_url}/logs/{name}')
+        response = requests.get(f'{settings.server.api_url}/logs/{name}/by_date')
         if response.status_code == 404:
             raise ContactNotFoundError
         await cls.raise_if_500(response)
 
         logs = response.json()
-        result_list = []
-        date_set = set()
-        
-        for log in logs:
-            log_str = log['log']
-            if log_str == "" or log_str is None:
-                continue
-            log_datetime_str = log['datetime']
-            log_datetime_obj = datetime.strptime(log_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-            log_date_str = f"{log_datetime_obj.date().strftime("%d-%m-%Y")}:"
-            if log_date_str not in date_set:
-                result_list.append(log_date_str)
-                date_set.add(log_date_str)
-            result_list.append('- ' + log_str)
 
-        result_str = ""
-        for row in result_list:
-            if row in date_set:
-                result_str += '\n'
-            result_str += row + '\n'
-        # return '\n'.join(result_list)
-        return result_str
+        result_list = []
+        for data in logs:
+            result_list.append(str(data['date']) + ':')
+            for log in data['logs']:
+                result_list.append(f"{log['number']}: {log['log']}")
+        return '\n'.join(result_list)
 
     @classmethod
     async def add_log(cls, log_str: str, name: str):
