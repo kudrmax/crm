@@ -1,8 +1,9 @@
 import json
 from datetime import datetime
+from uuid import UUID
 
 import requests
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 from src.errors import *
 from src.settings import settings
@@ -61,20 +62,32 @@ class ContactHelper:
         return answer
 
     @classmethod
-    async def get_all_logs(cls, name: str) -> str:
+    async def get_all_logs_with_numbers(cls, name: str) -> Tuple[str, Dict[int, UUID]]:
         response = requests.get(f'{settings.server.api_url}/logs/{name}/by_date')
         if response.status_code == 404:
             raise ContactNotFoundError
         await cls.raise_if_500(response)
+        logs = response.json()['data']
+        numbers_to_log_id = response.json()['numbers_to_log_id']
+        return await cls.convert_logs_to_str(logs), numbers_to_log_id
 
-        logs = response.json()
-
+    @classmethod
+    async def convert_logs_to_str(cls, logs):
         result_list = []
         for data in logs:
             result_list.append(str(data['date']) + ':')
             for log in data['logs']:
                 result_list.append(f"{log['number']}: {log['log']}")
         return '\n'.join(result_list)
+
+    @classmethod
+    async def get_all_logs(cls, name: str) -> str:
+        response = requests.get(f'{settings.server.api_url}/logs/{name}/by_date')
+        if response.status_code == 404:
+            raise ContactNotFoundError
+        await cls.raise_if_500(response)
+        logs = response.json()['data']
+        return await cls.convert_logs_to_str(logs)
 
     @classmethod
     async def add_log(cls, log_str: str, name: str):

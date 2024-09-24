@@ -60,12 +60,17 @@ class DAOLog(DAO):
                 'date': date,
                 'logs': sorted(result_dict[date], key=lambda x: x.datetime)
             })
+        numbers_to_log_id_dict: Dict[int, int] = {}
         number = 1
         for data in result_list:
             for log in data['logs']:
                 log.number = number
+                numbers_to_log_id_dict[int(log.number)] = log.id
                 number += 1
-        return result_list
+        return {
+            'numbers_to_log_id': numbers_to_log_id_dict,
+            'data': result_list,
+        }
 
     async def create_empty_log(self, empty_log: SEmptyLogCreate):
         return await self.create(
