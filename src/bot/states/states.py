@@ -15,6 +15,13 @@ class EditContactState(StatesGroup):
     waiting_for_data = State()
 
 
+class EditLogsState(StatesGroup):
+    typing_number = State()
+    menu = State()
+    typing_new_text = State()
+    typing_new_date = State()
+
+
 class AddContactState(StatesGroup):
     name = State()
 

@@ -7,10 +7,19 @@ def make_contact_profile_kb():
     return make_row_keyboard_by_list([
         'Start logging',
         'Get logs',
+        'Edit logs',
         'Add empty log',
         'Edit contact',
         'Delete contact',
         'Go to main menu',
+    ])
+
+
+def make_edit_log_menu_kb():
+    return make_row_keyboard_by_list([
+        'Edit text',
+        'Edit date',
+        'Cancel',
     ])
 
 
