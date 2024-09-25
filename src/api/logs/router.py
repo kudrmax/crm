@@ -31,6 +31,16 @@ async def add_empty_log(
     return await dao.create_empty_log(empty_log)
 
 
+@router.post("/new/yesterday")
+async def add_log_at_yesterday(
+        log: SLogCreate,
+        dao: DAOLog = Depends()
+) -> SLogRead:
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    log = SLogCreateOnDate(**log.model_dump(), date=yesterday)
+    return await dao.create(log)
+
+
 @router.post("/new/{date}")
 async def add_log_at_date(
         log: SLogCreateOnDate,
