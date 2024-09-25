@@ -26,9 +26,21 @@ class DAOLog(DAO):
             raise ContactNotFoundError
         return contact
 
-    async def create(self, log_create: SLogCreate):
+    async def create(self, log_create: SLogCreate, date: datetime.date | None = None):
+        new_datetime = None
+        if date:
+            query = select(MLog).filter(MLog.datetime.cast(Date) == date).order_by(desc(MLog.datetime))
+            last_log = await self.db.execute(query)
+            last_log = last_log.scalar()
+            if last_log:
+                new_datetime = last_log.datetime + datetime.timedelta(microseconds=1)
+            else:
+                new_datetime = datetime.datetime.combine(date, datetime.time(0, 1))
         contact = await self._get_contact_by_name(log_create.name)
-        m_log = MLog(contact_id=contact.id, log=log_create.log)
+        if new_datetime:
+            m_log = MLog(contact_id=contact.id, log=log_create.log, datetime=new_datetime)
+        else:
+            m_log = MLog(contact_id=contact.id, log=log_create.log)
         self.db.add(m_log)
         await self.db.commit()
         await self.db.refresh(m_log)
