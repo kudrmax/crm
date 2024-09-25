@@ -1,5 +1,5 @@
+import datetime
 import json
-from datetime import datetime
 from uuid import UUID
 
 import requests
@@ -90,11 +90,17 @@ class ContactHelper:
         return await cls.convert_logs_to_str(logs)
 
     @classmethod
-    async def add_log(cls, log_str: str, name: str):
-        response = requests.post(f'{settings.server.api_url}/logs/new', json={
-            'name': name,
-            'log': log_str
-        })
+    async def add_log(cls, log_str: str, name: str, date: datetime.date | None = None):
+        if not date:
+            response = requests.post(f'{settings.server.api_url}/logs/new', json={
+                'name': name,
+                'log': log_str
+            })
+        else:
+            response = requests.post(f'{settings.server.api_url}/logs/new/{date}', json={
+                'name': name,
+                'log': log_str
+            })
         if response.status_code == 404:
             raise ContactNotFoundError
 

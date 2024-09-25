@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
@@ -21,9 +23,22 @@ async def start_logging(
     await state.update_data(reply_markup=final_reply_markup)
     await message.answer(
         'Type log or cancel:',
-        reply_markup=make_row_keyboard_by_list(['Stop logging'])
+        reply_markup=make_row_keyboard_by_list(['Set date to yesterday', 'Set date to today', 'Stop logging'])
     )
     await state.set_state(AddLog.logging)
+
+
+@router.message(AddLog.logging, F.text == 'Set date to yesterday')
+async def set_date_to_yesterday(message: Message, state: FSMContext):
+    date = datetime.date.today() - datetime.timedelta(days=1)
+    await state.update_data(date=date)
+    await message.answer('Date was set to yesterday')
+
+
+@router.message(AddLog.logging, F.text == 'Set date to today')
+async def set_date_to_today(message: Message, state: FSMContext):
+    await state.update_data(date=None)
+    await message.answer('Date was set to today')
 
 
 @router.message(AddLog.logging, F.text == 'Stop logging')
@@ -38,8 +53,10 @@ async def add_log(message: Message, state: FSMContext):
     data = await state.get_data()
     new_log = message.text
     try:
-        await ContactHelper.add_log(log_str=new_log, name=data['name'])
-        await message.reply('✅')
+        date = data['date'] if 'date' in data else None
+        await ContactHelper.add_log(log_str=new_log, name=data['name'], date=date)
+        reply_text = '✅' if not date else f'✅ on {date}'
+        await message.reply(reply_text)
     except ContactNotFoundError:
         await message.reply('❌')
         await message.answer(f"Contact with name {data['name']} not found. Aborted.")
