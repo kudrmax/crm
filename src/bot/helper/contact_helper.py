@@ -75,9 +75,9 @@ class ContactHelper:
     async def convert_logs_to_str(cls, logs):
         result_list = []
         for data in logs:
-            result_list.append(str(data['date']) + ':')
+            result_list.append(f"\n{str(data['date'])}:")
             for log in data['logs']:
-                result_list.append(f"{log['number']}: {log['log']}")
+                result_list.append(f"— {log['number']}: {log['log']}")
         return '\n'.join(result_list)
 
     @classmethod
