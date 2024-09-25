@@ -24,10 +24,6 @@ class SLogCreate(BaseModel):
     log: str
 
 
-class SLogCreateOnDate(SLogCreate):
-    date: dt.date
-
-
 class SEmptyLogCreate(BaseModel):
     name: str
 
