@@ -13,12 +13,12 @@ from src.errors import ContactNotFoundError
 router = Router()
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Get logs')
+@router.message(ContactProfileState.choose_action, F.text == 'Get logs ⬇️')
 async def get_logs_handler(message: Message, state: FSMContext):
     await get_logs(message, state)
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Start logging')
+@router.message(ContactProfileState.choose_action, F.text == 'Start logging ⬆️')
 async def add_log(message: Message, state: FSMContext):
     await start_logging(
         message=message,

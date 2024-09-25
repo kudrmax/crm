@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
 from src.bot.helper.contact_helper import ContactHelper
-from src.bot.keyboards.keyboards import make_row_keyboard_by_list
+from src.bot.keyboards.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists
 from src.bot.states.states import FindContactState
 from src.errors import ContactNotFoundError
 
@@ -29,7 +29,7 @@ async def search_contact(
 
     await message.answer(
         'Type name or select from list:',
-        reply_markup=make_row_keyboard_by_list([*last_contacts, 'Cancel'])
+        reply_markup=make_keyboard_by_lists([*[[contact] for contact in last_contacts], ['Cancel']])
     )
     await state.set_state(FindContactState.typing_name)
 
