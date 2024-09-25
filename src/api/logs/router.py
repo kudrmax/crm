@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from src.api.logs.dao import DAOLog
 from src.api.contacts.models import MContact
 from src.api.contacts.schemas import SContactCreate, SContactUpdate, SContactRead
-from src.api.logs.schemas import SLogCreate, SLogRead, SEmptyLogCreate, SLogUpdate
+from src.api.logs.schemas import SLogCreate, SLogRead, SEmptyLogCreate, SLogUpdate, SLogCreateOnDate
 
 router = APIRouter(
     prefix="/logs",
@@ -29,6 +29,14 @@ async def add_empty_log(
         dao: DAOLog = Depends()
 ) -> SLogRead:
     return await dao.create_empty_log(empty_log)
+
+
+@router.post("/new/{date}")
+async def add_log_at_date(
+        log: SLogCreateOnDate,
+        dao: DAOLog = Depends()
+) -> SLogRead:
+    return await dao.create(log)
 
 
 @router.get("/{name}")

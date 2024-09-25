@@ -7,7 +7,7 @@ from sqlalchemy import select, Date, desc
 from src.api.contacts.models import MContact
 from src.api.dao_base import DAO
 from src.api.logs.models import MLog
-from src.api.logs.schemas import SLogCreate, SEmptyLogCreate, SLogUpdate, SLogRead
+from src.api.logs.schemas import SLogCreate, SEmptyLogCreate, SLogUpdate, SLogRead, SLogCreateOnDate
 from src.errors import *
 
 
@@ -26,9 +26,21 @@ class DAOLog(DAO):
             raise ContactNotFoundError
         return contact
 
-    async def create(self, log_create: SLogCreate):
+    async def create(self, log_create: SLogCreate | SLogCreateOnDate):
+        new_datetime = None
+        if isinstance(log_create, SLogCreateOnDate):
+            query = select(MLog).filter(MLog.datetime.cast(Date) == log_create.date).order_by(desc(MLog.datetime))
+            last_log = await self.db.execute(query)
+            last_log = last_log.scalar()
+            if last_log:
+                new_datetime = last_log.datetime + datetime.timedelta(microseconds=1)
+            else:
+                new_datetime = datetime.datetime.combine(log_create.date, datetime.time(0, 1))
         contact = await self._get_contact_by_name(log_create.name)
-        m_log = MLog(contact_id=contact.id, log=log_create.log)
+        if new_datetime:
+            m_log = MLog(contact_id=contact.id, log=log_create.log, datetime=new_datetime)
+        else:
+            m_log = MLog(contact_id=contact.id, log=log_create.log)
         self.db.add(m_log)
         await self.db.commit()
         await self.db.refresh(m_log)
