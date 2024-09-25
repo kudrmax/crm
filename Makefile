@@ -6,6 +6,12 @@ VENV_CMD = source .venv/bin/activate
 include .env
 #export $(shell sed 's/=.*//' .env)
 
+up:
+	docker compose up -d
+
+down:
+	docker compose down
+
 db_up:
 	docker compose -f $(DOCKER_COMPOSE_FILE) up -d
 
