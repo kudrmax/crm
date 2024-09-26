@@ -28,7 +28,7 @@ def make_keyboard_by_lists(items: list[list[str]]) -> ReplyKeyboardMarkup:
 
 def make_contact_profile_kb():
     return make_keyboard_by_lists([
-        ['Start logging ⬆️', 'Get logs ⬇️', 'Я 📝'],
+        ['Start logging ⬆️', 'Get logs ⬇️', 'Я'],
         ['Edit logs', 'Add empty log'],
         ['Edit contact', 'Delete contact', 'Go to main menu']
     ])

@@ -18,7 +18,7 @@ async def get_logs_handler(message: Message, state: FSMContext):
     await get_logs(message, state)
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Я 📝')
+@router.message(ContactProfileState.choose_action, F.text == 'Я')
 async def get_logs_handler(message: Message, state: FSMContext):
     await get_logs(message, state, name='Я')
 
