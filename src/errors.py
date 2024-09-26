@@ -11,6 +11,7 @@ class ContactAlreadyExistsError(Exception):
 class UnprocessableEntityError(Exception):
     pass
 
+
 class LogNotFoundError(Exception):
     pass
 
