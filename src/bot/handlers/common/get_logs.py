@@ -5,9 +5,10 @@ from src.bot.helper.contact_helper import ContactHelper
 from src.errors import ContactNotFoundError
 
 
-async def get_logs(message: Message, state: FSMContext):
+async def get_logs(message: Message, state: FSMContext, name: str | None = None):
     data = await state.get_data()
-    name = data.get('name')
+    if not name:
+        name = data.get('name')
     try:
         all_logs: str = await ContactHelper.get_all_logs(name)
         if not all_logs or all_logs == "":
