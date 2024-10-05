@@ -79,6 +79,8 @@ class DAOLog(DAO):
                 log.number = number
                 numbers_to_log_id_dict[int(log.number)] = log.id
                 number += 1
+        min_number = max(1, number - 20)
+        result_list = result_list[-min_number:]
         return {
             'numbers_to_log_id': numbers_to_log_id_dict,
             'data': result_list,
