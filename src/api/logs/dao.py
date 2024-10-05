@@ -125,3 +125,26 @@ class DAOLog(DAO):
         await self.db.commit()
         await self.db.refresh(log)
         return log
+
+    async def get_last_logs(self, days_count: int = 5):
+        dates = []
+        for i in range(days_count):
+            dates.append(datetime.date.today() - datetime.timedelta(days=i))
+
+        recent_date = datetime.date.today() - datetime.timedelta(days=days_count)
+        query = (
+            select(MLog).
+            filter(MLog.datetime.cast(Date) >= recent_date).
+            order_by(desc(MLog.datetime)).
+            group_by(MLog.contact_id)
+        )
+
+        names = []
+        result = {}
+        for name in names:
+            logs = (await self.get_all_logs_grouped_by_date(name))['data']
+            logs = [log for log in logs if log['date'] in dates]
+            result[name] = logs
+
+        # for date in dates:
+        #     query = select(MLog).filter(MLog.datetime.cast(Date) == date).order_by(desc(MLog.datetime))
