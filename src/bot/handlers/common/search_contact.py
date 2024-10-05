@@ -23,7 +23,6 @@ async def search_contact(
     await state.update_data(start_state=start_state)
     await state.update_data(final_reply_markup=final_reply_markup)
     await state.update_data(start_reply_markup=start_reply_markup)
-    print('here')
     last_contacts = await ContactHelper.get_last_contacts()
     await state.update_data(last_contacts=set(last_contacts))
 
