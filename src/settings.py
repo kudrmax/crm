@@ -22,14 +22,16 @@ class DatabaseBase:
 
     @property
     def url_alembic(self) -> str:
-        return str(PostgresDsn.build(
+        res = str(PostgresDsn.build(
             scheme="postgresql",
             username=self.user,
             password=self.password,
-            host=self.host,
-            port=self.docker_port,
+            host='0.0.0.0',
+            port=self.port,
             path=self.database,
         ))
+        print(res)
+        return res
 
 
 class MyBaseSettings(BaseSettings):
