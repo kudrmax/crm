@@ -1,6 +1,5 @@
 import datetime
 import json
-from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
@@ -11,7 +10,7 @@ from src.errors import *
 from src.settings import settings
 
 
-class RequestType(Enum, str):
+class RequestType(str, Enum):
     get = 'GET'
     post = 'POST'
     put = 'PUT'
@@ -135,7 +134,8 @@ class ContactHelper:
 
     @classmethod
     async def add_log(cls, log_str: str, name: str, date: datetime.date | None = None):
-        if not date:
+        print(f'{log_str = }, {name = }, {date = }')
+        if date is None:
             await cls.create_request(
                 f'{settings.server.api_url}/logs/new',
                 RequestType.post,
