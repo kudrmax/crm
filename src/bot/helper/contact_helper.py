@@ -72,13 +72,13 @@ class ContactHelper:
         return await cls.convert_logs_to_str(logs), numbers_to_log_id
 
     @classmethod
-    async def convert_logs_to_str(cls, logs):
+    async def convert_logs_to_str(cls, logs) -> str:
         result_list = []
         for data in logs:
             result_list.append(f"\n{str(data['date'])}:")
             for log in data['logs']:
                 result_list.append(f"— {log['number']}: {log['log']}")
-        return '\n'.join(result_list)
+        return ('\n'.join(result_list))[-4000:]
 
     @classmethod
     async def get_all_logs(cls, name: str) -> str:
