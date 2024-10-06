@@ -25,3 +25,8 @@ backend_up:
 bot_up:
 	@echo "Starting Telegram bot..."
 	@sh -c 'source .venv/bin/activate && $(BOT_CMD)'
+
+rebuild:
+	docker compose up -d api --build
+	docker compose up -d bot --build
+	docker compose up -d db
