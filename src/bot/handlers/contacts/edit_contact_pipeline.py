@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from src.bot.helper import Helper
-from src.bot.keyboards import make_contact_profile_kb, make_edit_contact_kb, contact_fields
+from src.bot.keyboards import contact_profile_kb, edit_contact_kb, contact_fields
 from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError, ContactAlreadyExistsError, UnprocessableEntityError, AlreadyExistsError, \
     NotFoundError
@@ -23,7 +23,7 @@ async def choose_action(message: Message, state: FSMContext):
     contact_for_print = await Helper.convert_contact_data_to_string(contact_data)
     await message.answer(
         f'Updated contact {name}\n' + contact_for_print,
-        reply_markup=make_contact_profile_kb(),
+        reply_markup=contact_profile_kb(),
     )
     await state.set_state(ContactProfileState.choose_action)
 
@@ -51,7 +51,7 @@ async def update_field_value(message: Message, state: FSMContext):
             await state.update_data(name=message.text)
         await message.answer(
             f'You changed filed "{updated_data['field']}" from "{updated_data['old_value']}" to "{updated_data['new_value']}"',
-            reply_markup=make_edit_contact_kb()
+            reply_markup=edit_contact_kb()
         )
         await state.set_state(EditContactState.choose_what_edit)
     except NotFoundError:

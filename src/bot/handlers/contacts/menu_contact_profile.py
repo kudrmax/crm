@@ -2,12 +2,12 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.common.get_logs import get_logs
-from src.bot.handlers.common.logging import start_logging
+from src.bot.handlers.logs.get_logs_pipeline import get_logs
+from src.bot.handlers.logs.logging_pipeline import start_logging
 from src.bot.helper import Helper
-from src.bot.keyboards import make_edit_contact_kb, make_contact_profile_kb, make_row_keyboard_by_list
-from src.bot.states import ContactProfileState, EditContactState, DeleteContactState, EditLogsState
-from src.bot.handlers.menu_main import make_main_menu_kb
+from src.bot.keyboards import edit_contact_kb, contact_profile_kb, make_row_keyboard_by_list, \
+    main_kb
+from src.bot.states import ContactProfileState, EditContactState, DeleteContactState
 from src.errors import ContactNotFoundError
 
 router = Router()
@@ -30,7 +30,7 @@ async def add_log(message: Message, state: FSMContext):
         message=message,
         state=state,
         final_state=ContactProfileState.choose_action,
-        final_reply_markup=make_contact_profile_kb(),
+        final_reply_markup=contact_profile_kb(),
     )
 
 
@@ -49,7 +49,7 @@ async def add_empty_log(message: Message, state: FSMContext):
 async def edit_contact(message: Message, state: FSMContext):
     await message.answer(
         'Choose what to edit:',
-        reply_markup=make_edit_contact_kb()
+        reply_markup=edit_contact_kb()
     )
     await state.set_state(EditContactState.choose_what_edit)
 
@@ -70,5 +70,5 @@ async def main_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
         'Choose option:',
-        reply_markup=make_main_menu_kb()
+        reply_markup=main_kb()
     )

@@ -44,6 +44,7 @@ async def set_date_to_today(message: Message, state: FSMContext):
 @router.message(AddLog.logging, F.text == 'Stop logging')
 async def stop_logging(message: Message, state: FSMContext):
     data = await state.get_data()
+    await state.update_data(date=None)
     await message.answer('Stopped logging', reply_markup=data['final_reply_markup'])
     await state.set_state(data['final_state'])
 
