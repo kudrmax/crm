@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from src.bot.handlers.common.get_logs import get_logs
 from src.bot.handlers.common.logging import start_logging
-from src.bot.helper import ContactHelper
+from src.bot.helper import Helper
 from src.bot.keyboards import make_edit_contact_kb, make_contact_profile_kb, make_row_keyboard_by_list
 from src.bot.states import ContactProfileState, EditContactState, DeleteContactState, EditLogsState
 from src.bot.handlers.menu_main import make_main_menu_kb
@@ -38,7 +38,7 @@ async def add_log(message: Message, state: FSMContext):
 async def add_empty_log(message: Message, state: FSMContext):
     data = await state.get_data()
     try:
-        await ContactHelper.add_empty_log(name=data['name'])
+        await Helper.add_empty_log(name=data['name'])
         await message.answer('Interaction was added.')
     except ContactNotFoundError:
         await message.answer(f"Contact with name {data['name']} not found. Aborted.")
