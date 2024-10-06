@@ -1,7 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from src.errors import *
+from src.errors import ContactNotFoundError, ContactAlreadyExistsError
 
 
 def contact_already_exists_exception_handler(request: Request, exc: ContactAlreadyExistsError):

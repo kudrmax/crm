@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.common.get_logs import get_logs
-from src.bot.states.states import AddLog
+from src.bot.states import AddLog
 
 router = Router()
 

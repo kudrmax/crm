@@ -3,9 +3,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from src.bot.helper import ContactHelper
-from src.bot.keyboards.keyboards import make_contact_profile_kb, make_edit_contact_kb, contact_fields
-from src.bot.states.states import ContactProfileState, EditContactState
-from src.errors import *
+from src.bot.keyboards import make_contact_profile_kb, make_edit_contact_kb, contact_fields
+from src.bot.states import ContactProfileState, EditContactState
+from src.errors import ContactNotFoundError, ContactAlreadyExistsError, UnprocessableEntityError, AlreadyExistsError, \
+    NotFoundError
 
 router = Router()
 
@@ -53,9 +54,14 @@ async def update_field_value(message: Message, state: FSMContext):
             reply_markup=make_edit_contact_kb()
         )
         await state.set_state(EditContactState.choose_what_edit)
-    except ContactNotFoundError:
+    except NotFoundError:
         await message.answer(f'Contact with name {name} not found. Aborted.')
         raise Exception
-    except ContactAlreadyExistsError:
+    except AlreadyExistsError:
         await message.answer(f"Contact with name {message.text} already exists. Type another name:")
         return
+    except UnprocessableEntityError:
+        # if field_to_update == 'date':
+        await message.answer(f'A date should be in the format "YYYY-MM-DD". Type another date:')
+        return
+        # raise

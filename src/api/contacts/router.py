@@ -26,7 +26,7 @@ async def get_last_contacts(
     return await dao.get_last_contacts(contact_count)
 
 
-@router.post("/new", response_model=SContactRead)
+@router.post("/new")
 async def add_contact(
         new_contact: SContactCreate,
         dao: DAOContact = Depends()

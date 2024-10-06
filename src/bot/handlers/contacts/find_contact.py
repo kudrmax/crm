@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.common.search_contact import search_contact
-from src.bot.keyboards.keyboards import make_contact_profile_kb, make_contacts_menu_kb
-from src.bot.states.states import ContactProfileState
+from src.bot.keyboards import make_contact_profile_kb, make_contacts_menu_kb
+from src.bot.states import ContactProfileState
 
 router = Router()
 

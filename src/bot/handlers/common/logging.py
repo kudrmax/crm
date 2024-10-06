@@ -6,8 +6,8 @@ from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
 from src.bot.helper import ContactHelper
-from src.bot.keyboards.keyboards import make_row_keyboard_by_list
-from src.bot.states.states import AddLog
+from src.bot.keyboards import make_row_keyboard_by_list
+from src.bot.states import AddLog
 from src.errors import ContactNotFoundError
 
 router = Router()

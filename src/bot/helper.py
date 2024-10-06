@@ -1,52 +1,98 @@
 import datetime
 import json
+from enum import Enum
 from uuid import UUID
 
 import requests
 from typing import List, Dict, Any, Tuple
 
-from src.errors import *
+from src.errors import (
+    InternalServerError,
+    UnknownError,
+    UnprocessableEntityError,
+    NotFoundError,
+    AlreadyExistsError
+)
 from src.settings import settings
 
 
+class RequestType(str, Enum):
+    get = 'GET'
+    post = 'POST'
+    put = 'PUT'
+    patch = 'PATCH'
+    delete = 'DELETE'
+
+
 class ContactHelper:
+
     @classmethod
-    async def create_contact(cls, name: str):
-        response = requests.post(settings.server.api_url + '/contacts/new', data=json.dumps({"name": name}))
-        if response.status_code == 409:
-            raise ContactAlreadyExistsError(name)
+    async def create_request(self, url: str, request_type: RequestType, data_dict: Dict[str, Any] | None = None):
+        response = None
+        data_json = json.dumps(data_dict) if data_dict else None
+        if request_type == RequestType.get:
+            response = requests.get(url)
+        elif request_type == RequestType.post:
+            response = requests.post(url, data=data_json)
+        elif request_type == RequestType.put:
+            response = requests.put(url, data=data_json)
+        elif request_type == RequestType.patch:
+            response = requests.patch(url, data=data_json)
+        elif request_type == RequestType.delete:
+            response = requests.delete(url, data=data_json)
+        await self.process_errors(response)
+        return response
+
+    @classmethod
+    async def process_errors(cls, response):
         if response.status_code == 200:
             return True
-        await cls.raise_if_500(response)
+        if response.status_code == 500:
+            raise InternalServerError
+        if response.status_code == 404:
+            raise NotFoundError
+        if response.status_code == 409:
+            raise AlreadyExistsError
+        if response.status_code == 422:
+            raise UnprocessableEntityError
+        raise UnknownError
+
+    @classmethod
+    async def create_contact(cls, name: str):
+        await cls.create_request(
+            settings.server.api_url + '/contacts/new',
+            RequestType.post,
+            {'name': name}
+        )
 
     @classmethod
     async def find_contact_by_name(cls, name: str) -> List[str] | None:
-        response = requests.get(f'{settings.server.api_url}/contacts/{name}/search')
-        await cls.raise_if_500(response)
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/{name}/search',
+            RequestType.get
+        )
 
         contacts = response.json()
         contact_names = [contact['name'] for contact in contacts]
         return contact_names
 
+
     @classmethod
     async def update_contact(cls, name: str, field_to_update: str, new_value: Any) -> Dict[str, str] | None:
         field_to_update = field_to_update.lower()
 
-        response = requests.get(f'{settings.server.api_url}/contacts/{name}')
-        if response.status_code == 404:
-            raise ContactNotFoundError
-        await cls.raise_if_500(response)
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/{name}',
+            RequestType.get
+        )
 
         contact = response.json()
-        response = requests.put(
+
+        response = await cls.create_request(
             f'{settings.server.api_url}/contacts/{name}',
-            data=json.dumps({field_to_update: new_value})
+            RequestType.put,
+            {field_to_update: new_value}
         )
-        if response.status_code == 404:
-            raise ContactNotFoundError
-        if response.status_code == 409:
-            raise ContactAlreadyExistsError
-        await cls.raise_if_500(response)
 
         return {
             'field': field_to_update.title(),
@@ -63,13 +109,14 @@ class ContactHelper:
 
     @classmethod
     async def get_all_logs_with_numbers(cls, name: str) -> Tuple[str, Dict[int, UUID]]:
-        response = requests.get(f'{settings.server.api_url}/logs/{name}/by_date')
-        if response.status_code == 404:
-            raise ContactNotFoundError
-        await cls.raise_if_500(response)
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/{name}/by_date',
+            RequestType.get
+        )
         logs = response.json()['data']
         numbers_to_log_id = response.json()['numbers_to_log_id']
         return await cls.convert_logs_to_str(logs), numbers_to_log_id
+
 
     @classmethod
     async def convert_logs_to_str(cls, logs) -> str:
@@ -82,57 +129,63 @@ class ContactHelper:
 
     @classmethod
     async def get_all_logs(cls, name: str) -> str:
-        response = requests.get(f'{settings.server.api_url}/logs/{name}/by_date')
-        if response.status_code == 404:
-            raise ContactNotFoundError
-        await cls.raise_if_500(response)
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/{name}/by_date',
+            RequestType.get
+        )
         logs = response.json()['data']
         return await cls.convert_logs_to_str(logs)
 
     @classmethod
     async def add_log(cls, log_str: str, name: str, date: datetime.date | None = None):
-        if not date:
-            response = requests.post(f'{settings.server.api_url}/logs/new', json={
-                'name': name,
-                'log': log_str
-            })
+        print(f'{log_str = }, {name = }, {date = }')
+        if date is None:
+            await cls.create_request(
+                f'{settings.server.api_url}/logs/new',
+                RequestType.post,
+                {
+                    'name': name,
+                    'log': log_str
+                }
+            )
         else:
-            response = requests.post(f'{settings.server.api_url}/logs/new/{date}', json={
-                'name': name,
-                'log': log_str
-            })
-        if response.status_code == 404:
-            raise ContactNotFoundError
+            await cls.create_request(
+                f'{settings.server.api_url}/logs/new/{date}',
+                RequestType.post,
+                {
+                    'name': name,
+                    'log': log_str
+                }
+            )
 
     @classmethod
     async def add_empty_log(cls, name: str):
-        response = requests.post(f'{settings.server.api_url}/logs/new/empty', json={
-            'name': name,
-        })
-        if response.status_code == 404:
-            raise ContactNotFoundError
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/new/empty',
+            RequestType.post,
+            {'name': name}
+        )
 
     @classmethod
     async def get_contact_data_by_name(cls, name: str) -> Dict[str, str] | None:
-        response = requests.get(f'{settings.server.api_url}/contacts/{name}')
-        if response.status_code == 404:
-            raise ContactNotFoundError
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/{name}',
+            RequestType.get,
+        )
         contact = response.json()
         return contact
 
     @classmethod
-    async def raise_if_500(cls, response):
-        if response.status_code == 500:
-            raise InternalServerError
-
-    @classmethod
     async def delete(cls, name: str):
-        response = requests.delete(f'{settings.server.api_url}/contacts/{name}')
-        if response.status_code == 404:
-            raise ContactNotFoundError
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/{name}',
+            RequestType.delete,
+        )
 
     @classmethod
     async def get_last_contacts(cls):
-        response = requests.get(f'{settings.server.api_url}/contacts/get_last_contacts')
-        await cls.raise_if_500(response)
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/get_last_contacts',
+            RequestType.get,
+        )
         return [contact['name'] for contact in response.json()]

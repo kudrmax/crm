@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.helper import ContactHelper
-from src.bot.keyboards.keyboards import make_row_keyboard_by_list, make_edit_log_menu_kb
-from src.bot.states.states import EditLogsState, ContactProfileState
+from src.bot.keyboards import make_row_keyboard_by_list, make_edit_log_menu_kb
+from src.bot.states import EditLogsState, ContactProfileState
 
 router = Router()
 

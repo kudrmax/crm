@@ -4,8 +4,8 @@ from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
 from src.bot.helper import ContactHelper
-from src.bot.keyboards.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists
-from src.bot.states.states import FindContactState
+from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists
+from src.bot.states import FindContactState
 from src.errors import ContactNotFoundError
 
 router = Router()
@@ -23,6 +23,7 @@ async def search_contact(
     await state.update_data(start_state=start_state)
     await state.update_data(final_reply_markup=final_reply_markup)
     await state.update_data(start_reply_markup=start_reply_markup)
+    print('here')
     last_contacts = await ContactHelper.get_last_contacts()
     await state.update_data(last_contacts=set(last_contacts))
 
