@@ -21,18 +21,19 @@ class RequestType(str, Enum):
 class ContactHelper:
 
     @classmethod
-    async def create_request(self, url: str, request_type: RequestType, data: Dict[str, Any] | None = None):
+    async def create_request(self, url: str, request_type: RequestType, data_dict: Dict[str, Any] | None = None):
         response = None
+        data_json = json.dumps(data_dict) if data_dict else None
         if request_type == RequestType.get:
             response = requests.get(url)
         elif request_type == RequestType.post:
-            response = requests.post(url, data=data)
+            response = requests.post(url, data=data_json)
         elif request_type == RequestType.put:
-            response = requests.put(url, data=data)
+            response = requests.put(url, data=data_json)
         elif request_type == RequestType.patch:
-            response = requests.patch(url, data=data)
+            response = requests.patch(url, data=data_json)
         elif request_type == RequestType.delete:
-            response = requests.delete(url, data=data)
+            response = requests.delete(url, data=data_json)
         await self.process_errors(response)
         return response
 
@@ -43,6 +44,8 @@ class ContactHelper:
 
     @classmethod
     async def process_errors(cls, response):
+        if response.status_code == 200:
+            return True
         if response.status_code == 500:
             raise InternalServerError
         if response.status_code == 404:
@@ -51,8 +54,6 @@ class ContactHelper:
             raise ContactAlreadyExistsError
         if response.status_code == 422:
             raise UnprocessableEntityError
-        if response.status_code == 200:
-            return True
         raise UnknownError
 
     @classmethod

@@ -32,10 +32,10 @@ async def connection_error(event: ErrorEvent, state: FSMContext):
     await go_to_main_menu_after_error(event, state)
 
 
-@router.errors(ExceptionTypeFilter(UnprocessableEntityError))
-async def connection_error(event: ErrorEvent, state: FSMContext):
-    await event.update.message.answer(f"UnprocessableEntityError:\n\n{event.exception}")
-    await go_to_main_menu_after_error(event, state)
+# @router.errors(ExceptionTypeFilter(UnprocessableEntityError))
+# async def connection_error(event: ErrorEvent, state: FSMContext):
+#     await event.update.message.answer(f"UnprocessableEntityError:\n\n{event.exception}")
+#     await go_to_main_menu_after_error(event, state)
 
 
 @router.errors()
