@@ -206,7 +206,12 @@ class LogHelper(RequestsHelper):
                     if log and log != "":
                         result.append(f'— {log}')
         text = "\n".join(result)
-        formatted_text = text.replace('.', '\.')
+        formatted_text = (
+            text
+            .replace('.', '\.')
+            .replace('(', '\(')
+            .replace(')', '\)')
+        )
         return formatted_text
 
 
