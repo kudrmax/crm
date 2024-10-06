@@ -1,31 +1,28 @@
 from aiogram import Router
 
-from src.bot.handlers.contacts.menu_contacts import router as contacts_router
-from src.bot.handlers.contacts.create_contact import router as add_contact_router
-from src.bot.handlers.contacts.find_contact import router as find_contact_router
-from src.bot.handlers.contacts.process_contact import router as process_contact_router
-from src.bot.handlers.contacts.edit_contact import router as edit_contact_router
-from src.bot.handlers.contacts.delete_contact import router as delete_router
-from src.bot.handlers.logs.menu_logs import router as menu_logs_router
-from src.bot.handlers.logs.get_logs import router as get_logs_router
-from src.bot.handlers.logs.logging import router as logging_router
-from src.bot.handlers.logs.edit_logs import router as edit_logs_router
-from src.bot.handlers.common.search_contact import router as search_contact_router
-from src.bot.handlers.common.logging import router as logging_common_router
+from src.bot.error_handlers import router as error_handlers
+
+from src.bot.handlers.menu_main import router as menu_main
+
+from src.bot.handlers.contacts.create_contact_pipline import router as create_contact_pipeline
+from src.bot.handlers.contacts.delete_contact_pipeline import router as delete_contact_pipeline
+from src.bot.handlers.contacts.edit_contact_pipeline import router as edit_contact_pipeline
+from src.bot.handlers.contacts.menu_contact_profile import router as menu_contact_profile
+from src.bot.handlers.contacts.search_contact_pipeline import router as search_contact_pipeline
+
+from src.bot.handlers.logs.edit_logs_pipeline import router as edit_logs_pipeline
+from src.bot.handlers.logs.logging_pipeline import router as logging_pipeline
 
 router = Router()
 
 router.include_routers(
-    contacts_router,
-    add_contact_router,
-    find_contact_router,
-    process_contact_router,
-    edit_contact_router,
-    menu_logs_router,
-    search_contact_router,
-    get_logs_router,
-    logging_router,
-    logging_common_router,
-    delete_router,
-    edit_logs_router,
+    error_handlers,
+    menu_main,
+    create_contact_pipeline,
+    delete_contact_pipeline,
+    edit_contact_pipeline,
+    menu_contact_profile,
+    search_contact_pipeline,
+    edit_logs_pipeline,
+    logging_pipeline,
 )

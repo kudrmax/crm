@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.helper import Helper
-from src.bot.keyboards import make_row_keyboard_by_list, make_edit_log_menu_kb
+from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb
 from src.bot.states import EditLogsState, ContactProfileState
 
 router = Router()
@@ -33,7 +33,7 @@ async def choose_number(message: Message, state: FSMContext):
     log_id = numbers_to_log_id[number]
     await message.answer(
         f'You are going to update log with log_id={log_id}',
-        reply_markup=make_edit_log_menu_kb()
+        reply_markup=edit_log_kb()
     )
     await state.set_state(EditLogsState.menu)
 

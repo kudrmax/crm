@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import ErrorEvent
 from requests.exceptions import ConnectionError
 
-from src.bot.handlers.menu_main import make_main_menu_kb
+from src.bot.keyboards import main_kb
 from src.errors import UnknownError, UnprocessableEntityError
 
 router = Router()
@@ -15,7 +15,7 @@ async def go_to_main_menu_after_error(event: ErrorEvent, state: FSMContext):
         # @todo перенести event.exception в логирование
         await event.update.message.answer(
             f"Oops, something went wrong!\n\nError:\n{event.exception}",
-            reply_markup=make_main_menu_kb()
+            reply_markup=main_kb()
         )
     await state.clear()
 

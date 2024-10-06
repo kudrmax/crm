@@ -26,24 +26,24 @@ def make_keyboard_by_lists(items: list[list[str]]) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
 
-def make_contact_profile_kb():
+def main_kb():
+    return make_row_keyboard_by_list([
+        'Find contact',
+        'Get last logs',
+        'Create new contact',
+        'Get stats ❌',
+    ])
+
+
+def contact_profile_kb():
     return make_keyboard_by_lists([
         ['Start logging ⬆️', 'Get logs ⬇️', 'Я'],
         ['Edit logs', 'Add empty log'],
         ['Edit contact', 'Delete contact', 'Go to main menu']
     ])
-    # return make_row_keyboard_by_list([
-    #     'Start logging',
-    #     'Get logs',
-    #     'Edit logs',
-    #     'Add empty log',
-    #     'Edit contact',
-    #     'Delete contact',
-    #     'Go to main menu',
-    # ])
 
 
-def make_edit_log_menu_kb():
+def edit_log_kb():
     return make_row_keyboard_by_list([
         'Edit text',
         'Edit date',
@@ -51,22 +51,10 @@ def make_edit_log_menu_kb():
     ])
 
 
-def make_edit_contact_kb():
-    # return make_row_keyboard_by_list([
-    #     *[w.capitalize() for w in contact_fields],
-    #     'Finish',
-    # ])
+def edit_contact_kb():
     return make_keyboard_by_lists([
         *[[w.capitalize()] for w in contact_fields],
         ['Finish'],
-    ])
-
-
-def make_contacts_menu_kb():
-    return make_keyboard_by_lists([
-        ['Find contact'],
-        ['Create new contact'],
-        ['Go to main menu']
     ])
 
 
@@ -76,16 +64,3 @@ contact_fields: List[str] = [
     'phone',
     'birthday',
 ]
-
-
-def make_log_menu_kb():
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(text="Start logging"),
-                KeyboardButton(text="Get logs"),
-                KeyboardButton(text="Go to main menu"),
-            ]
-        ],
-        resize_keyboard=True,
-    )
