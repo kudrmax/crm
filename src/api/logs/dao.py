@@ -8,7 +8,7 @@ from src.api.contacts.models import MContact
 from src.api.dao_base import DAO
 from src.api.logs.models import MLog
 from src.api.logs.schemas import SLogCreate, SEmptyLogCreate, SLogUpdate, SLogRead
-from src.errors import *
+from src.errors import LogNotFoundError, ContactNotFoundError
 
 
 class DAOLog(DAO):

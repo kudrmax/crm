@@ -7,6 +7,7 @@ from fastapi.responses import RedirectResponse
 from src.api.errors.error_handlers import *
 from src.api.errors.errors_global import global_exception_handler
 from src.api.routers import router
+from src.errors import ContactNotFoundError, ContactAlreadyExistsError
 from src.settings import settings
 
 app = FastAPI(

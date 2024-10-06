@@ -6,7 +6,13 @@ from uuid import UUID
 import requests
 from typing import List, Dict, Any, Tuple
 
-from src.errors import *
+from src.errors import (
+    InternalServerError,
+    UnknownError,
+    UnprocessableEntityError,
+    NotFoundError,
+    AlreadyExistsError
+)
 from src.settings import settings
 
 
@@ -38,20 +44,15 @@ class ContactHelper:
         return response
 
     @classmethod
-    async def raise_if_500(cls, response):
-        if response.status_code == 500:
-            raise InternalServerError(response)
-
-    @classmethod
     async def process_errors(cls, response):
         if response.status_code == 200:
             return True
         if response.status_code == 500:
             raise InternalServerError
         if response.status_code == 404:
-            raise ContactNotFoundError
+            raise NotFoundError
         if response.status_code == 409:
-            raise ContactAlreadyExistsError
+            raise AlreadyExistsError
         if response.status_code == 422:
             raise UnprocessableEntityError
         raise UnknownError

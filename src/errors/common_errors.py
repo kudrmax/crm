@@ -2,28 +2,11 @@ class NotFoundError(Exception):
     pass
 
 
+class AlreadyExistsError(Exception):
+    pass
+
+
 class UnprocessableEntityError(Exception):
-    pass
-
-
-class ContactError(Exception):
-    def __init__(self, name: str | None = None):
-        self.name = name
-
-
-class LogError(Exception):
-    pass
-
-
-class ContactNotFoundError(ContactError, NotFoundError):
-    pass
-
-
-class LogNotFoundError(LogError, NotFoundError):
-    pass
-
-
-class ContactAlreadyExistsError(ContactError):
     pass
 
 

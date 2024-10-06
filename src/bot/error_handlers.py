@@ -12,18 +12,12 @@ router = Router()
 
 async def go_to_main_menu_after_error(event: ErrorEvent, state: FSMContext):
     if event.update.message:
+        # @todo перенести event.exception в логирование
         await event.update.message.answer(
             f"Oops, something went wrong!\n\nError:\n{event.exception}",
-            # @todo перенести event.exception в логирование
             reply_markup=make_main_menu_kb()
         )
     await state.clear()
-
-
-@router.errors(ExceptionTypeFilter(UnknownError))
-async def unknown_error(event: ErrorEvent, state: FSMContext):
-    await event.update.message.answer(f"Unknown Error")
-    await go_to_main_menu_after_error(event, state)
 
 
 @router.errors(ExceptionTypeFilter(ConnectionError))
@@ -32,10 +26,16 @@ async def connection_error(event: ErrorEvent, state: FSMContext):
     await go_to_main_menu_after_error(event, state)
 
 
-# @router.errors(ExceptionTypeFilter(UnprocessableEntityError))
-# async def connection_error(event: ErrorEvent, state: FSMContext):
-#     await event.update.message.answer(f"UnprocessableEntityError:\n\n{event.exception}")
-#     await go_to_main_menu_after_error(event, state)
+@router.errors(ExceptionTypeFilter(UnknownError))
+async def unknown_error(event: ErrorEvent, state: FSMContext):
+    await event.update.message.answer(f"Unknown Error")
+    await go_to_main_menu_after_error(event, state)
+
+
+@router.errors(ExceptionTypeFilter(UnprocessableEntityError))
+async def connection_error(event: ErrorEvent, state: FSMContext):
+    await event.update.message.answer(f"UnprocessableEntityError")
+    await go_to_main_menu_after_error(event, state)
 
 
 @router.errors()
