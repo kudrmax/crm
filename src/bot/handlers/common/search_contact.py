@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
-from src.bot.helper.contact_helper import ContactHelper
+from src.bot.helper import ContactHelper
 from src.bot.keyboards.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists
 from src.bot.states.states import FindContactState
 from src.errors import ContactNotFoundError

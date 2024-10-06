@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from src.bot.helper.contact_helper import ContactHelper
+from src.bot.helper import ContactHelper
 from src.bot.keyboards.keyboards import make_contact_profile_kb, make_edit_contact_kb, contact_fields
 from src.bot.states.states import ContactProfileState, EditContactState
 from src.errors import *
