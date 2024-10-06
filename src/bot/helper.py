@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 from enum import Enum
 from uuid import UUID
 
@@ -191,6 +192,10 @@ class LogHelper(RequestsHelper):
         numbers_to_log_id = response.json()['numbers_to_log_id']
         return await cls.convert_logs_to_str(logs), numbers_to_log_id
 
+    @staticmethod
+    def __escape_markdown_v2(text: str) -> str:
+        return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', text)
+
     @classmethod
     async def get_last_logs(cls):
         response = await cls.create_request(
@@ -200,19 +205,15 @@ class LogHelper(RequestsHelper):
         logs_dict = response.json()
         result = []
         for name, logs_data in logs_dict.items():
+            name = cls.__escape_markdown_v2(name)
             result.append(f'*\n{name}:*')
             for date, logs in logs_data.items():
                 for log in logs:
                     if log and log != "":
+                        log = cls.__escape_markdown_v2(log)
                         result.append(f'— {log}')
         text = "\n".join(result)
-        formatted_text = (
-            text
-            .replace('.', '\.')
-            .replace('(', '\(')
-            .replace(')', '\)')
-        )
-        return formatted_text
+        return '||' + text + '||'
 
 
 class Helper(ContactHelper, LogHelper):
