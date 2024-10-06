@@ -56,6 +56,7 @@ async def get_last_logs(
 ):
     return await dao.get_last_logs(days_count)
 
+
 @router.get("/{name}")
 async def get_all_logs(
         name: str,
