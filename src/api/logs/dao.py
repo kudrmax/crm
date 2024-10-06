@@ -2,7 +2,7 @@ from collections import defaultdict
 import datetime
 from typing import List, Dict
 
-from sqlalchemy import select, Date, desc
+from sqlalchemy import select, Date, desc, func
 
 from src.api.contacts.models import MContact
 from src.api.dao_base import DAO
@@ -125,3 +125,26 @@ class DAOLog(DAO):
         await self.db.commit()
         await self.db.refresh(log)
         return log
+
+    async def get_last_logs(self, days_count: int = 5):
+        recent_date = datetime.date.today() - datetime.timedelta(days=days_count)
+
+        logs_query = (
+            select(MLog.contact_id, func.date(MLog.datetime).label('log_date'), MLog.log).
+            filter(MLog.datetime.cast(Date) >= recent_date).
+            order_by(MLog.contact_id, MLog.datetime)
+        )
+        logs_data = await self.db.execute(logs_query)
+
+        result = {}
+        for contact_id, log_date, log in logs_data:
+            contact = (await self.db.execute(select(MContact).where(MContact.id == contact_id))).scalar_one_or_none()
+            contact_name = contact.name
+            if contact_name:
+                if contact_name not in result:
+                    result[contact_name] = {}
+                if log_date not in result[contact_name]:
+                    result[contact_name][log_date] = []
+                result[contact_name][log_date].append(log)
+
+        return result

@@ -49,6 +49,14 @@ async def add_log_at_date(
     return await dao.create(log, date=date)
 
 
+@router.get("/last_logs")
+async def get_last_logs(
+        days_count: int = 5,
+        dao: DAOLog = Depends()
+):
+    return await dao.get_last_logs(days_count)
+
+
 @router.get("/{name}")
 async def get_all_logs(
         name: str,

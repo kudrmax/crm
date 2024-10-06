@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.contacts.search_contact_pipeline import search_contact
+from src.bot.handlers.logs.get_last_logs_pipeline import get_last_logs
 from src.bot.keyboards import main_kb, contact_profile_kb, make_row_keyboard_by_list
 from src.bot.states import ContactProfileState, AddContactState
 
@@ -35,8 +36,8 @@ async def find_contact(message: Message, state: FSMContext):
 
 
 @router.message(StateFilter(None), F.text == 'Get last logs')
-async def get_last_logs(message: Message, state: FSMContext):
-    pass
+async def get_last_logs_handler(message: Message, state: FSMContext):
+    await get_last_logs(message)
 
 
 @router.message(StateFilter(None), F.text == 'Create new contact')

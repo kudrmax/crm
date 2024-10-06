@@ -191,6 +191,24 @@ class LogHelper(RequestsHelper):
         numbers_to_log_id = response.json()['numbers_to_log_id']
         return await cls.convert_logs_to_str(logs), numbers_to_log_id
 
+    @classmethod
+    async def get_last_logs(cls):
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/last_logs',
+            RequestType.get
+        )
+        logs_dict = response.json()
+        result = []
+        for name, logs_data in logs_dict.items():
+            result.append(f'*\n{name}:*')
+            for date, logs in logs_data.items():
+                for log in logs:
+                    if log and log != "":
+                        result.append(f'— {log}')
+        text = "\n".join(result)
+        formatted_text = text.replace('.', '\.')
+        return formatted_text
+
 
 class Helper(ContactHelper, LogHelper):
     pass
