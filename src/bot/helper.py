@@ -134,23 +134,38 @@ class ContactHelper(RequestsHelper):
 
 
 class LogHelper(RequestsHelper):
+
+    @staticmethod
+    def __escape_markdown_v2(text: str) -> str:
+        return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', text)
+
+    @staticmethod
+    def __create_spoiler(text: str) -> str:
+        return '||' + text + '||'
+
     @classmethod
     async def convert_logs_to_str(cls, logs) -> str:
         result_list = []
         for data in logs:
-            result_list.append(f"\n{str(data['date'])}:")
+            date = str(data['date'])
+            date = cls.__escape_markdown_v2(date)
+            result_list.append(f"\n*{date}:*")
             for log in data['logs']:
-                result_list.append(f"— {log['number']}: {log['log']}")
-        return ('\n'.join(result_list))[-4000:]
+                log_text = cls.__escape_markdown_v2(log['log'])
+                result_list.append(f"— {log['number']}: {log_text}")
+        text = '\n'.join(result_list)
+        text = text[-4000:]
+        return cls.__create_spoiler(text)
 
     @classmethod
-    async def get_all_logs(cls, name: str) -> str:
+    async def get_all_logs(cls, name: str) -> Tuple[str, Dict[int, UUID]]:
         response = await cls.create_request(
             f'{settings.server.api_url}/logs/{name}/by_date',
             RequestType.get
         )
         logs = response.json()['data']
-        return await cls.convert_logs_to_str(logs)
+        numbers_to_log_id = response.json()['numbers_to_log_id']
+        return await cls.convert_logs_to_str(logs), numbers_to_log_id
 
     @classmethod
     async def add_log(cls, log_str: str, name: str, date: datetime.date | None = None):
@@ -183,20 +198,6 @@ class LogHelper(RequestsHelper):
         )
 
     @classmethod
-    async def get_all_logs_with_numbers(cls, name: str) -> Tuple[str, Dict[int, UUID]]:
-        response = await cls.create_request(
-            f'{settings.server.api_url}/logs/{name}/by_date',
-            RequestType.get
-        )
-        logs = response.json()['data']
-        numbers_to_log_id = response.json()['numbers_to_log_id']
-        return await cls.convert_logs_to_str(logs), numbers_to_log_id
-
-    @staticmethod
-    def __escape_markdown_v2(text: str) -> str:
-        return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', text)
-
-    @classmethod
     async def get_last_logs(cls):
         response = await cls.create_request(
             f'{settings.server.api_url}/logs/last_logs',
@@ -213,7 +214,7 @@ class LogHelper(RequestsHelper):
                         log = cls.__escape_markdown_v2(log)
                         result.append(f'— {log}')
         text = "\n".join(result)
-        return '||' + text + '||'
+        return cls.__create_spoiler(text)
 
 
 class Helper(ContactHelper, LogHelper):

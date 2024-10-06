@@ -12,7 +12,7 @@ router = Router()
 @router.message(ContactProfileState.choose_action, F.text == 'Edit logs')
 async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
-    log_str, numbers_to_log_id = await Helper.get_all_logs_with_numbers(data['name'])
+    log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
     await state.update_data(numbers_to_log_id=numbers_to_log_id)
     await message.answer(f'Logs:\n\n{log_str}')
     await message.answer(
