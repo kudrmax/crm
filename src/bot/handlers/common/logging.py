@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
-from src.bot.helper import ContactHelper
+from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list
 from src.bot.states import AddLog
 from src.errors import ContactNotFoundError
@@ -54,7 +54,7 @@ async def add_log(message: Message, state: FSMContext):
     new_log = message.text
     try:
         date = data['date'] if 'date' in data else None
-        await ContactHelper.add_log(log_str=new_log, name=data['name'], date=date)
+        await Helper.add_log(log_str=new_log, name=data['name'], date=date)
         reply_text = '✅' if not date else f'✅ on {date}'
         await message.reply(reply_text)
     except ContactNotFoundError:

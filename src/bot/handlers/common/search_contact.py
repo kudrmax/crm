@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
-from src.bot.helper import ContactHelper
+from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists
 from src.bot.states import FindContactState
 from src.errors import ContactNotFoundError
@@ -24,7 +24,7 @@ async def search_contact(
     await state.update_data(final_reply_markup=final_reply_markup)
     await state.update_data(start_reply_markup=start_reply_markup)
     print('here')
-    last_contacts = await ContactHelper.get_last_contacts()
+    last_contacts = await Helper.get_last_contacts()
     await state.update_data(last_contacts=set(last_contacts))
 
     await message.answer(
@@ -51,7 +51,7 @@ async def set_start_state(message: Message, state: FSMContext, text: str):
 
 async def set_last_state(message: Message, state: FSMContext, name: str):
     try:
-        contact_data = await ContactHelper.get_contact_data_by_name(name)
+        contact_data = await Helper.get_contact_data_by_name(name)
     except ContactNotFoundError:
         await message.answer(f"Contact with name {name} not found")
         raise
@@ -60,7 +60,7 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
     final_state = state_data.get('final_state')
     final_reply_markup = state_data.get('final_reply_markup')
 
-    contact_data_answer = await ContactHelper.print_contact_data(contact_data)
+    contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
     await message.answer(f'Contact info for {name}:')
     await message.answer(contact_data_answer, reply_markup=final_reply_markup)
     await state.update_data(name=name)
@@ -82,7 +82,7 @@ async def contact(message: Message, state: FSMContext):
         await set_last_state(message, state, name)
     else:
         await message.answer(f"Searching contact with name {name}")
-        similar_contacts = await ContactHelper.find_contact_by_name(name)
+        similar_contacts = await Helper.find_contacts_by_name(name)
         if similar_contacts is None:
             await set_start_state(message, state, 'Something went wrong. Error with similar contacts.')
         if len(similar_contacts) == 0:

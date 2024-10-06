@@ -24,8 +24,7 @@ class RequestType(str, Enum):
     delete = 'DELETE'
 
 
-class ContactHelper:
-
+class RequestsHelper:
     @classmethod
     async def create_request(self, url: str, request_type: RequestType, data_dict: Dict[str, Any] | None = None):
         response = None
@@ -40,11 +39,11 @@ class ContactHelper:
             response = requests.patch(url, data=data_json)
         elif request_type == RequestType.delete:
             response = requests.delete(url, data=data_json)
-        await self.process_errors(response)
+        await self._process_errors(response)
         return response
 
     @classmethod
-    async def process_errors(cls, response):
+    async def _process_errors(cls, response):
         if response.status_code == 200:
             return True
         if response.status_code == 500:
@@ -57,6 +56,8 @@ class ContactHelper:
             raise UnprocessableEntityError
         raise UnknownError
 
+
+class ContactHelper(RequestsHelper):
     @classmethod
     async def create_contact(cls, name: str):
         await cls.create_request(
@@ -64,18 +65,6 @@ class ContactHelper:
             RequestType.post,
             {'name': name}
         )
-
-    @classmethod
-    async def find_contact_by_name(cls, name: str) -> List[str] | None:
-        response = await cls.create_request(
-            f'{settings.server.api_url}/contacts/{name}/search',
-            RequestType.get
-        )
-
-        contacts = response.json()
-        contact_names = [contact['name'] for contact in contacts]
-        return contact_names
-
 
     @classmethod
     async def update_contact(cls, name: str, field_to_update: str, new_value: Any) -> Dict[str, str] | None:
@@ -101,23 +90,49 @@ class ContactHelper:
         }
 
     @classmethod
-    async def print_contact_data(cls, contact: Dict[str, str]) -> str:
+    async def find_contacts_by_name(cls, name: str) -> List[str] | None:
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/{name}/search',
+            RequestType.get
+        )
+
+        contacts = response.json()
+        contact_names = [contact['name'] for contact in contacts]
+        return contact_names
+
+    @classmethod
+    async def convert_contact_data_to_string(cls, contact: Dict[str, str]) -> str:
         answer = ""
         for key, value in contact.items():
             answer += f"{key}: {value}\n"
         return answer
 
     @classmethod
-    async def get_all_logs_with_numbers(cls, name: str) -> Tuple[str, Dict[int, UUID]]:
+    async def get_contact_data_by_name(cls, name: str) -> Dict[str, str] | None:
         response = await cls.create_request(
-            f'{settings.server.api_url}/logs/{name}/by_date',
-            RequestType.get
+            f'{settings.server.api_url}/contacts/{name}',
+            RequestType.get,
         )
-        logs = response.json()['data']
-        numbers_to_log_id = response.json()['numbers_to_log_id']
-        return await cls.convert_logs_to_str(logs), numbers_to_log_id
+        contact = response.json()
+        return contact
+
+    @classmethod
+    async def delete_contact(cls, name: str):
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/{name}',
+            RequestType.delete,
+        )
+
+    @classmethod
+    async def get_last_contacts(cls):
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/get_last_contacts',
+            RequestType.get,
+        )
+        return [contact['name'] for contact in response.json()]
 
 
+class LogHelper(RequestsHelper):
     @classmethod
     async def convert_logs_to_str(cls, logs) -> str:
         result_list = []
@@ -167,25 +182,15 @@ class ContactHelper:
         )
 
     @classmethod
-    async def get_contact_data_by_name(cls, name: str) -> Dict[str, str] | None:
+    async def get_all_logs_with_numbers(cls, name: str) -> Tuple[str, Dict[int, UUID]]:
         response = await cls.create_request(
-            f'{settings.server.api_url}/contacts/{name}',
-            RequestType.get,
+            f'{settings.server.api_url}/logs/{name}/by_date',
+            RequestType.get
         )
-        contact = response.json()
-        return contact
+        logs = response.json()['data']
+        numbers_to_log_id = response.json()['numbers_to_log_id']
+        return await cls.convert_logs_to_str(logs), numbers_to_log_id
 
-    @classmethod
-    async def delete(cls, name: str):
-        response = await cls.create_request(
-            f'{settings.server.api_url}/contacts/{name}',
-            RequestType.delete,
-        )
 
-    @classmethod
-    async def get_last_contacts(cls):
-        response = await cls.create_request(
-            f'{settings.server.api_url}/contacts/get_last_contacts',
-            RequestType.get,
-        )
-        return [contact['name'] for contact in response.json()]
+class Helper(ContactHelper, LogHelper):
+    pass

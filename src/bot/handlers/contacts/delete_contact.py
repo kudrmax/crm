@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.menu_main import make_main_menu_kb
-from src.bot.helper import ContactHelper
+from src.bot.helper import Helper
 from src.bot.keyboards import make_contact_profile_kb
 from src.bot.states import DeleteContactState, ContactProfileState
 from src.errors import ContactNotFoundError
@@ -27,7 +27,7 @@ async def delete(message: Message, state: FSMContext):
         return
     else:
         try:
-            await ContactHelper.delete(name)
+            await Helper.delete_contact(name)
             await message.answer(f"Contact with name {name} was deleted.", reply_markup=make_main_menu_kb())
             await state.clear()
         except ContactNotFoundError:

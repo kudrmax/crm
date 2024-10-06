@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from src.bot.helper import ContactHelper
+from src.bot.helper import Helper
 from src.bot.keyboards import make_contact_profile_kb, make_edit_contact_kb, contact_fields
 from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError, ContactAlreadyExistsError, UnprocessableEntityError, AlreadyExistsError, \
@@ -15,12 +15,12 @@ router = Router()
 async def choose_action(message: Message, state: FSMContext):
     name = (await state.get_data()).get('name')
     try:
-        contact_data = await ContactHelper.get_contact_data_by_name(name)
+        contact_data = await Helper.get_contact_data_by_name(name)
     except ContactNotFoundError:
         await message.answer(f"Contact with name {name} not found")
         raise
 
-    contact_for_print = await ContactHelper.print_contact_data(contact_data)
+    contact_for_print = await Helper.convert_contact_data_to_string(contact_data)
     await message.answer(
         f'Updated contact {name}\n' + contact_for_print,
         reply_markup=make_contact_profile_kb(),
@@ -46,7 +46,7 @@ async def update_field_value(message: Message, state: FSMContext):
     name = user_data.get('name')
     new_data = message.text
     try:
-        updated_data = await ContactHelper.update_contact(name, field_to_update, new_data)
+        updated_data = await Helper.update_contact(name, field_to_update, new_data)
         if field_to_update == 'name':
             await state.update_data(name=message.text)
         await message.answer(

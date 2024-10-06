@@ -3,7 +3,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.helper import ContactHelper
+from src.bot.helper import Helper
 from src.bot.keyboards import make_contacts_menu_kb, make_row_keyboard_by_list
 from src.bot.states import AddContactState
 from src.errors import ContactAlreadyExistsError
@@ -33,7 +33,7 @@ async def cancel(message: Message, state: FSMContext):
 async def set_name(message: Message, state: FSMContext):
     name = message.text
     try:
-        await ContactHelper.create_contact(name)
+        await Helper.create_contact(name)
         await message.answer(
             f'Contact {name} was added',
             reply_markup=make_contacts_menu_kb()
