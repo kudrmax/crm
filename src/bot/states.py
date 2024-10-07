@@ -33,3 +33,7 @@ class AddLog(StatesGroup):
 
 class DeleteContactState(StatesGroup):
     waiting_confirmation = State()
+
+
+class StatsState(StatesGroup):
+    menu = State()

@@ -12,7 +12,7 @@ async def get_logs(message: Message, state: FSMContext, name: str | None = None)
         name = data.get('name')
     try:
         all_logs, _ = await Helper.get_all_logs(name)
-        if not all_logs or all_logs == "":
+        if Helper.text_is_empty(all_logs):
             await message.answer(f'There is no logs for {name}')
             return
         await message.answer(f'Logs for {name}:')
