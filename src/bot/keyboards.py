@@ -31,7 +31,7 @@ def main_kb():
         'Find contact',
         'Get last logs',
         'Create new contact',
-        'Get stats ❌',
+        'Stats',
     ])
 
 
@@ -55,6 +55,13 @@ def edit_contact_kb():
     return make_keyboard_by_lists([
         *[[w.capitalize()] for w in contact_fields],
         ['Finish'],
+    ])
+
+
+def stats_kb():
+    return make_keyboard_by_lists([
+        ['Get all contacts'],
+        ['Go to main menu']
     ])
 
 

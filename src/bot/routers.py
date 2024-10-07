@@ -13,6 +13,8 @@ from src.bot.handlers.contacts.search_contact_pipeline import router as search_c
 from src.bot.handlers.logs.edit_logs_pipeline import router as edit_logs_pipeline
 from src.bot.handlers.logs.logging_pipeline import router as logging_pipeline
 
+from src.bot.handlers.stats.get_all_contacts import router as get_all_contacts_pipeline
+
 router = Router()
 
 router.include_routers(
@@ -25,4 +27,5 @@ router.include_routers(
     search_contact_pipeline,
     edit_logs_pipeline,
     logging_pipeline,
+    get_all_contacts_pipeline
 )

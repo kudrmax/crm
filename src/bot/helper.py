@@ -58,7 +58,19 @@ class RequestsHelper:
         raise UnknownError
 
 
-class ContactHelper(RequestsHelper):
+class TelegramHelper:
+    @staticmethod
+    def _escape_markdown_v2(text: str | None = None) -> str:
+        if not text:
+            return text
+        return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', text)
+
+    @staticmethod
+    def _create_spoiler(text: str) -> str:
+        return '||' + text + '||'
+
+
+class ContactHelper(RequestsHelper, TelegramHelper):
     @classmethod
     async def create_contact(cls, name: str):
         await cls.create_request(
@@ -132,30 +144,44 @@ class ContactHelper(RequestsHelper):
         )
         return [contact['name'] for contact in response.json()]
 
+    @classmethod
+    async def get_all_contacts(cls) -> str:
+        response = await cls.create_request(
+            f'{settings.server.api_url}/contacts/',
+            RequestType.get,
+        )
+        contacts = response.json()
+        res = []
+        for contact in contacts:
+            name = cls._escape_markdown_v2(contact['name'])
+            telegram = cls._escape_markdown_v2(contact['telegram'])
+            row = f'— {name} \({telegram}\)' if telegram else f'— {name}'
+            res.append(row)
+        text = "\n".join(sorted(res))
+        return text
 
-class LogHelper(RequestsHelper):
+
+class LogHelper(RequestsHelper, TelegramHelper):
 
     @staticmethod
-    def __escape_markdown_v2(text: str) -> str:
-        return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', text)
-
-    @staticmethod
-    def __create_spoiler(text: str) -> str:
-        return '||' + text + '||'
+    def text_is_empty(text: str) -> bool:
+        if not text or text == "" or text == '||||':
+            return True
+        return False
 
     @classmethod
     async def convert_logs_to_str(cls, logs) -> str:
         result_list = []
         for data in logs:
             date = str(data['date'])
-            date = cls.__escape_markdown_v2(date)
+            date = cls._escape_markdown_v2(date)
             result_list.append(f"\n*{date}:*")
             for log in data['logs']:
-                log_text = cls.__escape_markdown_v2(log['log'])
+                log_text = cls._escape_markdown_v2(log['log'])
                 result_list.append(f"— {log['number']}: {log_text}")
         text = '\n'.join(result_list)
         text = text[-4000:]
-        return cls.__create_spoiler(text)
+        return cls._create_spoiler(text)
 
     @classmethod
     async def get_all_logs(cls, name: str) -> Tuple[str, Dict[int, UUID]]:
@@ -206,15 +232,15 @@ class LogHelper(RequestsHelper):
         logs_dict = response.json()
         result = []
         for name, logs_data in logs_dict.items():
-            name = cls.__escape_markdown_v2(name)
+            name = cls._escape_markdown_v2(name)
             result.append(f'*\n{name}:*')
             for date, logs in logs_data.items():
                 for log in logs:
                     if log and log != "":
-                        log = cls.__escape_markdown_v2(log)
+                        log = cls._escape_markdown_v2(log)
                         result.append(f'— {log}')
         text = "\n".join(result)
-        return cls.__create_spoiler(text)
+        return cls._create_spoiler(text)
 
 
 class Helper(ContactHelper, LogHelper):

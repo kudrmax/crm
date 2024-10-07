@@ -5,8 +5,8 @@ from aiogram.types import Message
 
 from src.bot.handlers.contacts.search_contact_pipeline import search_contact
 from src.bot.handlers.logs.get_last_logs_pipeline import get_last_logs
-from src.bot.keyboards import main_kb, contact_profile_kb, make_row_keyboard_by_list
-from src.bot.states import ContactProfileState, AddContactState
+from src.bot.keyboards import main_kb, contact_profile_kb, make_row_keyboard_by_list, make_keyboard_by_lists, stats_kb
+from src.bot.states import ContactProfileState, AddContactState, StatsState
 
 router = Router()
 
@@ -47,3 +47,12 @@ async def create_contact(message: Message, state: FSMContext):
         reply_markup=make_row_keyboard_by_list(['Cancel'])
     )
     await state.set_state(AddContactState.name)
+
+
+@router.message(StateFilter(None), F.text == 'Stats')
+async def get_stats(message: Message, state: FSMContext):
+    await state.set_state(StatsState.menu)
+    await message.answer(
+        'Choose option:',
+        reply_markup=stats_kb()
+    )
