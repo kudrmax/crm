@@ -242,6 +242,23 @@ class LogHelper(RequestsHelper, TelegramHelper):
         text = "\n".join(result)
         return cls._create_spoiler(text)
 
+    @classmethod
+    async def edit_log_text(cls, log_id: UUID, new_text: str):
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/edit/{log_id}',
+            RequestType.put,
+            {'log': new_text}
+        )
+
+    @classmethod
+    async def edit_log_date(cls, log_id: UUID, new_date: str):
+        new_date: datetime.date = None
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/edit/{log_id}/by_date',
+            RequestType.put,
+            {'date': new_date}
+        )
+
 
 class Helper(ContactHelper, LogHelper):
     pass
