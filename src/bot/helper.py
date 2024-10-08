@@ -27,15 +27,21 @@ class RequestType(str, Enum):
 
 class RequestsHelper:
     @classmethod
-    async def create_request(self, url: str, request_type: RequestType, data_dict: Dict[str, Any] | None = None):
+    async def create_request(
+            self,
+            url: str,
+            request_type: RequestType,
+            data: Dict[str, Any] | None = None,
+            params: Dict[str, Any] | None = None,
+    ):
         response = None
-        data_json = json.dumps(data_dict) if data_dict else None
+        data_json = json.dumps(data) if data else None
         if request_type == RequestType.get:
             response = requests.get(url)
         elif request_type == RequestType.post:
             response = requests.post(url, data=data_json)
         elif request_type == RequestType.put:
-            response = requests.put(url, data=data_json)
+            response = requests.put(url, data=data_json, params=params)
         elif request_type == RequestType.patch:
             response = requests.patch(url, data=data_json)
         elif request_type == RequestType.delete:
@@ -252,11 +258,10 @@ class LogHelper(RequestsHelper, TelegramHelper):
 
     @classmethod
     async def edit_log_date(cls, log_id: UUID, new_date: str):
-        new_date: datetime.date = None
         response = await cls.create_request(
             f'{settings.server.api_url}/logs/edit/{log_id}/by_date',
             RequestType.put,
-            {'date': new_date}
+            params={'date': new_date}
         )
 
 

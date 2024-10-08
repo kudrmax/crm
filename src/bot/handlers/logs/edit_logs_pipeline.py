@@ -6,6 +6,7 @@ from aiogram.types import Message
 from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb, contact_profile_kb
 from src.bot.states import EditLogsState, ContactProfileState
+from src.errors import UnprocessableEntityError
 
 router = Router()
 
@@ -15,7 +16,8 @@ async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
     log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
     await state.update_data(numbers_to_log_id=numbers_to_log_id)
-    await message.answer(f'Logs:\n\n{log_str}', parse_mode=ParseMode.MARKDOWN_V2)
+    await message.answer(f'Logs:', parse_mode=ParseMode.MARKDOWN_V2)
+    await message.answer(log_str, parse_mode=ParseMode.MARKDOWN_V2)
     await message.answer(
         'Type number of log to edit:',
         reply_markup=make_row_keyboard_by_list(['Cancel'])
@@ -85,11 +87,15 @@ async def new_date(message: Message, state: FSMContext):
     new_date = message.text
     data = await state.get_data()
     log_id = data['log_id']
-    await Helper.edit_log_date(log_id=log_id, new_date=new_date)
-    await message.answer(
-        f'Date was edited successfully.',
-        reply_markup=contact_profile_kb()
-    )
-    await state.update_data(numbers_to_log_id=None)
-    await state.update_data(log_id=None)
-    await state.set_state(ContactProfileState.choose_action)
+    try:
+        await Helper.edit_log_date(log_id=log_id, new_date=new_date)
+    except UnprocessableEntityError:
+        await message.answer(f'A date should be in the format "YYYY-MM-DD". Type another date:')
+    else:
+        await message.answer(
+            f'Date was edited successfully.',
+            reply_markup=contact_profile_kb()
+        )
+        await state.update_data(numbers_to_log_id=None)
+        await state.update_data(log_id=None)
+        await state.set_state(ContactProfileState.choose_action)
