@@ -25,6 +25,13 @@ async def edit_logs_handler(message: Message, state: FSMContext):
     await state.set_state(EditLogsState.typing_number)
 
 
+@router.message(ContactProfileState.choose_action, F.text == 'Cancel')
+async def cancel(message: Message, state: FSMContext):
+    await state.update_data(numbers_to_log_id=None)
+    await message.answer(f'Canceled', reply_markup=contact_profile_kb())
+    await state.set_state(ContactProfileState.choose_action)
+
+
 @router.message(EditLogsState.typing_number, F.text == 'Cancel')
 async def cancel(message: Message, state: FSMContext):
     await state.update_data(numbers_to_log_id=None)
