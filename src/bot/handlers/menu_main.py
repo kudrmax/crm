@@ -49,7 +49,7 @@ async def create_contact(message: Message, state: FSMContext):
     await state.set_state(AddContactState.name)
 
 
-@router.message(StateFilter(None), F.text.lower().contains('Stats'))
+@router.message(StateFilter(None), F.text.lower().contains('stats'))
 async def get_stats(message: Message, state: FSMContext):
     await state.set_state(StatsState.menu)
     await message.answer(

@@ -15,6 +15,7 @@ from src.bot.handlers.logs.edit_logs_pipeline import router as edit_logs_pipelin
 from src.bot.handlers.logs.logging_pipeline import router as logging_pipeline
 
 from src.bot.handlers.stats.get_all_contacts import router as get_all_contacts_pipeline
+from src.bot.handlers.stats.who import router as who
 
 router = Router()
 
@@ -29,5 +30,6 @@ router.include_routers(
     edit_logs_pipeline,
     logging_pipeline,
     get_all_contacts_pipeline,
-    delete_log_pipeline
+    delete_log_pipeline,
+    who,
 )
