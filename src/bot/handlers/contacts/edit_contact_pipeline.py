@@ -11,7 +11,7 @@ from src.errors import ContactNotFoundError, ContactAlreadyExistsError, Unproces
 router = Router()
 
 
-@router.message(EditContactState.choose_what_edit, F.text == 'Finish')
+@router.message(EditContactState.choose_what_edit, F.text.lower().contains('finish'))
 async def choose_action(message: Message, state: FSMContext):
     name = (await state.get_data()).get('name')
     try:

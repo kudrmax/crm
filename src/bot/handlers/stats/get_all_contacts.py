@@ -10,7 +10,7 @@ from src.bot.states import StatsState
 router = Router()
 
 
-@router.message(StatsState.menu, F.text == 'Get all contacts')
+@router.message(StatsState.menu, F.text.lower().contains('get all contacts'))
 async def get_all_contacts(message: Message, state: FSMContext):
     text = await Helper.get_all_contacts()
     await message.answer(text, parse_mode=ParseMode.MARKDOWN_V2)

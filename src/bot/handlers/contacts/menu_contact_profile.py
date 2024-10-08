@@ -13,17 +13,17 @@ from src.errors import ContactNotFoundError
 router = Router()
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Get logs ⬇️')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('get logs'))
 async def get_logs_handler(message: Message, state: FSMContext):
     await get_logs(message, state)
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Я')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('я'))
 async def get_logs_handler(message: Message, state: FSMContext):
     await get_logs(message, state, name='Я')
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Start logging ⬆️')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('start logging'))
 async def add_log(message: Message, state: FSMContext):
     await get_logs(message, state)
     await start_logging(
@@ -34,7 +34,7 @@ async def add_log(message: Message, state: FSMContext):
     )
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Add empty log')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('add empty log'))
 async def add_empty_log(message: Message, state: FSMContext):
     data = await state.get_data()
     try:
@@ -45,7 +45,7 @@ async def add_empty_log(message: Message, state: FSMContext):
         raise
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Edit contact')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('edit contact'))
 async def edit_contact(message: Message, state: FSMContext):
     await message.answer(
         'Choose what to edit:',
@@ -54,7 +54,7 @@ async def edit_contact(message: Message, state: FSMContext):
     await state.set_state(EditContactState.choose_what_edit)
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Delete contact')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('delete contact'))
 async def delete_contact(message: Message, state: FSMContext):
     data = await state.get_data()
     name = data['name']
@@ -65,7 +65,7 @@ async def delete_contact(message: Message, state: FSMContext):
     )
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Go to main menu')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('go to main menu'))
 async def main_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(

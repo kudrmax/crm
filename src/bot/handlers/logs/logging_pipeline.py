@@ -28,20 +28,20 @@ async def start_logging(
     await state.set_state(AddLog.logging)
 
 
-@router.message(AddLog.logging, F.text == 'Set date to yesterday')
+@router.message(AddLog.logging, F.text.lower().contains('set date to yesterday'))
 async def set_date_to_yesterday(message: Message, state: FSMContext):
     date = datetime.date.today() - datetime.timedelta(days=1)
     await state.update_data(date=date)
     await message.answer('Date was set to yesterday')
 
 
-@router.message(AddLog.logging, F.text == 'Set date to today')
+@router.message(AddLog.logging, F.text.lower().contains('set date to today'))
 async def set_date_to_today(message: Message, state: FSMContext):
     await state.update_data(date=None)
     await message.answer('Date was set to today')
 
 
-@router.message(AddLog.logging, F.text == 'Stop logging')
+@router.message(AddLog.logging, F.text.lower().contains('stop logging'))
 async def stop_logging(message: Message, state: FSMContext):
     data = await state.get_data()
     await state.update_data(date=None)

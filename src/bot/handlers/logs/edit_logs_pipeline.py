@@ -11,7 +11,7 @@ from src.errors import UnprocessableEntityError
 router = Router()
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Edit log')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('edit log'))
 async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
     log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
@@ -25,14 +25,14 @@ async def edit_logs_handler(message: Message, state: FSMContext):
     await state.set_state(EditLogsState.typing_number)
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Cancel')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('cancel'))
 async def cancel(message: Message, state: FSMContext):
     await state.update_data(numbers_to_log_id=None)
     await message.answer(f'Canceled', reply_markup=contact_profile_kb())
     await state.set_state(ContactProfileState.choose_action)
 
 
-@router.message(EditLogsState.typing_number, F.text == 'Cancel')
+@router.message(EditLogsState.typing_number, F.text.lower().contains('cancel'))
 async def cancel(message: Message, state: FSMContext):
     await state.update_data(numbers_to_log_id=None)
     await message.answer(f'Canceled', reply_markup=contact_profile_kb())
@@ -56,7 +56,7 @@ async def choose_number(message: Message, state: FSMContext):
     await state.set_state(EditLogsState.choose_what_to_edit)
 
 
-@router.message(EditLogsState.choose_what_to_edit, F.text == 'Edit text')
+@router.message(EditLogsState.choose_what_to_edit, F.text.lower().contains('edit text'))
 async def edit_text(message: Message, state: FSMContext):
     await message.answer(
         f'Type new text:',
@@ -80,7 +80,7 @@ async def new_text(message: Message, state: FSMContext):
     await state.set_state(ContactProfileState.choose_action)
 
 
-@router.message(EditLogsState.choose_what_to_edit, F.text == 'Edit date')
+@router.message(EditLogsState.choose_what_to_edit, F.text.lower().contains('edit date'))
 async def edit_date(message: Message, state: FSMContext):
     await message.answer(
         f'Type new date:',

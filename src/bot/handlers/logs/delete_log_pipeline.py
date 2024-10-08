@@ -11,7 +11,7 @@ from src.errors import UnprocessableEntityError, NotFoundError
 router = Router()
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Delete log')
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('delete log'))
 async def delete_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
     log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
@@ -25,7 +25,7 @@ async def delete_logs_handler(message: Message, state: FSMContext):
     await state.set_state(DeleteLogsState.typing_number)
 
 
-@router.message(DeleteLogsState.typing_number, F.text == 'Cancel')
+@router.message(DeleteLogsState.typing_number, F.text.lower().contains('cancel'))
 async def cancel(message: Message, state: FSMContext):
     await state.update_data(numbers_to_log_id=None)
     await message.answer(f'Canceled', reply_markup=contact_profile_kb())

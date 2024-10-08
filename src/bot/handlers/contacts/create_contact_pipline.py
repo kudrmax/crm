@@ -11,7 +11,7 @@ from src.errors import ContactAlreadyExistsError, AlreadyExistsError
 router = Router()
 
 
-@router.message(AddContactState.name, F.text == 'Cancel')
+@router.message(AddContactState.name, F.text.lower().contains('сancel'))
 async def cancel(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(

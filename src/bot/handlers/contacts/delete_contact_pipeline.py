@@ -10,7 +10,7 @@ from src.errors import ContactNotFoundError
 router = Router()
 
 
-@router.message(DeleteContactState.waiting_confirmation, F.text == 'Cancel')
+@router.message(DeleteContactState.waiting_confirmation, F.text.lower().contains('сancel'))
 async def choose_action(message: Message, state: FSMContext):
     await message.answer("Canceled", reply_markup=contact_profile_kb())
     await state.set_state(ContactProfileState.choose_action)

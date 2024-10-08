@@ -67,7 +67,7 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
     await state.set_state(final_state)
 
 
-@router.message(FindContactState.typing_name, F.text == 'Cancel')
+@router.message(FindContactState.typing_name, F.text.lower().contains('cancel'))
 async def cancel(message: Message, state: FSMContext):
     await set_start_state(message, state, 'Canceled')
 
@@ -96,7 +96,7 @@ async def contact(message: Message, state: FSMContext):
         await state.set_state(FindContactState.choosing_name_from_list)
 
 
-@router.message(FindContactState.choosing_name_from_list, F.text == 'Cancel')
+@router.message(FindContactState.choosing_name_from_list, F.text.lower().contains('cancel'))
 async def cancel(message: Message, state: FSMContext):
     await set_start_state(message, state, 'Canceled')
 
