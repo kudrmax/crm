@@ -121,10 +121,23 @@ class ContactHelper(RequestsHelper, TelegramHelper):
 
     @classmethod
     async def convert_contact_data_to_string(cls, contact: Dict[str, str]) -> str:
-        answer = ""
-        for key, value in contact.items():
-            answer += f"{key}: {value}\n"
-        return answer
+        result = [
+            f"*{cls._escape_markdown_v2(contact['name'])}*",
+            ""
+        ]
+        if contact['telegram']:
+            telegram = contact['telegram']
+            telegram = cls._escape_markdown_v2(telegram)
+            result.append(f"✈️ Telegram: {telegram}")
+        if contact['phone']:
+            phone = contact['phone']
+            phone = cls._escape_markdown_v2(phone)
+            result.append(f"📞 Phone: {phone}")
+        if contact['birthday']:
+            birthday = contact['birthday']
+            birthday = cls._escape_markdown_v2(birthday)
+            result.append(f"🎉 Birthday: {birthday}")
+        return "\n".join(result)
 
     @classmethod
     async def get_contact_data_by_name(cls, name: str) -> Dict[str, str] | None:
@@ -187,6 +200,8 @@ class LogHelper(RequestsHelper, TelegramHelper):
                 result_list.append(f"— {log['number']}: {log_text}")
         text = '\n'.join(result_list)
         text = text[-4000:]
+        if len(text) > 0 and text[0] == '\n':
+            text = text[1:]
         return cls._create_spoiler(text)
 
     @classmethod
@@ -270,6 +285,10 @@ class LogHelper(RequestsHelper, TelegramHelper):
             f'{settings.server.api_url}/logs/{log_id}',
             RequestType.delete
         )
+
+    @classmethod
+    def create_str_for_logs(self, all_logs: str, name: str) -> str:
+        return f'📋 Logs for *{Helper._escape_markdown_v2(name)}*:\n\n{all_logs}'
 
 
 class Helper(ContactHelper, LogHelper):

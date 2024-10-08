@@ -14,10 +14,13 @@ router = Router()
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('edit log'))
 async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
+    name = data['name']
     log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
+    if Helper.text_is_empty(log_str):
+        await message.answer(f'👎🏻 There is no logs for {name}')
+        return
     await state.update_data(numbers_to_log_id=numbers_to_log_id)
-    await message.answer(f'Logs:', parse_mode=ParseMode.MARKDOWN_V2)
-    await message.answer(log_str, parse_mode=ParseMode.MARKDOWN_V2)
+    await message.answer(Helper.create_str_for_logs(log_str, name), parse_mode=ParseMode.MARKDOWN_V2)
     await message.answer(
         'Type number of log to edit:',
         reply_markup=make_row_keyboard_by_list(['Cancel'])

@@ -1,4 +1,5 @@
 from aiogram import F, Router
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
@@ -61,8 +62,7 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
     final_reply_markup = state_data.get('final_reply_markup')
 
     contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
-    await message.answer(f'Contact info for {name}:')
-    await message.answer(contact_data_answer, reply_markup=final_reply_markup)
+    await message.answer(contact_data_answer, reply_markup=final_reply_markup, parse_mode=ParseMode.MARKDOWN_V2)
     await state.update_data(name=name)
     await state.set_state(final_state)
 
