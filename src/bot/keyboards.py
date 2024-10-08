@@ -28,14 +28,14 @@ def make_keyboard_by_lists(items: list[list[str]]) -> ReplyKeyboardMarkup:
 
 def main_kb():
     return make_keyboard_by_lists([
-        ['Find contact 🔎', 'Last logs ⬇️'],
-        ['New contact 🆕', 'Stats 📈']
+        ['Find contact 🔎', 'Last logs 📋'],
+        ['New contact 👤', 'Stats 📈']
     ])
 
 
 def contact_profile_kb():
     return make_keyboard_by_lists([
-        ['Start logging 📥', 'Get logs ⬇️', 'Я'],
+        ['Start logging 📥', 'Get logs 📋️', 'Profile 👤', 'Я'],
         ['Edit log ✍🏻', 'Delete log 🗑️', 'Add empty log 👉🏻'],
         ['Edit contact ✍🏻', 'Delete contact 🗑️', 'Go to main menu 🚪']
     ])

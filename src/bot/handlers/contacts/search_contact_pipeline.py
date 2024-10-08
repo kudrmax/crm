@@ -24,7 +24,6 @@ async def search_contact(
     await state.update_data(start_state=start_state)
     await state.update_data(final_reply_markup=final_reply_markup)
     await state.update_data(start_reply_markup=start_reply_markup)
-    print('here')
     last_contacts = await Helper.get_last_contacts()
     await state.update_data(last_contacts=set(last_contacts))
 
@@ -62,7 +61,11 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
     final_reply_markup = state_data.get('final_reply_markup')
 
     contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
-    await message.answer(contact_data_answer, reply_markup=final_reply_markup, parse_mode=ParseMode.MARKDOWN_V2)
+    await message.answer(
+        contact_data_answer,
+        reply_markup=final_reply_markup,
+        parse_mode=ParseMode.MARKDOWN_V2
+    )
     await state.update_data(name=name)
     await state.set_state(final_state)
 
