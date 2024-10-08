@@ -1,5 +1,10 @@
-class NotFoundError(Exception):
-    pass
+from fastapi import HTTPException
+
+
+class NotFoundError(HTTPException):
+    def __init__(self):
+        self.status_code = 404
+        self.detail = "Item not found"
 
 
 class AlreadyExistsError(Exception):
