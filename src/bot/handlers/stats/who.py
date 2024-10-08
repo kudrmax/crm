@@ -13,4 +13,4 @@ router = Router()
 @router.message(StatsState.menu, F.text.lower().contains('who'))
 async def who(message: Message, state: FSMContext):
     text = await Helper.get_days_count_since_last_interaction()
-    await message.answer(text)
+    await message.answer(text, parse_mode=ParseMode.MARKDOWN_V2)

@@ -290,8 +290,25 @@ class StatsHelper(RequestsHelper, TelegramHelper):
 
     @classmethod
     async def get_days_count_since_last_interaction(cls):
+        def add_title(day_count: int, result: List[str]) -> None:
+            class Types(str, Enum):
+                recent = '*Recent:*'
+                average = '*Average:*'
+                long = '*Long*:'
+
+            result_set = set(result)
+            if day_count < 7 and Types.recent not in result_set:
+                result.append("")
+                result.append(Types.recent)
+            elif 7 <= day_count < 30 and Types.average not in result_set:
+                result.append("")
+                result.append(Types.average)
+            elif 30 <= day_count and Types.long not in result_set:
+                result.append("")
+                result.append(Types.long)
+
         response = await cls.create_request(
-            f'{settings.server.api_url}/stats/get_days_count_since_last_interaction',
+            f'{settings.server.api_url}/stats/days_count_since_last_interaction',
             RequestType.get
         )
         contacts_with_days: List[Tuple[str, int]] = []
@@ -303,8 +320,9 @@ class StatsHelper(RequestsHelper, TelegramHelper):
 
         result: List[str] = []
         for name, day_count in contacts_with_days:
-            telegram = cls._get_telegram_by_name(name)
-            result.append(f"— {day_count} days: {name} ({telegram})")
+            add_title(day_count, result)
+            telegram = await cls._get_telegram_by_name(name)
+            result.append(f"— {day_count} days: {cls._escape_markdown_v2(name)} \({cls._escape_markdown_v2(telegram)}\)")
 
         return "\n".join(result)
 
