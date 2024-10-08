@@ -50,7 +50,11 @@ async def update_field_value(message: Message, state: FSMContext):
         if field_to_update == 'name':
             await state.update_data(name=message.text)
         await message.answer(
-            f'You changed filed "{updated_data['field']}" from "{updated_data['old_value']}" to "{updated_data['new_value']}"',
+            "\n".join([
+                f"Field: {updated_data['field']}",
+                f"Old value: {updated_data['old_value']}",
+                f"New value: {updated_data['new_value']}",
+            ]),
             reply_markup=edit_contact_kb()
         )
         await state.set_state(EditContactState.choose_what_edit)
