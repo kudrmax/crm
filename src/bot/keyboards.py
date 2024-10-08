@@ -59,6 +59,13 @@ def edit_contact_kb():
         ['Finish ✅'],
     ])
 
+# def edit_contact_kb():
+#     return make_keyboard_by_lists([
+#         ['name', 'telegram'],
+#         ['phone', 'birthday'],
+#         ['Finish ✅'],
+#     ])
+
 
 def stats_kb():
     return make_keyboard_by_lists([
