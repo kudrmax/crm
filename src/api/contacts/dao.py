@@ -37,12 +37,20 @@ class DAOContact(DAO):
         return m_contact
 
     async def update(self, name: str, update_contact: SContactUpdate) -> MContact:
+        def add_dog_to_telegram(text: str) -> str:
+            text = text.strip()
+            if len(text) > 0 and text[0] != '@':
+                return f'@{text}'
+            return text
+
         if update_contact.name:
             if await self.get_one_or_none_with_filter(name=update_contact.name):
                 raise ContactAlreadyExistsError(name=update_contact.name)
         m_contact = await self.get_one_or_none_with_filter(name=name)
         if not m_contact:
             raise ContactNotFoundError(name=name)
+        if update_contact.telegram is not None:
+            update_contact.telegram = add_dog_to_telegram(update_contact.telegram)
         for key, val in update_contact.model_dump(exclude_unset=True).items():
             setattr(m_contact, key, val)
         await self.db.commit()
