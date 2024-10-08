@@ -32,6 +32,9 @@ async def edit_logs_handler(message: Message, state: FSMContext):
 
 async def cancel_func(message: Message, state: FSMContext):
     await state.update_data(numbers_to_log_id=None)
+    await state.update_data(log_id=None)
+    await state.update_data(old_log_date=None)
+    await state.update_data(old_log_text=None)
     await message.answer(f'Canceled', reply_markup=contact_profile_kb())
     await state.set_state(ContactProfileState.choose_action)
 
@@ -76,6 +79,8 @@ async def choose_number(message: Message, state: FSMContext):
     log_datetime = log['datetime']
     dt = datetime.datetime.fromisoformat(log_datetime)
     log_date = dt.strftime("%Y-%m-%d")
+    await state.update_data(old_log_text=log_text)
+    await state.update_data(old_log_date=log_date)
     await message.answer(
         f"Log to edit:\n\n— Text: `{Helper._escape_markdown_v2(log_text)}`\n— Date: `{Helper._escape_markdown_v2(log_date)}`",
         parse_mode=ParseMode.MARKDOWN_V2
@@ -101,9 +106,15 @@ async def new_text(message: Message, state: FSMContext):
     new_text = message.text
     data = await state.get_data()
     log_id = data['log_id']
+    data =await state.get_data()
     await Helper.edit_log_text(log_id=log_id, new_text=new_text)
     await message.answer(
-        f'Text was edited successfully.',
+        "\n".join([
+            f"Text was edited successfully.",
+            f"",
+            f"Old text: {data['old_log_text']}",
+            f"New text: {new_text}",
+        ]),
         reply_markup=contact_profile_kb()
     )
     await state.update_data(numbers_to_log_id=None)
@@ -131,9 +142,17 @@ async def new_date(message: Message, state: FSMContext):
         await message.answer(f'A date should be in the format "YYYY-MM-DD". Type another date:')
     else:
         await message.answer(
-            f'Date was edited successfully.',
+        "\n".join([
+            f"Date was edited successfully.",
+            f"",
+            f"Old date: {data['old_log_date']}",
+            f"New date: {new_date}",
+
+        ]),
             reply_markup=contact_profile_kb()
         )
         await state.update_data(numbers_to_log_id=None)
         await state.update_data(log_id=None)
+        await state.update_data(old_log_date=None)
+        await state.update_data(old_log_text=None)
         await state.set_state(ContactProfileState.choose_action)
