@@ -1,6 +1,7 @@
 from typing import List
 
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
 def make_row_keyboard_by_list(items: list[str]) -> ReplyKeyboardMarkup:
@@ -51,7 +52,8 @@ def edit_log_kb():
 
 def edit_contact_kb():
     return make_keyboard_by_lists([
-        *[[w.capitalize()] for w in contact_fields],
+        ['Name 👤', 'Telegram ✈️'],
+        ['Phone 📞', 'Birthday 📆'],
         ['Finish ✅'],
     ])
 
