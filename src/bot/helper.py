@@ -37,15 +37,15 @@ class RequestsHelper:
         response = None
         data_json = json.dumps(data) if data else None
         if request_type == RequestType.get:
-            response = requests.get(url)
+            response = requests.get(url, params=params)
         elif request_type == RequestType.post:
-            response = requests.post(url, data=data_json)
+            response = requests.post(url, data=data_json, params=params)
         elif request_type == RequestType.put:
             response = requests.put(url, data=data_json, params=params)
         elif request_type == RequestType.patch:
-            response = requests.patch(url, data=data_json)
+            response = requests.patch(url, data=data_json, params=params)
         elif request_type == RequestType.delete:
-            response = requests.delete(url, data=data_json)
+            response = requests.delete(url, data=data_json, params=params)
         await self._process_errors(response)
         return response
 
@@ -257,11 +257,18 @@ class LogHelper(RequestsHelper, TelegramHelper):
         )
 
     @classmethod
-    async def edit_log_date(cls, log_id: UUID, new_date: str):
+    async def edit_log_date(cls, log_id: int, new_date: str):
         response = await cls.create_request(
             f'{settings.server.api_url}/logs/edit/{log_id}/by_date',
             RequestType.put,
             params={'date': new_date}
+        )
+
+    @classmethod
+    async def delete_log(cls, log_id: int):
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/{log_id}',
+            RequestType.delete
         )
 
 

@@ -11,7 +11,7 @@ from src.errors import UnprocessableEntityError
 router = Router()
 
 
-@router.message(ContactProfileState.choose_action, F.text == 'Edit logs')
+@router.message(ContactProfileState.choose_action, F.text == 'Edit log')
 async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
     log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])

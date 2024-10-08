@@ -38,7 +38,7 @@ def main_kb():
 def contact_profile_kb():
     return make_keyboard_by_lists([
         ['Start logging ⬆️', 'Get logs ⬇️', 'Я'],
-        ['Edit logs', 'Add empty log'],
+        ['Edit log', 'Delete log', 'Add empty log'],
         ['Edit contact', 'Delete contact', 'Go to main menu']
     ])
 
