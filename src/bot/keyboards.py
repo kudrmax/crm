@@ -52,19 +52,19 @@ def edit_log_kb():
     ])
 
 
-# def edit_contact_kb():
-#     return make_keyboard_by_lists([
-#         ['Name 👤', 'Telegram ✈️'],
-#         ['Phone 📞', 'Birthday 📆'],
-#         ['Finish ✅'],
-#     ])
-
 def edit_contact_kb():
     return make_keyboard_by_lists([
-        ['name', 'telegram'],
-        ['phone', 'birthday'],
+        ['Name 👤', 'Telegram ✈️'],
+        ['Phone 📞', 'Birthday 📆'],
         ['Finish ✅'],
     ])
+
+# def edit_contact_kb():
+#     return make_keyboard_by_lists([
+#         ['name', 'telegram'],
+#         ['phone', 'birthday'],
+#         ['Finish ✅'],
+#     ])
 
 
 def stats_kb():

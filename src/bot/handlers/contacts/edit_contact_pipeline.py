@@ -32,10 +32,21 @@ async def choose_action(message: Message, state: FSMContext):
 
 @router.message(EditContactState.choose_what_edit)
 async def choose_action(message: Message, state: FSMContext):
+    def get_filed_from_button_text(button_text: str):
+        if 'name' in button_text.lower():
+            return 'name'
+        if 'telegram' in button_text.lower():
+            return 'telegram'
+        if 'phone' in button_text.lower():
+            return 'phone'
+        if 'birthday' in button_text.lower():
+            return 'birthday'
+        return None
     button_text = message.text
-    if button_text.lower() in contact_fields:
-        await message.answer(f"Type new data for filed {button_text}", reply_markup=ReplyKeyboardRemove())
-        await state.update_data(field_to_update=button_text.lower())
+    field = get_filed_from_button_text(button_text)
+    if field:
+        await message.answer(f"Type new data for filed {field}", reply_markup=ReplyKeyboardRemove())
+        await state.update_data(field_to_update=field)
         await state.set_state(EditContactState.waiting_for_data)
     else:
         await message.answer(f"You can't change this field. Choose one of the buttons:")
