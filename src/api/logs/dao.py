@@ -150,3 +150,11 @@ class DAOLog(DAO):
                 result[contact_name][log_date].append(log)
 
         return result
+
+    async def get_log_by_log_id(self, log_id: int):
+        query = select(MLog).where(MLog.id == log_id)
+        log_data = await self.db.execute(query)
+        log_data = log_data.scalar_one_or_none()
+        if not log_data:
+            raise LogNotFoundError
+        return log_data
