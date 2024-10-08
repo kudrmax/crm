@@ -30,18 +30,35 @@ async def edit_logs_handler(message: Message, state: FSMContext):
     await state.set_state(EditLogsState.typing_number)
 
 
-@router.message(ContactProfileState.choose_action, F.text.lower().contains('cancel'))
-async def cancel(message: Message, state: FSMContext):
+async def cancel_func(message: Message, state: FSMContext):
     await state.update_data(numbers_to_log_id=None)
     await message.answer(f'Canceled', reply_markup=contact_profile_kb())
     await state.set_state(ContactProfileState.choose_action)
+
+
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('cancel'))
+async def cancel1(message: Message, state: FSMContext):
+    await cancel_func(message, state)
 
 
 @router.message(EditLogsState.typing_number, F.text.lower().contains('cancel'))
-async def cancel(message: Message, state: FSMContext):
-    await state.update_data(numbers_to_log_id=None)
-    await message.answer(f'Canceled', reply_markup=contact_profile_kb())
-    await state.set_state(ContactProfileState.choose_action)
+async def cancel2(message: Message, state: FSMContext):
+    await cancel_func(message, state)
+
+
+@router.message(EditLogsState.choose_what_to_edit, F.text.lower().contains('cancel'))
+async def cancel3(message: Message, state: FSMContext):
+    await cancel_func(message, state)
+
+
+@router.message(EditLogsState.typing_new_text, F.text.lower().contains('cancel'))
+async def cancel4(message: Message, state: FSMContext):
+    await cancel_func(message, state)
+
+
+@router.message(EditLogsState.typing_new_date, F.text.lower().contains('cancel'))
+async def cancel5(message: Message, state: FSMContext):
+    await cancel_func(message, state)
 
 
 @router.message(EditLogsState.typing_number)
