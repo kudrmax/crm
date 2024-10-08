@@ -10,6 +10,7 @@ from src.bot.handlers.contacts.edit_contact_pipeline import router as edit_conta
 from src.bot.handlers.contacts.menu_contact_profile import router as menu_contact_profile
 from src.bot.handlers.contacts.search_contact_pipeline import router as search_contact_pipeline
 
+from src.bot.handlers.logs.delete_log_pipeline import router as delete_log_pipeline
 from src.bot.handlers.logs.edit_logs_pipeline import router as edit_logs_pipeline
 from src.bot.handlers.logs.logging_pipeline import router as logging_pipeline
 
@@ -27,5 +28,6 @@ router.include_routers(
     search_contact_pipeline,
     edit_logs_pipeline,
     logging_pipeline,
-    get_all_contacts_pipeline
+    get_all_contacts_pipeline,
+    delete_log_pipeline
 )

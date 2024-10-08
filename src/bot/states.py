@@ -21,6 +21,9 @@ class EditLogsState(StatesGroup):
     typing_new_text = State()
     typing_new_date = State()
 
+class DeleteLogsState(StatesGroup):
+    typing_number = State()
+
 
 class AddContactState(StatesGroup):
     name = State()
