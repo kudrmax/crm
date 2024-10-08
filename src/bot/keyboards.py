@@ -43,8 +43,8 @@ def contact_profile_kb():
 
 def edit_log_kb():
     return make_row_keyboard_by_list([
-        'Edit text',
-        'Edit date',
+        'Edit text 💬',
+        'Edit date 📆',
         'Cancel',
     ])
 
@@ -52,13 +52,13 @@ def edit_log_kb():
 def edit_contact_kb():
     return make_keyboard_by_lists([
         *[[w.capitalize()] for w in contact_fields],
-        ['Finish'],
+        ['Finish ✅'],
     ])
 
 
 def stats_kb():
     return make_keyboard_by_lists([
-        ['Get all contacts'],
+        ['All contacts 👥'],
         ['Go to main menu']
     ])
 
