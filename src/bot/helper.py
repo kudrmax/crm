@@ -290,6 +290,14 @@ class LogHelper(RequestsHelper, TelegramHelper):
     def create_str_for_logs(self, all_logs: str, name: str) -> str:
         return f'📋 Logs for *{Helper._escape_markdown_v2(name)}*:\n\n{all_logs}'
 
+    @classmethod
+    async def get_log_by_id(cls, log_id: int):
+        response = await cls.create_request(
+            f'{settings.server.api_url}/logs/{log_id}/by_log_id',
+            RequestType.get
+        )
+        return response.json()
+
 
 class Helper(ContactHelper, LogHelper):
     pass

@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
@@ -52,8 +54,17 @@ async def choose_number(message: Message, state: FSMContext):
         return
     log_id = numbers_to_log_id[number]
     await state.update_data(log_id=log_id)
+    log = await Helper.get_log_by_id(log_id)
+    log_text = log['log']
+    log_datetime = log['datetime']
+    dt = datetime.datetime.fromisoformat(log_datetime)
+    log_date = dt.strftime("%Y-%m-%d")
     await message.answer(
-        f'You are going to update log with log_id={log_id}',
+        f"Log to edit:\n\n— Text: `{Helper._escape_markdown_v2(log_text)}`\n— Date: `{Helper._escape_markdown_v2(log_date)}`",
+        parse_mode=ParseMode.MARKDOWN_V2
+    )
+    await message.answer(
+        f'Choose option:',
         reply_markup=edit_log_kb()
     )
     await state.set_state(EditLogsState.choose_what_to_edit)
