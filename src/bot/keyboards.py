@@ -27,11 +27,9 @@ def make_keyboard_by_lists(items: list[list[str]]) -> ReplyKeyboardMarkup:
 
 
 def main_kb():
-    return make_row_keyboard_by_list([
-        'Find contact',
-        'Get last logs',
-        'Create new contact',
-        'Stats',
+    return make_keyboard_by_lists([
+        ['Find contact 🔎', 'Last logs ⬇️'],
+        ['New contact 🆕', 'Stats 📈']
     ])
 
 
