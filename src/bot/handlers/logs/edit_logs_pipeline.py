@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
@@ -14,10 +16,13 @@ router = Router()
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('edit log'))
 async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
+    name = data['name']
     log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
+    if Helper.text_is_empty(log_str):
+        await message.answer(f'👎🏻 There is no logs for {name}')
+        return
     await state.update_data(numbers_to_log_id=numbers_to_log_id)
-    await message.answer(f'Logs:', parse_mode=ParseMode.MARKDOWN_V2)
-    await message.answer(log_str, parse_mode=ParseMode.MARKDOWN_V2)
+    await message.answer(Helper.create_str_for_logs(log_str, name), parse_mode=ParseMode.MARKDOWN_V2)
     await message.answer(
         'Type number of log to edit:',
         reply_markup=make_row_keyboard_by_list(['Cancel'])
@@ -25,18 +30,35 @@ async def edit_logs_handler(message: Message, state: FSMContext):
     await state.set_state(EditLogsState.typing_number)
 
 
-@router.message(ContactProfileState.choose_action, F.text.lower().contains('cancel'))
-async def cancel(message: Message, state: FSMContext):
+async def cancel_func(message: Message, state: FSMContext):
     await state.update_data(numbers_to_log_id=None)
     await message.answer(f'Canceled', reply_markup=contact_profile_kb())
     await state.set_state(ContactProfileState.choose_action)
+
+
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('cancel'))
+async def cancel1(message: Message, state: FSMContext):
+    await cancel_func(message, state)
 
 
 @router.message(EditLogsState.typing_number, F.text.lower().contains('cancel'))
-async def cancel(message: Message, state: FSMContext):
-    await state.update_data(numbers_to_log_id=None)
-    await message.answer(f'Canceled', reply_markup=contact_profile_kb())
-    await state.set_state(ContactProfileState.choose_action)
+async def cancel2(message: Message, state: FSMContext):
+    await cancel_func(message, state)
+
+
+@router.message(EditLogsState.choose_what_to_edit, F.text.lower().contains('cancel'))
+async def cancel3(message: Message, state: FSMContext):
+    await cancel_func(message, state)
+
+
+@router.message(EditLogsState.typing_new_text, F.text.lower().contains('cancel'))
+async def cancel4(message: Message, state: FSMContext):
+    await cancel_func(message, state)
+
+
+@router.message(EditLogsState.typing_new_date, F.text.lower().contains('cancel'))
+async def cancel5(message: Message, state: FSMContext):
+    await cancel_func(message, state)
 
 
 @router.message(EditLogsState.typing_number)
@@ -49,8 +71,17 @@ async def choose_number(message: Message, state: FSMContext):
         return
     log_id = numbers_to_log_id[number]
     await state.update_data(log_id=log_id)
+    log = await Helper.get_log_by_id(log_id)
+    log_text = log['log']
+    log_datetime = log['datetime']
+    dt = datetime.datetime.fromisoformat(log_datetime)
+    log_date = dt.strftime("%Y-%m-%d")
     await message.answer(
-        f'You are going to update log with log_id={log_id}',
+        f"Log to edit:\n\n— Text: `{Helper._escape_markdown_v2(log_text)}`\n— Date: `{Helper._escape_markdown_v2(log_date)}`",
+        parse_mode=ParseMode.MARKDOWN_V2
+    )
+    await message.answer(
+        f'Choose option:',
         reply_markup=edit_log_kb()
     )
     await state.set_state(EditLogsState.choose_what_to_edit)

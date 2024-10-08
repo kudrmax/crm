@@ -1,4 +1,5 @@
 from aiogram import Router, F
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
@@ -20,10 +21,11 @@ async def choose_action(message: Message, state: FSMContext):
         await message.answer(f"Contact with name {name} not found")
         raise
 
-    contact_for_print = await Helper.convert_contact_data_to_string(contact_data)
+    contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
     await message.answer(
-        f'Updated contact {name}\n' + contact_for_print,
-        reply_markup=contact_profile_kb(),
+        contact_data_answer,
+        parse_mode=ParseMode.MARKDOWN_V2,
+        reply_markup=contact_profile_kb()
     )
     await state.set_state(ContactProfileState.choose_action)
 
@@ -50,7 +52,11 @@ async def update_field_value(message: Message, state: FSMContext):
         if field_to_update == 'name':
             await state.update_data(name=message.text)
         await message.answer(
-            f'You changed filed "{updated_data['field']}" from "{updated_data['old_value']}" to "{updated_data['new_value']}"',
+            "\n".join([
+                f"Field: {updated_data['field']}",
+                f"Old value: {updated_data['old_value']}",
+                f"New value: {updated_data['new_value']}",
+            ]),
             reply_markup=edit_contact_kb()
         )
         await state.set_state(EditContactState.choose_what_edit)

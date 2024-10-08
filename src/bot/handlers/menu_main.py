@@ -35,12 +35,12 @@ async def find_contact(message: Message, state: FSMContext):
     )
 
 
-@router.message(StateFilter(None), F.text.lower().contains('get last logs'))
+@router.message(StateFilter(None), F.text.lower().contains('last logs'))
 async def get_last_logs_handler(message: Message, state: FSMContext):
     await get_last_logs(message)
 
 
-@router.message(StateFilter(None), F.text.lower().contains('create new contact'))
+@router.message(StateFilter(None), F.text.lower().contains('new contact'))
 async def create_contact(message: Message, state: FSMContext):
     await message.answer(
         'Type name:',
@@ -49,7 +49,7 @@ async def create_contact(message: Message, state: FSMContext):
     await state.set_state(AddContactState.name)
 
 
-@router.message(StateFilter(None), F.text.lower().contains('Stats'))
+@router.message(StateFilter(None), F.text.lower().contains('stats'))
 async def get_stats(message: Message, state: FSMContext):
     await state.set_state(StatsState.menu)
     await message.answer(

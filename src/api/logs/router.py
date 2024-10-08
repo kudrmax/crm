@@ -72,6 +72,13 @@ async def get_all_logs_grouped_by_date(
 ):
     return await dao.get_all_logs_grouped_by_date(name)
 
+@router.get("/{log_id}/by_log_id")
+async def get_log_by_log_id(
+        log_id: int,
+        dao: DAOLog = Depends()
+) -> SLogRead:
+    return await dao.get_log_by_log_id(log_id)
+
 
 @router.put("/edit/{log_id}/")
 async def edit_log_by_id(

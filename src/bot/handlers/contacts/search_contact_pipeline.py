@@ -1,4 +1,5 @@
 from aiogram import F, Router
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
@@ -6,7 +7,7 @@ from aiogram.types import Message
 from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists
 from src.bot.states import FindContactState
-from src.errors import ContactNotFoundError
+from src.errors import ContactNotFoundError, NotFoundError
 
 router = Router()
 
@@ -23,7 +24,6 @@ async def search_contact(
     await state.update_data(start_state=start_state)
     await state.update_data(final_reply_markup=final_reply_markup)
     await state.update_data(start_reply_markup=start_reply_markup)
-    print('here')
     last_contacts = await Helper.get_last_contacts()
     await state.update_data(last_contacts=set(last_contacts))
 
@@ -52,17 +52,25 @@ async def set_start_state(message: Message, state: FSMContext, text: str):
 async def set_last_state(message: Message, state: FSMContext, name: str):
     try:
         contact_data = await Helper.get_contact_data_by_name(name)
-    except ContactNotFoundError:
+    except NotFoundError:
         await message.answer(f"Contact with name {name} not found")
         raise
 
     state_data = await state.get_data()
     final_state = state_data.get('final_state')
     final_reply_markup = state_data.get('final_reply_markup')
-
     contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
-    await message.answer(f'Contact info for {name}:')
-    await message.answer(contact_data_answer, reply_markup=final_reply_markup)
+    all_logs, _ = await Helper.get_all_logs(name)
+    logs = Helper.create_str_for_logs(all_logs, name)
+    await message.answer(
+        contact_data_answer,
+        parse_mode=ParseMode.MARKDOWN_V2
+    )
+    await message.answer(
+        logs,
+        reply_markup=final_reply_markup,
+        parse_mode=ParseMode.MARKDOWN_V2
+    )
     await state.update_data(name=name)
     await state.set_state(final_state)
 
