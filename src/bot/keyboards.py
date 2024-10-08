@@ -70,6 +70,7 @@ def edit_contact_kb():
 def stats_kb():
     return make_keyboard_by_lists([
         ['All contacts 👥'],
+        ['Who'],
         ['Go to main menu']
     ])
 
