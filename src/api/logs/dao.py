@@ -138,6 +138,8 @@ class DAOLog(DAO):
 
         result = {}
         for contact_id, log_date, log in logs_data:
+            if not log or log == "":
+                continue
             contact = (await self.db.execute(select(MContact).where(MContact.id == contact_id))).scalar_one_or_none()
             contact_name = contact.name
             if contact_name:
