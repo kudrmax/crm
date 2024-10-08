@@ -1,4 +1,5 @@
 from aiogram import Router, F
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
@@ -20,10 +21,11 @@ async def choose_action(message: Message, state: FSMContext):
         await message.answer(f"Contact with name {name} not found")
         raise
 
-    contact_for_print = await Helper.convert_contact_data_to_string(contact_data)
+    contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
     await message.answer(
-        f'Updated contact {name}\n' + contact_for_print,
-        reply_markup=contact_profile_kb(),
+        contact_data_answer,
+        parse_mode=ParseMode.MARKDOWN_V2,
+        reply_markup=contact_profile_kb()
     )
     await state.set_state(ContactProfileState.choose_action)
 
