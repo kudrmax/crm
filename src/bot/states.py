@@ -17,7 +17,7 @@ class EditContactState(StatesGroup):
 
 class EditLogsState(StatesGroup):
     typing_number = State()
-    menu = State()
+    choose_what_to_edit = State()
     typing_new_text = State()
     typing_new_date = State()
 
