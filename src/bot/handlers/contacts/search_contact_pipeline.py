@@ -108,10 +108,13 @@ async def contact(message: Message, state: FSMContext):
         if len(similar_contacts) == 0:
             await message.answer("No contacts found. Type another name or cancel.")
             return
-        buttons = similar_contacts + ['Cancel']
+        buttons = [
+            *[[similar_contact] for similar_contact in similar_contacts],
+            ['Cancel']
+        ]
         await message.answer(
             'Choose contact from list:',
-            reply_markup=make_row_keyboard_by_list(buttons)
+            reply_markup=make_keyboard_by_lists(buttons)
         )
         await state.set_state(FindContactState.choosing_name_from_list)
 
