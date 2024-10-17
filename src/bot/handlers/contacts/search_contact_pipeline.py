@@ -5,8 +5,8 @@ from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
 from src.bot.helper import Helper
-from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists
-from src.bot.states import FindContactState
+from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists, main_kb, contact_profile_kb
+from src.bot.states import FindContactState, ContactProfileState
 from src.errors import ContactNotFoundError, NotFoundError
 
 router = Router()
@@ -32,6 +32,17 @@ async def search_contact(
         reply_markup=make_keyboard_by_lists([*[[contact] for contact in last_contacts], ['Cancel']])
     )
     await state.set_state(FindContactState.typing_name)
+
+
+async def search_contact_from_main_to_profile(message: Message, state: FSMContext):
+    await search_contact(
+        message=message,
+        state=state,
+        start_state=None,
+        start_reply_markup=main_kb(),
+        final_state=ContactProfileState.choose_action,
+        final_reply_markup=contact_profile_kb(),
+    )
 
 
 async def set_start_state(message: Message, state: FSMContext, text: str):

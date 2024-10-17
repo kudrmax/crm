@@ -3,6 +3,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from src.bot.handlers.contacts.search_contact_pipeline import search_contact, search_contact_from_main_to_profile
 from src.bot.handlers.logs.get_logs_pipeline import get_logs
 from src.bot.handlers.logs.logging_pipeline import start_logging
 from src.bot.helper import Helper
@@ -73,6 +74,12 @@ async def delete_contact(message: Message, state: FSMContext):
         f'Type "I want to delete contact {name}" to delete contact {name}.',
         reply_markup=make_row_keyboard_by_list(['Cancel'])
     )
+
+
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('find contact'))
+async def find_contact(message: Message, state: FSMContext):
+    await state.clear()
+    await search_contact_from_main_to_profile(message, state)
 
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('go to main menu'))

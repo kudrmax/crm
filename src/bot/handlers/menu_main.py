@@ -3,7 +3,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.contacts.search_contact_pipeline import search_contact
+from src.bot.handlers.contacts.search_contact_pipeline import search_contact, search_contact_from_main_to_profile
 from src.bot.handlers.logs.get_last_logs_pipeline import get_last_logs
 from src.bot.keyboards import main_kb, contact_profile_kb, make_row_keyboard_by_list, make_keyboard_by_lists, stats_kb
 from src.bot.states import ContactProfileState, AddContactState, StatsState
@@ -25,14 +25,7 @@ async def go_to_main_menu(message: Message, state: FSMContext):
 
 @router.message(StateFilter(None), F.text.lower().contains('find contact'))
 async def find_contact(message: Message, state: FSMContext):
-    await search_contact(
-        message=message,
-        state=state,
-        start_state=None,
-        start_reply_markup=main_kb(),
-        final_state=ContactProfileState.choose_action,
-        final_reply_markup=contact_profile_kb(),
-    )
+    await search_contact_from_main_to_profile(message, state)
 
 
 @router.message(StateFilter(None), F.text.lower().contains('last logs'))
