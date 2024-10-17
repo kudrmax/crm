@@ -40,7 +40,7 @@ def contact_profile_kb():
         ['Add empty log 👉🏻', 'Profile 👤'],
         ['Edit log ✍🏻', 'Delete log 🗑️', ],
         ['Edit contact ✍🏻', 'Delete contact 🗑️'],
-        ['Go to main menu 🚪']
+        ['Find contact 🔎', 'Go to main menu 🚪']
     ])
 
 
@@ -52,12 +52,20 @@ def edit_log_kb():
     ])
 
 
+def logging_kb():
+    return make_keyboard_by_lists([
+        ['Set date to yesterday', 'Set date to today'],
+        ['Find contact 🔎', 'Stop logging']
+    ])
+
+
 def edit_contact_kb():
     return make_keyboard_by_lists([
         ['Name 👤', 'Telegram ✈️'],
         ['Phone 📞', 'Birthday 📆'],
         ['Finish ✅'],
     ])
+
 
 # def edit_contact_kb():
 #     return make_keyboard_by_lists([

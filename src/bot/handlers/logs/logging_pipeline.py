@@ -6,7 +6,7 @@ from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
 from src.bot.helper import Helper
-from src.bot.keyboards import make_row_keyboard_by_list
+from src.bot.keyboards import make_row_keyboard_by_list, logging_kb
 from src.bot.states import AddLog
 from src.errors import ContactNotFoundError
 
@@ -23,7 +23,7 @@ async def start_logging(
     await state.update_data(reply_markup=final_reply_markup)
     await message.answer(
         'Type log or cancel:',
-        reply_markup=make_row_keyboard_by_list(['Set date to yesterday', 'Set date to today', 'Stop logging'])
+        reply_markup=logging_kb()
     )
     await state.set_state(AddLog.logging)
 
