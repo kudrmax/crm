@@ -50,6 +50,7 @@ async def find_contact(message: Message, state: FSMContext):
 
 @router.message(AddLog.logging, F.text.lower().contains('stop logging'))
 async def stop_logging(message: Message, state: FSMContext):
+    await state.update_data(logs_are_got=False)
     data = await state.get_data()
     await state.update_data(date=None)
     await message.answer('Stopped logging', reply_markup=data['final_reply_markup'])

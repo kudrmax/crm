@@ -82,6 +82,7 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
         reply_markup=final_reply_markup,
         parse_mode=ParseMode.MARKDOWN_V2
     )
+    await state.update_data(logs_are_got=True)
     await state.update_data(name=name)
     await state.set_state(final_state)
 
