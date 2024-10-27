@@ -208,6 +208,16 @@ class LogHelper(RequestsHelper, TelegramHelper):
                 log_text = cls._escape_markdown_v2(log['log'])
                 result_list.append(f"— {log['number']}: {log_text}")
         text = '\n'.join(result_list)
+
+        p1, p2 = 0, len(result_list) - 1
+        while p1 < p2:
+            m = (p1 + p2) // 2
+            text = '\n'.join(result_list[m:])
+            if len(text) > 4000:
+                p1 = m + 1
+            else:
+                p2 = m
+
         text = text[-4000:]
         if len(text) > 0 and text[0] == '\n':
             text = text[1:]
