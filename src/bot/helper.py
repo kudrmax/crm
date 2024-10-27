@@ -207,8 +207,17 @@ class LogHelper(RequestsHelper, TelegramHelper):
             for log in data['logs']:
                 log_text = cls._escape_markdown_v2(log['log'])
                 result_list.append(f"— {log['number']}: {log_text}")
+
         text = '\n'.join(result_list)
-        text = text[-4000:]
+        p1, p2 = 0, len(result_list) - 1
+        while p1 < p2:
+            m = (p1 + p2) // 2
+            text = '\n'.join(result_list[m:])
+            if len(text) > 4000:
+                p1 = m + 1
+            else:
+                p2 = m
+
         if len(text) > 0 and text[0] == '\n':
             text = text[1:]
         return cls._create_spoiler(text)
@@ -349,7 +358,8 @@ class StatsHelper(RequestsHelper, TelegramHelper):
         for name, day_count in contacts_with_days:
             add_title(day_count, result)
             telegram = await cls._get_telegram_by_name(name)
-            result.append(f"— {day_count} days: {cls._escape_markdown_v2(name)} \({cls._escape_markdown_v2(telegram)}\)")
+            result.append(
+                f"— {day_count} days: {cls._escape_markdown_v2(name)} \({cls._escape_markdown_v2(telegram)}\)")
 
         return "\n".join(result)
 
