@@ -4,7 +4,5 @@ create table if not exists contacts
     name       varchar(255) not null unique,
     phone      varchar(20),
     telegram   varchar(50),
-    birthday   varchar(10),
-    created_at timestamptz  not null default now(),
-    updated_at timestamptz  not null default now()
+    birthday   varchar(10)
 );

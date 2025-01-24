@@ -9,8 +9,8 @@ class MContact:
     phone: str = None
     telegram: str = None
     birthday: str = None
-    created_at: dt.datetime = None
-    updated_at: dt.datetime = None
+    # created_at: dt.datetime = None
+    # updated_at: dt.datetime = None
 
 
 @dataclasses.dataclass
