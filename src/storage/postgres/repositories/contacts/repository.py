@@ -4,7 +4,7 @@ from sqlalchemy import Engine, text
 from sqlalchemy.exc import IntegrityError
 
 from src.models.contact.model import MContactCreate, MContact, MContactUpdate
-from src.storage.postgres.contacts.errors import ContactNotFoundErr
+from src.storage.postgres.repositories.contacts.errors import ContactNotFoundErr
 
 
 class ContactRepository:

@@ -1,8 +1,8 @@
 from typing import List
 
 from src.models.contact.model import MContact, MContactCreate, MContactUpdate
-from src.storage.postgres.contacts.errors import ContactNotFoundErr
-from src.storage.postgres.contacts.repository import ContactRepository
+from src.storage.postgres.repositories.contacts.errors import ContactNotFoundErr
+from src.storage.postgres.repositories.contacts.repository import ContactRepository
 
 
 class ContactService:

@@ -92,7 +92,7 @@ class Settings(BaseModel):
     server: Server = Server()
     telegram_bot: Telegram = Telegram()
     db_prod: PostgresProd = PostgresProd()
-    db_test: PostgresTest = PostgresTest()
+    # db_test: PostgresTest = PostgresTest()
     app: App = App()
 
 
