@@ -14,6 +14,8 @@ from src.errors import (
     NotFoundError,
     AlreadyExistsError
 )
+from src.models.contact.model import MContactCreate
+from src.services.contacts.service import ContactService
 from src.settings import settings
 
 
@@ -77,13 +79,11 @@ class TelegramHelper:
 
 
 class ContactHelper(RequestsHelper, TelegramHelper):
-    @classmethod
-    async def create_contact(cls, name: str):
-        await cls.create_request(
-            settings.server.api_url + '/contacts/new',
-            RequestType.post,
-            {'name': name}
-        )
+    def __init__(self, contact_service: ContactService):
+        self.contact_service = contact_service
+
+    async def create_contact(self, name: str) -> bool:
+        return self.contact_service.create_contact(MContactCreate(name=name))
 
     @classmethod
     async def update_contact(cls, name: str, field_to_update: str, new_value: Any) -> Dict[str, str] | None:
