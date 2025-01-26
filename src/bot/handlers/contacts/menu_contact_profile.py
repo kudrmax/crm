@@ -11,6 +11,7 @@ from src.bot.keyboards import edit_contact_kb, contact_profile_kb, make_row_keyb
     main_kb
 from src.bot.states import ContactProfileState, EditContactState, DeleteContactState
 from src.errors import ContactNotFoundError
+from src.services.contact_log.service import contact_log_service
 
 router = Router()
 
@@ -19,9 +20,11 @@ router = Router()
 async def get_profile(message: Message, state: FSMContext):
     data = await state.get_data()
     name = data['name']
-    contact_data = await Helper.get_contact_data_by_name(name)
-    contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
-    await message.answer(contact_data_answer, parse_mode=ParseMode.MARKDOWN_V2)
+    contact = contact_log_service.get_contact_by_name(name)
+    contact_str = contact.to_string()
+    # contact_data = await Helper.get_contact_data_by_name(name)
+    # contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
+    await message.answer(contact_str)
     await state.update_data(logs_are_got=False)
 
 
