@@ -4,7 +4,7 @@ from sqlalchemy import Engine, text
 from sqlalchemy.exc import IntegrityError
 
 from src.models.contact.model import MContactCreate, MContact, MContactUpdate
-from src.storage.postgres.repositories.contacts.errors import ContactNotFoundErr
+from src.storage.postgres.repositories.contacts.errors import ContactNotFoundErr, ContactAlreadyExistsErr
 
 
 class ContactRepository:
@@ -15,7 +15,7 @@ class ContactRepository:
         with self.engine.connect() as conn:
             query = text('''SELECT * FROM contacts''')
             rows = conn.execute(query).all()
-            return self.__convert_rows_to_contact(rows)
+            return self.__convert_rows_to_models(rows)
 
     def get_by_name(self, name: str) -> MContact | None:
         with self.engine.connect() as conn:
@@ -23,7 +23,7 @@ class ContactRepository:
             rows = conn.execute(query, {'name': name}).all()
             if len(rows) == 0:
                 return None
-            return self.__convert_row_to_contact(rows[0])
+            return self.__convert_row_to_model(rows[0])
 
     def create(self, new_contact: MContactCreate) -> bool:
         with self.engine.connect() as conn:
@@ -41,28 +41,31 @@ class ContactRepository:
                 return bool(rows.rowcount)
             except IntegrityError as e:
                 if 'duplicate key value violates unique constraint' in str(e):
-                    raise ContactNotFoundErr()
+                    raise ContactAlreadyExistsErr()
 
     def update_by_name(self, old_name: str, new_contact_data: MContactUpdate) -> bool:
         with self.engine.connect() as conn:
-            query = text('''
-                UPDATE contacts
-                SET 
-                    name = COALESCE(:name, name), 
-                    phone = COALESCE(:phone, phone), 
-                    telegram = COALESCE(:telegram, telegram), 
-                    birthday = COALESCE(:birthday, birthday)
-                WHERE name = :old_name
-            ''')
-            rows = conn.execute(query, {
-                'old_name': old_name,
-                'name': new_contact_data.name,
-                'phone': new_contact_data.phone,
-                'telegram': new_contact_data.telegram,
-                'birthday': new_contact_data.birthday,
-            })
-            conn.commit()
-            return bool(rows.rowcount)
+            try:
+                query = text('''
+                    UPDATE contacts
+                    SET 
+                        name = COALESCE(:name, name), 
+                        phone = COALESCE(:phone, phone), 
+                        telegram = COALESCE(:telegram, telegram), 
+                        birthday = COALESCE(:birthday, birthday)
+                    WHERE name = :old_name
+                ''')
+                rows = conn.execute(query, {
+                    'old_name': old_name,
+                    'name': new_contact_data.name,
+                    'phone': new_contact_data.phone,
+                    'telegram': new_contact_data.telegram,
+                    'birthday': new_contact_data.birthday,
+                })
+                conn.commit()
+                return bool(rows.rowcount)
+            except ContactNotFoundErr as e:
+                raise  # TODO проверить как выглядит эта ошибка
 
     def delete_by_name(self, name: str) -> bool:
         with self.engine.connect() as conn:
@@ -72,9 +75,56 @@ class ContactRepository:
             return bool(rows.rowcount)
 
     @staticmethod
-    def __convert_row_to_contact(row) -> MContact:
+    def __convert_row_to_model(row) -> MContact:
         return MContact(*row)
 
     @staticmethod
-    def __convert_rows_to_contact(rows) -> List[MContact]:
+    def __convert_rows_to_models(rows) -> List[MContact]:
         return [MContact(*row) for row in rows]
+
+    # def get_last_contacts(self, count: int = 5) -> List[MContact]:
+    #     with self.engine.connect() as conn:
+    #         query = text('''
+    #             SELECT contact_id, max(datetime) AS last_date
+    #             FROM logs
+    #             GROUP BY contact_id
+    #             ORDER BY last_date DESC
+    #             LIMIT contact_count
+    #         ''')
+
+    # def tmp(self):
+    #     SQL = """
+    #     SELECT contact_id, max(datetime) AS last_date
+    #     FROM logs
+    #     GROUP BY contact_id
+    #     ORDER BY last_date DESC
+    #     LIMIT contact_count
+    #     """
+    #
+    #     subquery = (
+    #         select(
+    #             MLog.contact_id,
+    #             func.max(MLog.datetime).label('last_date')
+    #         )
+    #         .group_by(MLog.contact_id)
+    #         .subquery()
+    #     )
+    #
+    #     query = (
+    #         select(subquery.c.contact_id, subquery.c.last_date)
+    #         .order_by(subquery.c.last_date.desc())
+    #         .limit(contact_count)
+    #     )
+    #
+    #     contact_ids = await self.db.execute(query)
+    #     contact_ids = contact_ids.scalars().all()
+    #
+    #     contacts = []
+    #     for contact_id in contact_ids:
+    #         query = select(MContact).where(MContact.id == contact_id)
+    #         contact = await self.db.execute(query)
+    #         contact = contact.scalar_one_or_none()
+    #         if contact:
+    #             contacts.append(contact)
+    #
+    #     return contacts
