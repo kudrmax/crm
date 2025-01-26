@@ -27,6 +27,8 @@ class ContactRepository:
             return self.__convert_row_to_model(rows[0])
 
     def get_by_contact_ids(self, contact_ids: List[int]) -> List[MContact]:
+        if len(contact_ids) == 0:
+            return []
         with self.engine.connect() as conn:
             query = text('''SELECT * FROM contacts WHERE id IN :contact_ids''')
             rows = conn.execute(query, {'contact_ids': tuple(contact_ids)}).all()
