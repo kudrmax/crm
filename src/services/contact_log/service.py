@@ -20,6 +20,7 @@ class ContactLogService:
         return self.contact_repository.get_by_name(name)
 
     def get_last_contacts(self) -> List[MContact]:
+        # TODO сделать так, чтобы получать последние созданные контакты, у которых пока 0 логов
         ids = self.log_repository.get_last_contact_ids()
         return self.contact_repository.get_by_contact_ids(ids)
 
