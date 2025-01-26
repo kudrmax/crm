@@ -12,13 +12,13 @@ class MLog:
 
 @dataclasses.dataclass
 class MLogCreate:
-    contact_id: int
-    text: str
-    datetime: dt.datetime
+    contact_id: int = None
+    text: str = None
+    datetime: dt.datetime = None
 
 
 @dataclasses.dataclass
 class MLogUpdate:
-    contact_id: int
-    text: str
-    datetime: dt.datetime
+    contact_id: int = None
+    text: str = None
+    datetime: dt.datetime = None
