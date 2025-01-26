@@ -8,6 +8,8 @@ from src.bot.keyboards import contact_profile_kb, edit_contact_kb, contact_field
 from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError, ContactAlreadyExistsError, UnprocessableEntityError, AlreadyExistsError, \
     NotFoundError
+from src.models.contact.model import MContactUpdate
+from src.services.contact_log.service import contact_log_service
 
 router = Router()
 
@@ -16,15 +18,16 @@ router = Router()
 async def choose_action(message: Message, state: FSMContext):
     name = (await state.get_data()).get('name')
     try:
-        contact_data = await Helper.get_contact_data_by_name(name)
+        # contact_data = await Helper.get_contact_data_by_name(name)
+        contact = contact_log_service.get_contact_by_name(name)
     except ContactNotFoundError:
         await message.answer(f"Contact with name {name} not found")
         raise
 
-    contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
+    contact_str = contact.to_string()
     await message.answer(
-        contact_data_answer,
-        parse_mode=ParseMode.MARKDOWN_V2,
+        contact_str,
+        # parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=contact_profile_kb()
     )
     await state.set_state(ContactProfileState.choose_action)
@@ -42,10 +45,14 @@ async def choose_action(message: Message, state: FSMContext):
         if 'birthday' in button_text.lower():
             return 'birthday'
         return None
+
     button_text = message.text
     field = get_filed_from_button_text(button_text)
     if field:
-        await message.answer(f"Type new data for filed {field}", reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            f"Type new data for filed {field}",
+            reply_markup=ReplyKeyboardRemove()
+        )
         await state.update_data(field_to_update=field)
         await state.set_state(EditContactState.waiting_for_data)
     else:
@@ -55,23 +62,36 @@ async def choose_action(message: Message, state: FSMContext):
 @router.message(EditContactState.waiting_for_data)
 async def update_field_value(message: Message, state: FSMContext):
     user_data = await state.get_data()
+
     field_to_update = user_data.get('field_to_update')
     name = user_data.get('name')
     new_data = message.text
+
     try:
-        updated_data = await Helper.update_contact(name, field_to_update, new_data)
+        contact_update = MContactUpdate()
+        if field_to_update == 'name':
+            contact_update.name = new_data
+        elif field_to_update == 'telegram':
+            contact_update.telegram = new_data
+        elif field_to_update == 'phone':
+            contact_update.phone = new_data
+        elif field_to_update == 'birthday':
+            contact_update.birthday = new_data
+
+        contact_log_service.update_contact_by_name(name, contact_update)
+        # updated_data = await Helper.update_contact(name, field_to_update, new_data)
         if field_to_update == 'name':
             await state.update_data(name=message.text)
         await message.answer(
             "\n".join([
-                f"Field: {updated_data['field']}",
-                f"Old value: {updated_data['old_value']}",
-                f"New value: {updated_data['new_value']}",
+                f"Field: {field_to_update}",
+                # f"Old value: {updated_data['old_value']}", # TODO добавить old value
+                f"New value: {new_data}",
             ]),
             reply_markup=edit_contact_kb()
         )
         await state.set_state(EditContactState.choose_what_edit)
-    except NotFoundError:
+    except NotFoundError: # TODO прочекать   все ошибки
         await message.answer(f'Contact with name {name} not found. Aborted.')
         raise Exception
     except AlreadyExistsError:
