@@ -10,6 +10,8 @@ from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, logging_kb
 from src.bot.states import AddLog
 from src.errors import ContactNotFoundError
+from src.models.log.models import MLogCreate
+from src.services.contact_log.service import contact_log_service
 
 router = Router()
 
@@ -60,10 +62,16 @@ async def stop_logging(message: Message, state: FSMContext):
 @router.message(AddLog.logging)
 async def add_log(message: Message, state: FSMContext):
     data = await state.get_data()
-    new_log = message.text
+    log_text = message.text
     try:
         date = data['date'] if 'date' in data else None
-        await Helper.add_log(log_str=new_log, name=data['name'], date=date)
+        contact = contact_log_service.get_contact_by_name(data['name'])
+        contact_log_service.create_log(MLogCreate(
+            contact_id=contact.id,
+            text=log_text,
+            datetime=date,
+        ))
+        # await Helper.add_log(log_str=new_log, name=data['name'], date=date)
         reply_text = '✅' if not date else f'✅ on {date}'
         await message.reply(reply_text)
     except ContactNotFoundError:

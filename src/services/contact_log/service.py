@@ -1,7 +1,7 @@
 from typing import List
 
 from src.models.contact.model import MContact, MContactCreate, MContactUpdate
-from src.models.log.models import MLogUpdate, MLog
+from src.models.log.models import MLogUpdate, MLog, MLogCreate
 from src.storage.postgres.connection.engine import engine
 from src.errors import ContactNotFoundErr, ContactAlreadyExistsErr
 from src.storage.postgres.repositories.contacts.repository import ContactRepository
@@ -36,6 +36,9 @@ class ContactLogService:
             return self.contact_repository.create(contact)
         except ContactAlreadyExistsErr:
             raise ContactAlreadyExistsErr()
+
+    def create_log(self, log_create: MLogCreate) -> bool:
+        return self.log_repository.create(log_create)
 
     def update_contact_by_name(self, name: str, new_contact: MContactUpdate) -> bool:
         return self.contact_repository.update_by_name(name, new_contact)
