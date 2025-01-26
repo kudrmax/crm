@@ -4,6 +4,8 @@ from aiogram.types import Message
 
 from src.bot.helper import Helper
 from src.errors import ContactNotFoundError
+from src.services.contact_log.service import contact_log_service
+from src.services.telegram.service import telegram_service
 
 
 async def get_logs(message: Message, state: FSMContext, name: str | None = None):
@@ -11,13 +13,15 @@ async def get_logs(message: Message, state: FSMContext, name: str | None = None)
     if not name:
         name = data.get('name')
     try:
-        all_logs, _ = await Helper.get_all_logs(name)
-        if Helper.text_is_empty(all_logs):
+        logs = contact_log_service.get_logs_by_contact_name(name)
+        # all_logs, _ = await Helper.get_all_logs(name)
+        if len(logs) == 0:
             await message.answer(f'👎🏻 There is no logs for {name}')
             return
+
         await message.answer(
-            Helper.create_str_for_logs(all_logs, name),
-            parse_mode=ParseMode.MARKDOWN_V2
+            telegram_service.convert_logs_to_str(logs),
+            # parse_mode=ParseMode.MARKDOWN_V2
         )
     except ContactNotFoundError:
         await message.answer(f"Contact with name {name} not found.")
