@@ -5,6 +5,20 @@ import datetime as dt
 @dataclasses.dataclass
 class MLog:
     id: int
-    contact_id: str
+    contact_id: int
+    text: str
     datetime: dt.datetime
-    log: str
+
+
+@dataclasses.dataclass
+class MLogCreate:
+    contact_id: int
+    text: str
+    datetime: dt.datetime
+
+
+@dataclasses.dataclass
+class MLogUpdate:
+    contact_id: int
+    text: str
+    datetime: dt.datetime

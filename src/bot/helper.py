@@ -79,11 +79,11 @@ class TelegramHelper:
 
 
 class ContactHelper(RequestsHelper, TelegramHelper):
-    def __init__(self, contact_service: ContactService):
-        self.contact_service = contact_service
+    def __init__(self, contact_log_service: ContactLogService):
+        self.contact_log_service = contact_log_service
 
     async def create_contact(self, name: str) -> bool:
-        return self.contact_service.create_contact(MContactCreate(name=name))
+        return self.contact_log_service.create_contact(MContactCreate(name=name))
 
     @classmethod
     async def update_contact(cls, name: str, field_to_update: str, new_value: Any) -> Dict[str, str] | None:
