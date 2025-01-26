@@ -1,3 +1,4 @@
+import difflib
 from typing import List
 
 from src.models.contact.model import MContact, MContactCreate, MContactUpdate
@@ -45,6 +46,12 @@ class ContactLogService:
 
     def delete_contact_by_name(self, name: str) -> bool:
         return self.contact_repository.delete_by_name(name)
+
+    def get_similar_contacts(self, name: str, name_count: int = 6) -> List[MContact]:
+        contacts = self.get_all_contacts()
+        names = [contact.name.lower() for contact in contacts]
+        close_names = difflib.get_close_matches(name.lower(), names, n=name_count)
+        return [contact for contact in contacts if contact.name.lower() in close_names]
 
     @staticmethod
     def get_names_from_models(contacts: List[MContact]) -> List[str]:

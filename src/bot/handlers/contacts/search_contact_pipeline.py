@@ -100,14 +100,15 @@ async def contact(message: Message, state: FSMContext):
         await set_last_state(message, state, name)
     else:
         await message.answer(f"Searching contact with name {name}")
-        similar_contacts = await Helper.find_contacts_by_name(name)
+        similar_contacts = contact_log_service.get_similar_contacts(name)
+        # similar_contacts = await Helper.find_contacts_by_name(name)
         if similar_contacts is None:
             await set_start_state(message, state, 'Something went wrong. Error with similar contact_log.')
         if len(similar_contacts) == 0:
             await message.answer("No contact_log found. Type another name or cancel.")
             return
         buttons = [
-            *[[similar_contact] for similar_contact in similar_contacts],
+            *[[similar_contact.name] for similar_contact in similar_contacts],
             ['Cancel']
         ]
         await message.answer(
