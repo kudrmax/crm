@@ -27,6 +27,16 @@ class LogRepository:
                 return None
             return self.__convert_row_to_model(rows[0])
 
+    def get_by_contact_id(self, contact_id: int) -> List[MLog]:
+        with self.engine.connect() as conn:
+            query = text('''
+                SELECT * FROM logs 
+                WHERE contact_id = :contact_id
+                ORDER BY datetime DESC
+            ''')
+            rows = conn.execute(query, {'contact_id': contact_id}).all()
+            return self.__convert_rows_to_models(rows)
+
     def create(self, new_log: MLogCreate) -> bool:
         with self.engine.connect() as conn:
             try:

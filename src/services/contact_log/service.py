@@ -28,7 +28,8 @@ class ContactLogService:
         return self.log_repository.get_by_id(log_id)
 
     def get_logs_by_contact_name(self, name: str) -> List[MLog]:
-        pass
+        contact = self.contact_repository.get_by_name(name)
+        return self.log_repository.get_by_contact_id(contact.id)
 
     def create_contact(self, contact: MContactCreate) -> bool:
         try:

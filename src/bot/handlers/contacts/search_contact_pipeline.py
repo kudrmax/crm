@@ -9,6 +9,7 @@ from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists,
 from src.bot.states import FindContactState, ContactProfileState
 from src.errors import ContactNotFoundError, NotFoundError
 from src.services.contact_log.service import contact_log_service
+from src.services.telegram.service import telegram_service
 
 router = Router()
 
@@ -50,45 +51,38 @@ async def search_contact_from_main_to_profile(message: Message, state: FSMContex
 
 async def set_start_state(message: Message, state: FSMContext, text: str):
     data = await state.get_data()
-    start_reply_markup = data['start_reply_markup']
-    start_state = data['start_state']
-
     await message.answer(
         text,
-        reply_markup=start_reply_markup
+        reply_markup=data['start_reply_markup']
     )
-    if not start_state:
+    if not data['start_state']:
         await state.clear()
     else:
-        await state.set_state(start_state)
+        await state.set_state(data['start_state'])
 
 
 async def set_last_state(message: Message, state: FSMContext, name: str):
-    # contact_data = await Helper.get_contact_data_by_name(name)
     contact = contact_log_service.get_contact_by_name(name)
     if not contact:
         await message.answer(f"Contact with name {name} not found")
         return
 
     state_data = await state.get_data()
-    final_state = state_data.get('final_state')
-    final_reply_markup = state_data.get('final_reply_markup')
-    contact_data_answer = contact.to_string()
-    # all_logs, _ = await Helper.get_all_logs(name)
-    # logs = Helper.create_str_for_logs(all_logs, name)
-    logs = "test text"
+
+    logs = contact_log_service.get_logs_by_contact_name(name)
+    logs_str = telegram_service.convert_logs_to_str(logs)
     await message.answer(
-        contact_data_answer,
+        contact.to_string(),
         parse_mode=ParseMode.MARKDOWN_V2
     )
+
     await message.answer(
-        logs,
-        reply_markup=final_reply_markup,
-        parse_mode=ParseMode.MARKDOWN_V2
+        logs_str,
+        reply_markup=state_data.get('final_reply_markup'),
     )
     await state.update_data(logs_are_got=True)
     await state.update_data(name=name)
-    await state.set_state(final_state)
+    await state.set_state(state_data.get('final_state'))
 
 
 @router.message(FindContactState.typing_name, F.text.lower().contains('cancel'))
