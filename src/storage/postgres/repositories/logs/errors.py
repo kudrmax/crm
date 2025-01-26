@@ -1,0 +1,2 @@
+class ContactIdNotFoundErr(Exception):
+    pass
