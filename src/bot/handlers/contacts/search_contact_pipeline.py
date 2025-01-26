@@ -8,6 +8,7 @@ from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists, main_kb, contact_profile_kb
 from src.bot.states import FindContactState, ContactProfileState
 from src.errors import ContactNotFoundError, NotFoundError
+from src.services.contact_log.service import contact_log_service
 
 router = Router()
 
@@ -24,12 +25,14 @@ async def search_contact(
     await state.update_data(start_state=start_state)
     await state.update_data(final_reply_markup=final_reply_markup)
     await state.update_data(start_reply_markup=start_reply_markup)
-    last_contacts = await Helper.get_last_contacts()
-    await state.update_data(last_contacts=set(last_contacts))
+
+    last_contacts = contact_log_service.get_last_contacts()
+    last_contacts_names = contact_log_service.get_names_from_models(last_contacts)
+    await state.update_data(last_contacts=set(last_contacts_names))
 
     await message.answer(
         'Type name or select from list:',
-        reply_markup=make_keyboard_by_lists([*[[contact] for contact in last_contacts], ['Cancel']])
+        reply_markup=make_keyboard_by_lists([*[[name] for name in last_contacts_names], ['Cancel']])
     )
     await state.set_state(FindContactState.typing_name)
 
@@ -104,9 +107,9 @@ async def contact(message: Message, state: FSMContext):
         await message.answer(f"Searching contact with name {name}")
         similar_contacts = await Helper.find_contacts_by_name(name)
         if similar_contacts is None:
-            await set_start_state(message, state, 'Something went wrong. Error with similar contacts.')
+            await set_start_state(message, state, 'Something went wrong. Error with similar contact_log.')
         if len(similar_contacts) == 0:
-            await message.answer("No contacts found. Type another name or cancel.")
+            await message.answer("No contact_log found. Type another name or cancel.")
             return
         buttons = [
             *[[similar_contact] for similar_contact in similar_contacts],

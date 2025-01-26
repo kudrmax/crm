@@ -4,7 +4,8 @@ from sqlalchemy import Engine, text
 from sqlalchemy.exc import IntegrityError
 
 from src.models.contact.model import MContactCreate, MContact, MContactUpdate
-from src.storage.postgres.repositories.contacts.errors import ContactNotFoundErr, ContactAlreadyExistsErr
+from src.errors import ContactNotFoundErr, ContactAlreadyExistsErr
+from src.storage.postgres.connection.engine import engine
 
 
 class ContactRepository:
@@ -24,6 +25,12 @@ class ContactRepository:
             if len(rows) == 0:
                 return None
             return self.__convert_row_to_model(rows[0])
+
+    def get_by_contact_ids(self, contact_ids: List[int]) -> List[MContact]:
+        with self.engine.connect() as conn:
+            query = text('''SELECT * FROM contacts WHERE id IN :contact_ids''')
+            rows = conn.execute(query, {'contact_ids': tuple(contact_ids)}).all()
+            return self.__convert_rows_to_models(rows)
 
     def create(self, new_contact: MContactCreate) -> bool:
         with self.engine.connect() as conn:
@@ -81,50 +88,3 @@ class ContactRepository:
     @staticmethod
     def __convert_rows_to_models(rows) -> List[MContact]:
         return [MContact(*row) for row in rows]
-
-    # def get_last_contacts(self, count: int = 5) -> List[MContact]:
-    #     with self.engine.connect() as conn:
-    #         query = text('''
-    #             SELECT contact_id, max(datetime) AS last_date
-    #             FROM logs
-    #             GROUP BY contact_id
-    #             ORDER BY last_date DESC
-    #             LIMIT contact_count
-    #         ''')
-
-    # def tmp(self):
-    #     SQL = """
-    #     SELECT contact_id, max(datetime) AS last_date
-    #     FROM logs
-    #     GROUP BY contact_id
-    #     ORDER BY last_date DESC
-    #     LIMIT contact_count
-    #     """
-    #
-    #     subquery = (
-    #         select(
-    #             MLog.contact_id,
-    #             func.max(MLog.datetime).label('last_date')
-    #         )
-    #         .group_by(MLog.contact_id)
-    #         .subquery()
-    #     )
-    #
-    #     query = (
-    #         select(subquery.c.contact_id, subquery.c.last_date)
-    #         .order_by(subquery.c.last_date.desc())
-    #         .limit(contact_count)
-    #     )
-    #
-    #     contact_ids = await self.db.execute(query)
-    #     contact_ids = contact_ids.scalars().all()
-    #
-    #     contacts = []
-    #     for contact_id in contact_ids:
-    #         query = select(MContact).where(MContact.id == contact_id)
-    #         contact = await self.db.execute(query)
-    #         contact = contact.scalar_one_or_none()
-    #         if contact:
-    #             contacts.append(contact)
-    #
-    #     return contacts

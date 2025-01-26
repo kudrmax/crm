@@ -6,8 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from src.models.log.models import MLog, MLogCreate, MLogUpdate
 from src.storage.postgres.connection.engine import engine
-from src.storage.postgres.repositories.contacts.errors import ContactNotFoundErr
-from src.storage.postgres.repositories.logs.errors import ContactIdNotFoundErr
+from src.errors import ContactNotFoundErr, ContactIdNotFoundErr
 
 
 class LogRepository:
@@ -22,7 +21,7 @@ class LogRepository:
 
     def get_by_id(self, id: int) -> MLog | None:
         with self.engine.connect() as conn:
-            query = text('''SELECT * FROM contacts WHERE id = :id''')
+            query = text('''SELECT * FROM logs WHERE id = :id''')
             rows = conn.execute(query, {'id': id}).all()
             if len(rows) == 0:
                 return None
@@ -75,6 +74,19 @@ class LogRepository:
             conn.commit()
             return bool(rows.rowcount)
 
+    def get_last_contact_ids(self, count: int = 5) -> List[int]:
+        with self.engine.connect() as conn:
+            query = text('''
+                SELECT contact_id, max(datetime) AS last_date
+                FROM logs
+                GROUP BY contact_id
+                ORDER BY last_date DESC
+                LIMIT :count
+            ''')
+            rows = conn.execute(query, {'count': count})
+            contact_ids = [row[0] for row in rows]
+            return contact_ids
+
     @staticmethod
     def __convert_row_to_model(row) -> MLog:
         return MLog(*row)
@@ -85,7 +97,3 @@ class LogRepository:
 
 
 r = LogRepository(engine=engine)
-
-print(r.get_all())
-r.delete_by_id(9)
-print(r.get_all())

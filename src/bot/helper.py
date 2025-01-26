@@ -15,7 +15,7 @@ from src.errors import (
     AlreadyExistsError
 )
 from src.models.contact.model import MContactCreate
-from src.services.contacts.service import ContactService
+from src.services.contact_log.service import ContactLogService
 from src.settings import settings
 
 

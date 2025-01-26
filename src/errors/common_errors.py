@@ -32,3 +32,15 @@ class UnknownError(Exception):
     ):
         self.status_code = status_code
         self.details = details
+
+
+class ContactNotFoundErr(Exception):
+    pass
+
+
+class ContactAlreadyExistsErr(Exception):
+    pass
+
+
+class ContactIdNotFoundErr(Exception):
+    pass
