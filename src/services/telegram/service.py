@@ -1,13 +1,24 @@
 from typing import List
 
+from src.bot.keyboards import main_kb
 from src.models.contact.model import MContact
 from src.models.log.models import MLog, MLogWithNumbers
 
 
+class MainMenuService:
+    def get_post(self):
+        return "Choose option:"
+
+    def get_kb(self):
+        return main_kb()
+
+
 class TelegramService:
+    main_menu: MainMenuService = MainMenuService()
+
     def get_logs_post(self, logs: List[MLogWithNumbers] | List[MLog]):
         if len(logs) == 0:
-            return "No logs"
+            return f'👎🏻 There is no logs'
         if isinstance(logs[0], MLogWithNumbers):
             log_texts_with_dashes = [f'{log.telegram_number}. {log.text}' for log in logs if log.text != ""]
         elif isinstance(logs[0], MLog):
