@@ -64,7 +64,7 @@ async def add_empty_log(message: Message, state: FSMContext):
             contact_id=contact.id,
             text="",
         ))
-        await Helper.add_empty_log(name=data['name'])
+        # await Helper.add_empty_log(name=data['name'])
         await message.answer('Interaction was added.')
     except ContactNotFoundError:
         await message.answer(f"Contact with name {data['name']} not found. Aborted.")
