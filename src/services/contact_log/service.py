@@ -1,8 +1,9 @@
+import dataclasses
 import difflib
-from typing import List
+from typing import List, Tuple, Any
 
 from src.models.contact.model import MContact, MContactCreate, MContactUpdate
-from src.models.log.models import MLogUpdate, MLog, MLogCreate
+from src.models.log.models import MLogUpdate, MLog, MLogCreate, MLogWithNumbers
 from src.storage.postgres.connection.engine import engine
 from src.errors import ContactNotFoundErr, ContactAlreadyExistsErr
 from src.storage.postgres.repositories.contacts.repository import ContactRepository
@@ -13,6 +14,8 @@ class ContactLogService:
     def __init__(self, contact_repository: ContactRepository, log_repository: LogRepository):
         self.contact_repository = contact_repository
         self.log_repository = log_repository
+
+    # GET
 
     def get_all_contacts(self) -> List[MContact]:
         return self.contact_repository.get_all()
@@ -25,12 +28,25 @@ class ContactLogService:
         ids = self.log_repository.get_last_contact_ids()
         return self.contact_repository.get_by_contact_ids(ids)
 
-    def get_log_by_log_id(self, log_id: int) -> MLog | None:
-        return self.log_repository.get_by_id(log_id)
-
-    def get_logs_by_contact_name(self, name: str) -> List[MLog]:
+    def get_logs_by_contact_name(self, name: str, need_numbers: bool = False) -> List[MLog] | List[MLogWithNumbers]:
         contact = self.contact_repository.get_by_name(name)
-        return self.log_repository.get_by_contact_id(contact.id)
+        logs = self.log_repository.get_by_contact_id(contact.id)
+        if not need_numbers:
+            return logs
+
+        logs_with_numbers = [
+            MLogWithNumbers(*dataclasses.astuple(logs[i]), i)
+            for i in range(len(logs))
+        ]
+        return logs_with_numbers
+
+    def get_similar_contacts(self, name: str, name_count: int = 6) -> List[MContact]:
+        contacts = self.get_all_contacts()
+        names = [contact.name.lower() for contact in contacts]
+        close_names = difflib.get_close_matches(name.lower(), names, n=name_count)
+        return [contact for contact in contacts if contact.name.lower() in close_names]
+
+    # CREATE
 
     def create_contact(self, contact: MContactCreate) -> bool:
         try:
@@ -41,17 +57,20 @@ class ContactLogService:
     def create_log(self, log_create: MLogCreate) -> bool:
         return self.log_repository.create(log_create)
 
+    # UPDATE
+
     def update_contact_by_name(self, name: str, new_contact: MContactUpdate) -> bool:
         return self.contact_repository.update_by_name(name, new_contact)
+
+    def update_log_by_log_id(self, log_id: int, log_update: MLogUpdate) -> bool:
+        pass
+
+    # DELETE
 
     def delete_contact_by_name(self, name: str) -> bool:
         return self.contact_repository.delete_by_name(name)
 
-    def get_similar_contacts(self, name: str, name_count: int = 6) -> List[MContact]:
-        contacts = self.get_all_contacts()
-        names = [contact.name.lower() for contact in contacts]
-        close_names = difflib.get_close_matches(name.lower(), names, n=name_count)
-        return [contact for contact in contacts if contact.name.lower() in close_names]
+    # OTHER
 
     @staticmethod
     def get_names_from_models(contacts: List[MContact]) -> List[str]:
@@ -66,3 +85,18 @@ def new_contact_service() -> ContactLogService:
 
 
 contact_log_service = new_contact_service()
+
+# class LogNumbers:
+#     def __init__(self, logs: List[MLog]):
+#         self.__log_id_to_number = {}
+#         self.__number_to_log_id = {}
+#         for i in range(len(logs)):
+#             log_id = logs[i].id
+#             self.__log_id_to_number[log_id] = i
+#             self.__number_to_log_id[i] = log_id
+#
+#     def get_log_id_by_number(self, number: int) -> int | None:
+#         return self.__number_to_log_id.get(number)
+#
+#     def get_number_by_log_id(self, log_id: int) -> int | None:
+#         return self.__log_id_to_number.get(log_id)

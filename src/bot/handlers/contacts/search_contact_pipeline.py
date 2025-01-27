@@ -69,7 +69,7 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
 
     state_data = await state.get_data()
 
-    logs = contact_log_service.get_logs_by_contact_name(name)
+    logs = contact_log_service.get_logs_by_contact_name(name, need_numbers=True) # TODO перенести в отдельный один пайпдайн получения логов
     logs_str = telegram_service.convert_logs_to_str(logs)
     await message.answer(
         contact.to_string(),

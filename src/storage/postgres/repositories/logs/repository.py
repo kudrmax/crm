@@ -13,12 +13,6 @@ class LogRepository:
     def __init__(self, engine: Engine):
         self.engine = engine
 
-    def get_all(self) -> List[MLog]:
-        with self.engine.connect() as conn:
-            query = text('''SELECT * FROM logs''')
-            rows = conn.execute(query).all()
-            return self.__convert_rows_to_models(rows)
-
     def get_by_id(self, id: int) -> MLog | None:
         with self.engine.connect() as conn:
             query = text('''SELECT * FROM logs WHERE id = :id''')
@@ -31,7 +25,7 @@ class LogRepository:
         with self.engine.connect() as conn:
             query = text('''
                 SELECT * FROM logs 
-                WHERE contact_id = :contact_id
+                WHERE contact_id = :contact_id AND text != ''
                 ORDER BY datetime DESC
             ''')
             rows = conn.execute(query, {'contact_id': contact_id}).all()
