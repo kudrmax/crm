@@ -22,7 +22,7 @@ async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
     name = data['name']
     logs = contact_log_service.get_logs_by_contact_name(data['name'], need_numbers=True)
-    logs_str = telegram_service.convert_logs_to_str(logs)
+    logs_str = telegram_service.get_logs_post(logs)
     # log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
     if len(logs) == 0:
         await message.answer(f'👎🏻 There is no logs for {name}')

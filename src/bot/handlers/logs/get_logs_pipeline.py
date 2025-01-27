@@ -23,7 +23,7 @@ async def get_logs(message: Message, state: FSMContext, name: str | None = None)
             return
 
         await message.answer(
-            telegram_service.convert_logs_to_str(logs),
+            telegram_service.get_logs_post(logs),
             # parse_mode=ParseMode.MARKDOWN_V2
         )
     except ContactNotFoundError:

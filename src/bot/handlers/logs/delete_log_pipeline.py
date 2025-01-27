@@ -26,7 +26,7 @@ async def delete_logs_handler(message: Message, state: FSMContext):
         return
     await state.update_data(logs=logs)
     await message.answer(
-        telegram_service.convert_logs_to_str(logs), # TODO превратить в один пайплайн get_logs
+        telegram_service.get_logs_post(logs), # TODO превратить в один пайплайн get_logs
         # parse_mode=ParseMode.MARKDOWN_V2,
     )
     await message.answer(
