@@ -1,3 +1,5 @@
+from typing import List
+
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
@@ -7,6 +9,9 @@ from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb, contact_profile_kb
 from src.bot.states import ContactProfileState, DeleteLogsState
 from src.errors import UnprocessableEntityError, NotFoundError
+from src.models.log.models import MLogWithNumbers
+from src.services.contact_log.service import contact_log_service
+from src.services.telegram.service import telegram_service
 
 router = Router()
 
@@ -15,12 +20,15 @@ router = Router()
 async def delete_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
     name = data['name']
-    log_str, numbers_to_log_id = await Helper.get_all_logs(name)
-    if Helper.text_is_empty(log_str):
+    logs = contact_log_service.get_logs_by_contact_name(name, need_numbers=True)
+    if len(logs) == 0:
         await message.answer(f'👎🏻 There is no logs for {name}')
         return
-    await state.update_data(numbers_to_log_id=numbers_to_log_id)
-    await message.answer(Helper.create_str_for_logs(log_str, name), parse_mode=ParseMode.MARKDOWN_V2)
+    await state.update_data(logs=logs)
+    await message.answer(
+        telegram_service.convert_logs_to_str(logs), # TODO превратить в один пайплайн get_logs
+        # parse_mode=ParseMode.MARKDOWN_V2,
+    )
     await message.answer(
         'Type number of log to delete:',
         reply_markup=make_row_keyboard_by_list(['Cancel'])
@@ -30,7 +38,7 @@ async def delete_logs_handler(message: Message, state: FSMContext):
 
 @router.message(DeleteLogsState.typing_number, F.text.lower().contains('cancel'))
 async def cancel(message: Message, state: FSMContext):
-    await state.update_data(numbers_to_log_id=None)
+    await state.update_data(logs=None)
     await message.answer(f'Canceled', reply_markup=contact_profile_kb())
     await state.set_state(ContactProfileState.choose_action)
 
@@ -39,13 +47,22 @@ async def cancel(message: Message, state: FSMContext):
 async def choose_number(message: Message, state: FSMContext):
     number = message.text
     data = await state.get_data()
-    numbers_to_log_id = data['numbers_to_log_id']
-    if number not in numbers_to_log_id:
+    logs: List[MLogWithNumbers] = data['logs']
+
+    deleted_log = None
+    for log in logs:
+        if log.telegram_number == int(number): # TODO добавить проверку на то, что это конвертируется в int
+            deleted_log = log
+            break
+
+    if not deleted_log:
         await message.answer(f'There is no log with number {int(number)}. Type another number:')
         return
-    log_id = numbers_to_log_id[number]
+
+    log_id = deleted_log.id
     try:
-        await Helper.delete_log(log_id)
+        contact_log_service.delete_log_by_log_id(log_id)
+        # await Helper.delete_log(log_id)
     except NotFoundError as e:
         await message.answer(f'There is no log with number {int(number)}. Type another number:')
     else:
@@ -53,13 +70,6 @@ async def choose_number(message: Message, state: FSMContext):
             f'Log was deleted successfully.',
             reply_markup=contact_profile_kb()
         )
-        await state.update_data(numbers_to_log_id=None)
+        await state.update_data(logs=None)
         await state.update_data(log_id=None)
         await state.set_state(ContactProfileState.choose_action)
-
-    # await state.update_data(log_id=log_id)
-    # await message.answer(
-    #     f'You are going to update log with log_id={log_id}',
-    #     reply_markup=edit_log_kb()
-    # )
-    # await state.set_state(ContactProfileState.choose_what_to_edit)
