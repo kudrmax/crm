@@ -13,6 +13,6 @@ def postgres_url(username, password, host, port, database) -> str:
     ))
 
 
-POSTGRES_URL = postgres_url('postgres', 'postgres', 'localhost', 5432, 'postgres')
+POSTGRES_URL = postgres_url('postgres', 'postgres', 'localhost', 5533, 'postgres')
 
 engine = create_engine(POSTGRES_URL, future=True, echo=False)

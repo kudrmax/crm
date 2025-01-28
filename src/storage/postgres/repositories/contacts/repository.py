@@ -53,6 +53,8 @@ class ContactRepository:
                     raise ContactAlreadyExistsErr()
 
     def update_by_name(self, old_name: str, new_contact_data: MContactUpdate) -> bool:
+        new_contact_data.telegram = self.__prepare_telegram(new_contact_data.telegram)
+
         with self.engine.connect() as conn:
             try:
                 query = text('''
@@ -75,6 +77,9 @@ class ContactRepository:
                 return bool(rows.rowcount)
             except ContactNotFoundErr as e:
                 raise  # TODO проверить как выглядит эта ошибка
+            except IntegrityError as e:
+                if 'duplicate key value violates unique constraint' in str(e):
+                    raise ContactAlreadyExistsErr()
 
     def delete_by_name(self, name: str) -> bool:
         with self.engine.connect() as conn:
@@ -90,3 +95,7 @@ class ContactRepository:
     @staticmethod
     def __convert_rows_to_models(rows) -> List[MContact]:
         return [MContact(*row) for row in rows]
+
+    @staticmethod
+    def __prepare_telegram(telegram: str) -> str:
+        return telegram[1:] if ((len(telegram) > 0) and telegram[0] == '@') else telegram

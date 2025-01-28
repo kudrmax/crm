@@ -41,6 +41,7 @@ async def set_name(message: Message, state: FSMContext):
             reply_markup=contact_profile_kb(),
         )
         await state.clear()
+        await state.update_data(name=name)
         await state.set_state(ContactProfileState.choose_action)
     except ContactAlreadyExistsErr:
         await message.reply(
