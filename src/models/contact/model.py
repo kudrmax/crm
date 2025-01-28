@@ -31,6 +31,7 @@ class MContact:
             birthday = self.birthday
             birthday = escape_markdown_v2(birthday)
             result.append(f"🎉 Birthday: {birthday}")
+
         return "\n".join(result)
 
 

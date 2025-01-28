@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from sqlalchemy.orm.base import state_str
 
+from src.bot.handlers.pipelines.get_profile import start_get_profile_pipeline
 from src.bot.keyboards import contact_profile_kb, edit_contact_kb
 from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError, UnprocessableEntityError, AlreadyExistsError, NotFoundError, \
@@ -15,20 +16,7 @@ router = Router()
 
 @router.message(EditContactState.choose_what_edit, F.text.lower().contains('finish'))
 async def choose_action(message: Message, state: FSMContext):
-    name = (await state.get_data()).get('name')
-    try:
-        contact = contact_log_service.get_contact_by_name(name)
-    except ContactNotFoundError:
-        await message.answer(f"Contact with name {name} not found")
-        raise
-
-    contact_str = contact.to_string()
-    await message.answer(
-        contact_str,
-        # parse_mode=ParseMode.MARKDOWN_V2,
-        reply_markup=contact_profile_kb()
-    )
-    await state.set_state(ContactProfileState.choose_action)
+    await start_get_profile_pipeline(message, state)
 
 
 @router.message(EditContactState.choose_what_edit)

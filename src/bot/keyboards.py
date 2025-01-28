@@ -34,7 +34,7 @@ def main_kb():
     ])
 
 
-def contact_profile_kb():
+def contact_profile_kb(): # TODO заменить 20 usage на использование start_get_profile_pipeline()
     return make_keyboard_by_lists([
         ['Start logging 📥', 'Get logs 📋️', 'Я'],
         ['Add empty log 👉🏻', 'Profile 👤'],

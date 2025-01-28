@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from src.bot.handlers.pipelines.get_profile import start_get_profile_pipeline
 from src.bot.handlers.pipelines.search_contact import search_contact_from_main_to_profile
 from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
 from src.bot.handlers.logs.logging_pipeline import start_logging
@@ -17,14 +18,7 @@ router = Router()
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('profile'))
 async def get_profile(message: Message, state: FSMContext):
-    data = await state.get_data()
-    name = data['name']
-    contact = contact_log_service.get_contact_by_name(name)
-    contact_str = contact.to_string()
-    # contact_data = await Helper.get_contact_data_by_name(name)
-    # contact_data_answer = await Helper.convert_contact_data_to_string(contact_data)
-    await message.answer(contact_str)
-    await state.update_data(logs_are_got=False)
+    await start_get_profile_pipeline(message, state)
 
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('get logs'))
