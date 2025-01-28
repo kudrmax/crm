@@ -41,6 +41,7 @@ class ContactLogService:
         return logs_with_numbers
 
     def get_similar_contacts(self, name: str, name_count: int = 6) -> List[MContact]:
+        # TODO улучшить функцию
         contacts = self.get_all_contacts()
         names = [contact.name.lower() for contact in contacts]
         close_names = difflib.get_close_matches(name.lower(), names, n=name_count)

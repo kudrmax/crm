@@ -3,7 +3,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.contacts.search_contact_pipeline import search_contact, search_contact_from_main_to_profile
+from src.bot.handlers.contacts.search_contact_pipeline import start_search_contact_pipeline, search_contact_from_main_to_profile
 from src.bot.handlers.logs.get_logs_pipeline import get_logs
 from src.bot.handlers.logs.logging_pipeline import start_logging
 from src.bot.helper import Helper
