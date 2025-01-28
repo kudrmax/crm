@@ -4,11 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.pipelines.create_contact import start_create_contact_pipeline
-from src.bot.handlers.contacts.search_contact_pipeline import start_search_contact_pipeline, \
-    search_contact_from_main_to_profile
+from src.bot.handlers.pipelines.search_contact import start_search_contact_pipeline
 from src.bot.handlers.logs.get_last_logs_pipeline import get_last_logs
-from src.bot.keyboards import main_kb, contact_profile_kb, make_row_keyboard_by_list, make_keyboard_by_lists, stats_kb
-from src.bot.states import ContactProfileState, AddContactState, StatsState
+from src.bot.keyboards import main_kb, contact_profile_kb, stats_kb
+from src.bot.states import ContactProfileState, StatsState
 
 router = Router()
 
