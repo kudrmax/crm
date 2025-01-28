@@ -4,13 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
 
-from src.bot.handlers.logs.get_logs_pipeline import get_logs
-from src.bot.helper import Helper
-from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists, main_kb, contact_profile_kb
+from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
+from src.bot.keyboards import make_keyboard_by_lists, main_kb, contact_profile_kb
 from src.bot.states import FindContactState, ContactProfileState
-from src.errors import ContactNotFoundError, NotFoundError
 from src.services.contact_log.service import contact_log_service
-from src.services.telegram.service import telegram_service
 
 router = Router()
 
@@ -82,7 +79,7 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
     final_state = data.get('final_state')
     final_reply_markup = data.get('final_reply_markup')
 
-    await get_logs(message, state, name=name, reply_markup=final_reply_markup)
+    await start_get_logs_pipeline(message, state, name=name, reply_markup=final_reply_markup)
 
     await state.update_data(final_state=None)
     await state.update_data(start_state=None)

@@ -1,17 +1,14 @@
 from typing import List
 
-from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardMarkup
 
-from src.bot.helper import Helper
-from src.errors import ContactNotFoundError
 from src.models.log.models import MLogWithNumbers
 from src.services.contact_log.service import contact_log_service
 from src.services.telegram.service import telegram_service
 
 
-async def get_logs(
+async def start_get_logs_pipeline(
         message: Message,
         state: FSMContext,
         logs: List[MLogWithNumbers] | None = None,

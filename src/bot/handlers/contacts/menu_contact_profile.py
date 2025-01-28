@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.pipelines.search_contact import search_contact_from_main_to_profile
-from src.bot.handlers.logs.get_logs_pipeline import get_logs
+from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
 from src.bot.handlers.logs.logging_pipeline import start_logging
 from src.bot.keyboards import edit_contact_kb, contact_profile_kb, make_row_keyboard_by_list, \
     main_kb
@@ -29,12 +29,12 @@ async def get_profile(message: Message, state: FSMContext):
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('get logs'))
 async def get_logs_handler(message: Message, state: FSMContext):
-    await get_logs(message, state)
+    await start_get_logs_pipeline(message, state)
 
 
 @router.message(ContactProfileState.choose_action, F.text == 'Я')
 async def get_logs_handler(message: Message, state: FSMContext):
-    await get_logs(message, state, name='Я')
+    await start_get_logs_pipeline(message, state, name='Я')
     await state.update_data(logs_are_got=False)
 
 
@@ -42,7 +42,7 @@ async def get_logs_handler(message: Message, state: FSMContext):
 async def add_log(message: Message, state: FSMContext):
     data = await state.get_data()
     if 'logs_are_got' not in data or 'logs_are_got' in data and data['logs_are_got'] == False:
-        await get_logs(message, state)
+        await start_get_logs_pipeline(message, state)
     await start_logging(
         message=message,
         state=state,

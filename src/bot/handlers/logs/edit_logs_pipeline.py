@@ -1,4 +1,3 @@
-import datetime
 from typing import List
 
 from aiogram import Router, F
@@ -6,14 +5,12 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.logs.get_logs_pipeline import get_logs
-from src.bot.helper import Helper
+from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
 from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb, contact_profile_kb
 from src.bot.states import EditLogsState, ContactProfileState
 from src.errors import UnprocessableEntityError
 from src.models.log.models import MLogWithNumbers, MLogUpdate
 from src.services.contact_log.service import contact_log_service
-from src.services.telegram.service import telegram_service
 
 router = Router()
 
@@ -25,7 +22,7 @@ async def edit_logs_handler(message: Message, state: FSMContext):
     name = data.get('name')
     logs = contact_log_service.get_logs_by_contact_name(data['name'], need_numbers=True)
     await state.update_data(logs=logs)
-    await get_logs(message, state, logs=logs, name=name)
+    await start_get_logs_pipeline(message, state, logs=logs, name=name)
 
     await message.answer(
         'Type number of log to edit:',
