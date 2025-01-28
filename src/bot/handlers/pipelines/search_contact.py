@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
 
+from src.bot.handlers.logs.get_logs_pipeline import get_logs
 from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, make_keyboard_by_lists, main_kb, contact_profile_kb
 from src.bot.states import FindContactState, ContactProfileState
@@ -72,19 +73,16 @@ async def set_last_state(message: Message, state: FSMContext, name: str):
     await state.update_data(name=name)
 
     contact = contact_log_service.get_contact_by_name(name)
-    logs = contact_log_service.get_logs_by_contact_name(name, need_numbers=True)
-    logs_str = telegram_service.get_logs_post(logs)  # TODO перенести в отдельный один пайпдайн получения логов
     await message.answer(
         contact.to_string(),
         parse_mode=ParseMode.MARKDOWN_V2
-    )
+    )  # TODO перенести в отдельный один пайпдайн для получения profile
 
     data = await state.get_data()
     final_state = data.get('final_state')
     final_reply_markup = data.get('final_reply_markup')
 
-    await message.answer(logs_str, reply_markup=final_reply_markup)
-    await state.update_data(logs_are_got=True)
+    await get_logs(message, state, name=name, reply_markup=final_reply_markup)
 
     await state.update_data(final_state=None)
     await state.update_data(start_state=None)

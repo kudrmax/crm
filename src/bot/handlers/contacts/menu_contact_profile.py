@@ -30,7 +30,6 @@ async def get_profile(message: Message, state: FSMContext):
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('get logs'))
 async def get_logs_handler(message: Message, state: FSMContext):
     await get_logs(message, state)
-    await state.update_data(logs_are_got=True)
 
 
 @router.message(ContactProfileState.choose_action, F.text == 'Я')

@@ -6,6 +6,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from src.bot.handlers.logs.get_logs_pipeline import get_logs
 from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb, contact_profile_kb
 from src.bot.states import EditLogsState, ContactProfileState
@@ -20,19 +21,12 @@ router = Router()
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('edit log'))
 async def edit_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
-    name = data['name']
-    logs = contact_log_service.get_logs_by_contact_name(data['name'], need_numbers=True)
-    logs_str = telegram_service.get_logs_post(logs)
-    # log_str, numbers_to_log_id = await Helper.get_all_logs(data['name'])
-    if len(logs) == 0:
-        await message.answer(f'👎🏻 There is no logs for {name}')
-        return
 
+    name = data.get('name')
+    logs = contact_log_service.get_logs_by_contact_name(data['name'], need_numbers=True)
     await state.update_data(logs=logs)
-    await message.answer(
-        logs_str,
-        # parse_mode=ParseMode.MARKDOWN_V2,
-    )
+    await get_logs(message, state, logs=logs, name=name)
+
     await message.answer(
         'Type number of log to edit:',
         reply_markup=make_row_keyboard_by_list(['Cancel'])

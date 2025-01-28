@@ -5,6 +5,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from src.bot.handlers.logs.get_logs_pipeline import get_logs
 from src.bot.helper import Helper
 from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb, contact_profile_kb
 from src.bot.states import ContactProfileState, DeleteLogsState
@@ -19,16 +20,12 @@ router = Router()
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('delete log'))
 async def delete_logs_handler(message: Message, state: FSMContext):
     data = await state.get_data()
-    name = data['name']
+
+    name = data.get('name')
     logs = contact_log_service.get_logs_by_contact_name(name, need_numbers=True)
-    if len(logs) == 0:
-        await message.answer(f'👎🏻 There is no logs for {name}')
-        return
+    await get_logs(message, state, logs=logs, name=name)
     await state.update_data(logs=logs)
-    await message.answer(
-        telegram_service.get_logs_post(logs), # TODO превратить в один пайплайн get_logs
-        # parse_mode=ParseMode.MARKDOWN_V2,
-    )
+
     await message.answer(
         'Type number of log to delete:',
         reply_markup=make_row_keyboard_by_list(['Cancel'])
@@ -51,7 +48,7 @@ async def choose_number(message: Message, state: FSMContext):
 
     deleted_log = None
     for log in logs:
-        if log.telegram_number == int(number): # TODO добавить проверку на то, что это конвертируется в int
+        if log.telegram_number == int(number):  # TODO добавить проверку на то, что это конвертируется в int
             deleted_log = log
             break
 

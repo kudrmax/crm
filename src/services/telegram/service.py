@@ -16,17 +16,20 @@ class MainMenuService:
 class TelegramService:
     main_menu: MainMenuService = MainMenuService()
 
-    def get_logs_post(self, logs: List[MLogWithNumbers] | List[MLog]):
+    def get_logs_post(self, logs: List[MLogWithNumbers] | List[MLog], name: str | None = None) -> str:
         if len(logs) == 0:
-            return f'👎🏻 There is no logs'
+            return f'👎🏻 There is no logs' if not name else f'👎🏻 There is no logs for {name}'
+
         if isinstance(logs[0], MLogWithNumbers):
             log_texts_with_dashes = [f'{log.telegram_number}. {log.text}' for log in logs if log.text != ""]
         elif isinstance(logs[0], MLog):
             log_texts_with_dashes = [f'- {log.text}' for log in logs if log.text != ""]
         else:
             raise Exception(f'Unsupported type {type(logs)}')
+
         log_texts_str = "\n".join(log_texts_with_dashes)
-        return f"Logs:\n\n{log_texts_str}"
+        title = "Logs:" if not name else f"Logs of {name}:"
+        return f"{title}\n\n{log_texts_str}"
 
     def get_all_contacts_post(self, contacts: List[MContact]):
         rows = []
