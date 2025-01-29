@@ -6,6 +6,7 @@ from src.bot.keyboards import make_row_keyboard_by_list, contact_profile_kb
 from src.bot.states import AddContactState, ContactProfileState
 from src.errors import ContactAlreadyExistsErr
 from src.models.contact.model import MContactCreate
+from src.models.log.models import MLogCreate
 from src.services.contact_log.service import contact_log_service
 from src.services.telegram.service import telegram_service
 
@@ -40,6 +41,14 @@ async def set_name(message: Message, state: FSMContext):
             f'✅ Contact *{name}* was added',  # TODO добавить жирный текст
             reply_markup=contact_profile_kb(),
         )
+
+        # заполняем пустой лог, чтобы контакт сразу же появился в поиске
+        contact_id = contact_log_service.get_contact_id_by_name(name)
+        contact_log_service.create_log(MLogCreate(
+            contact_id=contact_id,
+            text=""
+        ))
+
         await state.clear()
         await state.update_data(name=name)
         await state.set_state(ContactProfileState.choose_action)

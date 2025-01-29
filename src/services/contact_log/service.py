@@ -23,6 +23,12 @@ class ContactLogService:
     def get_contact_by_name(self, name: str) -> MContact | None:
         return self.contact_repository.get_by_name(name)
 
+    def get_contact_id_by_name(self, name: str) -> int | None:
+        contact = self.get_contact_by_name(name)
+        if not contact:
+            return None
+        return contact.id
+
     def get_last_contacts(self) -> List[MContact]:
         # TODO сделать так, чтобы получать последние созданные контакты, у которых пока 0 логов
         ids = self.log_repository.get_last_contact_ids()
