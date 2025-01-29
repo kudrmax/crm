@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.handlers.menu_main import start_main_menu_pipeline
-from src.bot.handlers.pipelines.menu_contact import start_menu_contact_pipeline
+from src.bot.handlers.pipelines.contact_menu import start_menu_contact_pipeline
 from src.bot.keyboards import cancel_kb
 from src.bot.states import DeleteContactState
 from src.services.contact_log.service import contact_log_service

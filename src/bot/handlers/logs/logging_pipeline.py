@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message
 
-from src.bot.handlers.pipelines.search_contact import search_contact_from_main_to_profile
+from src.bot.handlers.pipelines.contact_serach import search_contact_from_main_to_profile
 from src.bot.keyboards import logging_kb
 from src.bot.states import AddLog
 from src.errors import ContactNotFoundError

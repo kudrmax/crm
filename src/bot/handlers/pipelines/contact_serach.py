@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
 
-from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
+from src.bot.handlers.pipelines.logs_get import start_get_logs_pipeline
 from src.bot.keyboards import make_keyboard_by_lists, main_kb, contact_profile_kb
 from src.bot.states import FindContactState, ContactProfileState
 from src.services.contact_log.service import contact_log_service

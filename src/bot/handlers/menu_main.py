@@ -3,8 +3,8 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.pipelines.create_contact import start_create_contact_pipeline
-from src.bot.handlers.pipelines.search_contact import start_search_contact_pipeline
+from src.bot.handlers.pipelines.contact_create import start_create_contact_pipeline
+from src.bot.handlers.pipelines.contact_serach import start_search_contact_pipeline
 from src.bot.handlers.logs.get_last_logs_pipeline import get_last_logs
 from src.bot.keyboards import main_kb, contact_profile_kb, stats_kb
 from src.bot.states import ContactProfileState, StatsState

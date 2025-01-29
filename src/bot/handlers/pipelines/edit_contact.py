@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from sqlalchemy.orm.base import state_str
 
-from src.bot.handlers.pipelines.get_profile import start_get_profile_pipeline
+from src.bot.handlers.pipelines.contact_profile_get import start_get_profile_pipeline
 from src.bot.keyboards import contact_profile_kb, edit_contact_kb
 from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError, UnprocessableEntityError, AlreadyExistsError, NotFoundError, \

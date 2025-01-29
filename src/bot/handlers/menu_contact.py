@@ -2,10 +2,10 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.pipelines.delete_contact import start_delete_contact_pipeline
-from src.bot.handlers.pipelines.get_profile import start_get_profile_pipeline
-from src.bot.handlers.pipelines.search_contact import search_contact_from_main_to_profile
-from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
+from src.bot.handlers.pipelines.contact_delete import start_delete_contact_pipeline
+from src.bot.handlers.pipelines.contact_profile_get import start_get_profile_pipeline
+from src.bot.handlers.pipelines.contact_serach import search_contact_from_main_to_profile
+from src.bot.handlers.pipelines.logs_get import start_get_logs_pipeline
 from src.bot.handlers.logs.logging_pipeline import start_logging
 from src.bot.keyboards import edit_contact_kb, contact_profile_kb, main_kb
 from src.bot.states import ContactProfileState, EditContactState

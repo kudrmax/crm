@@ -5,7 +5,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
+from src.bot.handlers.pipelines.logs_get import start_get_logs_pipeline
 from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb, contact_profile_kb
 from src.bot.states import EditLogsState, ContactProfileState
 from src.errors import UnprocessableEntityError
