@@ -10,6 +10,7 @@ from src.bot.handlers.pipelines.logs_logging import start_logging
 from src.bot.keyboards import edit_contact_kb, contact_profile_kb, main_kb
 from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError
+from src.models.contact.model import MContactCreate
 from src.models.log.models import MLogCreate
 from src.services.contact_log.service import contact_log_service
 
@@ -28,6 +29,9 @@ async def get_logs_handler(message: Message, state: FSMContext):
 
 @router.message(ContactProfileState.choose_action, F.text == 'Я')
 async def get_logs_handler(message: Message, state: FSMContext):
+    contact = contact_log_service.get_contact_by_name('Я')
+    if not contact:
+        contact_log_service.create_contact(MContactCreate(name='Я'))
     await start_get_logs_pipeline(message, state, name='Я')
     await state.update_data(logs_are_got=False)
 

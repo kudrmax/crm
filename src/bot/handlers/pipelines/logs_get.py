@@ -26,5 +26,6 @@ async def start_get_logs_pipeline(
         logs_str,
         reply_markup=reply_markup,
     )
-    await message.answer(f'Logs of {name} ⬆️')
+    if len(logs) > 0:
+        await message.answer(f'Logs of {name} ⬆️')
     await state.update_data(logs_are_got=True)
