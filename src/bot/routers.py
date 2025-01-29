@@ -5,7 +5,7 @@ from src.bot.error_handlers import router as error_handlers
 from src.bot.handlers.menu_main import router as menu_main
 
 from src.bot.handlers.pipelines.create_contact import router as create_contact_pipeline
-from src.bot.handlers.contacts.delete_contact_pipeline import router as delete_contact_pipeline
+from src.bot.handlers.pipelines.delete_contact import router as delete_contact_pipeline
 from src.bot.handlers.pipelines.edit_contact import router as edit_contact_pipeline
 from src.bot.handlers.contacts.menu_contact_profile import router as menu_contact_profile
 from src.bot.handlers.pipelines.search_contact import router as search_contact_pipeline

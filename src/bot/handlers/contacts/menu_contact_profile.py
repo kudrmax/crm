@@ -2,13 +2,13 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from src.bot.handlers.pipelines.delete_contact import start_delete_contact_pipeline
 from src.bot.handlers.pipelines.get_profile import start_get_profile_pipeline
 from src.bot.handlers.pipelines.search_contact import search_contact_from_main_to_profile
 from src.bot.handlers.pipelines.get_logs import start_get_logs_pipeline
 from src.bot.handlers.logs.logging_pipeline import start_logging
-from src.bot.keyboards import edit_contact_kb, contact_profile_kb, make_row_keyboard_by_list, \
-    main_kb
-from src.bot.states import ContactProfileState, EditContactState, DeleteContactState
+from src.bot.keyboards import edit_contact_kb, contact_profile_kb, main_kb
+from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError
 from src.models.log.models import MLogCreate
 from src.services.contact_log.service import contact_log_service
@@ -74,14 +74,7 @@ async def edit_contact(message: Message, state: FSMContext):
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('delete contact'))
 async def delete_contact(message: Message, state: FSMContext):
-    await state.update_data(logs_are_got=False)
-    data = await state.get_data()
-    name = data['name']
-    await state.set_state(DeleteContactState.waiting_confirmation)
-    await message.answer(
-        f'Type "I want to delete contact {name}" to delete contact {name}.',
-        reply_markup=make_row_keyboard_by_list(['Cancel'])
-    )
+    await start_delete_contact_pipeline(message, state)
 
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('find contact'))

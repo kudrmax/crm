@@ -34,7 +34,7 @@ def main_kb():
     ])
 
 
-def contact_profile_kb(): # TODO заменить 20 usage на использование start_get_profile_pipeline()
+def contact_profile_kb():  # TODO заменить 20 usage на использование start_get_profile_pipeline()
     return make_keyboard_by_lists([
         ['Start logging 📥', 'Get logs 📋️', 'Я'],
         ['Add empty log 👉🏻', 'Profile 👤'],
@@ -81,6 +81,10 @@ def stats_kb():
         ['With days 📆'],
         ['Go to main menu']
     ])
+
+
+def cancel_kb():
+    return make_row_keyboard_by_list(['Cancel ⬅️'])
 
 
 contact_fields: List[str] = [

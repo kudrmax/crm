@@ -98,4 +98,8 @@ class ContactRepository:
 
     @staticmethod
     def __prepare_telegram(telegram: str) -> str:
-        return telegram[1:] if ((len(telegram) > 0) and telegram[0] == '@') else telegram
+        if len(telegram) == 0:
+            return ''
+        if telegram[0] == '@':
+            return telegram
+        return f'@{telegram}'

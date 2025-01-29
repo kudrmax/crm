@@ -12,6 +12,16 @@ from src.bot.states import ContactProfileState, StatsState
 router = Router()
 
 
+async def start_main_menu_pipeline(
+        message: Message,
+        state: FSMContext,
+        text: str | None = "Choose action",
+        reply_markup: FSMContext | None = main_kb(),
+):
+    await message.answer(text, reply_markup=reply_markup)
+    await state.clear()
+
+
 @router.message(Command("start"))
 async def start_command(message: Message, state: FSMContext):
     await state.clear()
