@@ -6,13 +6,13 @@ from src.bot.handlers.menu_main import router as menu_main
 
 from src.bot.handlers.pipelines.contact_create import router as create_contact_pipeline
 from src.bot.handlers.pipelines.contact_delete import router as delete_contact_pipeline
-from src.bot.handlers.pipelines.edit_contact import router as edit_contact_pipeline
+from src.bot.handlers.pipelines.contact_update import router as edit_contact_pipeline
 from src.bot.handlers.menu_contact import router as menu_contact_profile
 from src.bot.handlers.pipelines.contact_serach import router as search_contact_pipeline
 
 from src.bot.handlers.logs.delete_log_pipeline import router as delete_log_pipeline
 from src.bot.handlers.logs.edit_logs_pipeline import router as edit_logs_pipeline
-from src.bot.handlers.logs.logging_pipeline import router as logging_pipeline
+from src.bot.handlers.pipelines.logs_logging import router as logging_pipeline
 
 from src.bot.handlers.stats.get_all_contacts import router as get_all_contacts_pipeline
 from src.bot.handlers.stats.who import router as who

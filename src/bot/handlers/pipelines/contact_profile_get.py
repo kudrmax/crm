@@ -2,6 +2,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.keyboards import contact_profile_kb
+from src.bot.states import ContactProfileState
 from src.errors import ContactNotFoundErr, NameNotFoundInState
 from src.services.contact_log.service import contact_log_service
 
@@ -24,4 +25,5 @@ async def start_get_profile_pipeline(message: Message, state: FSMContext):
         reply_markup=contact_profile_kb()
     )
 
+    await state.set_state(ContactProfileState.choose_action)
     await state.update_data(logs_are_got=False)

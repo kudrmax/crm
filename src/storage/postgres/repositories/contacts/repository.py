@@ -97,7 +97,9 @@ class ContactRepository:
         return [MContact(*row) for row in rows]
 
     @staticmethod
-    def __prepare_telegram(telegram: str) -> str:
+    def __prepare_telegram(telegram: str | None) -> str | None:
+        if telegram == None:
+            return None
         if len(telegram) == 0:
             return ''
         if telegram[0] == '@':

@@ -6,7 +6,7 @@ from src.bot.handlers.pipelines.contact_delete import start_delete_contact_pipel
 from src.bot.handlers.pipelines.contact_profile_get import start_get_profile_pipeline
 from src.bot.handlers.pipelines.contact_serach import search_contact_from_main_to_profile
 from src.bot.handlers.pipelines.logs_get import start_get_logs_pipeline
-from src.bot.handlers.logs.logging_pipeline import start_logging
+from src.bot.handlers.pipelines.logs_logging import start_logging
 from src.bot.keyboards import edit_contact_kb, contact_profile_kb, main_kb
 from src.bot.states import ContactProfileState, EditContactState
 from src.errors import ContactNotFoundError

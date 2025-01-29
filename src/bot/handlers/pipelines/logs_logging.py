@@ -22,9 +22,9 @@ async def start_logging(
         final_reply_markup,
 ):
     await state.update_data(final_state=final_state)
-    await state.update_data(reply_markup=final_reply_markup)
+    await state.update_data(final_reply_markup=final_reply_markup)
     await message.answer(
-        'Type log or cancel:',
+        'Type log or cancel',
         reply_markup=logging_kb()
     )
     await state.set_state(AddLog.logging)
@@ -52,28 +52,29 @@ async def find_contact(message: Message, state: FSMContext):
 @router.message(AddLog.logging, F.text.lower().contains('stop logging'))
 async def stop_logging(message: Message, state: FSMContext):
     await state.update_data(logs_are_got=False)
-    data = await state.get_data()
     await state.update_data(date=None)
-    await message.answer('Stopped logging', reply_markup=data['final_reply_markup'])
+
+    data = await state.get_data()
+    await message.answer(
+        'Stopped logging',
+        reply_markup=data['final_reply_markup']
+    )
     await state.set_state(data['final_state'])
 
 
 @router.message(AddLog.logging)
 async def add_log(message: Message, state: FSMContext):
     data = await state.get_data()
+
     log_text = message.text
-    try:
-        date = data['date'] if 'date' in data else None
-        contact = contact_log_service.get_contact_by_name(data['name'])
-        contact_log_service.create_log(MLogCreate(
-            contact_id=contact.id,
-            text=log_text,
-            datetime=date,
-        ))
-        # await Helper.add_log(log_str=new_log, name=data['name'], date=date)
-        reply_text = '✅' if not date else f'✅ on {date}'
-        await message.reply(reply_text)
-    except ContactNotFoundError:
-        await message.reply('❌')
-        await message.answer(f"Contact with name {data['name']} not found. Aborted.")
-        raise
+    contact_id = contact_log_service.get_contact_id_by_name(data['name'])
+    date = data['date'] if 'date' in data else None
+
+    contact_log_service.create_log(MLogCreate(
+        contact_id=contact_id,
+        text=log_text,
+        datetime=date,
+    ))
+
+    reply_text = '✅' if not date else f'✅ on {date}'
+    await message.reply(reply_text)
