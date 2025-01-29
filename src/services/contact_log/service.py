@@ -41,7 +41,7 @@ class ContactLogService:
             return logs
 
         logs_with_numbers = [
-            MLogWithNumbers(*dataclasses.astuple(logs[i]), i)
+            MLogWithNumbers(*dataclasses.astuple(logs[i]), i + 1)
             for i in range(len(logs))
         ]
         return logs_with_numbers

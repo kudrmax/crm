@@ -19,12 +19,12 @@ async def start_get_logs_pipeline(
 
     if not logs:
         logs: List[MLogWithNumbers] = contact_log_service.get_logs_by_contact_name(name, need_numbers=True)
+
     logs_str = telegram_service.get_logs_post(logs, name=name)
 
     await message.answer(
         logs_str,
-        # parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=reply_markup,
     )
-
+    await message.answer(f'Logs of {name} ⬆️')
     await state.update_data(logs_are_got=True)
