@@ -10,10 +10,4 @@ class Voice2TextService:
         return self.voice2text_service.voice2text(file_path)
 
 
-file_path = "../../../files/voice_messages/test.ogg"
-
-s1 = Voice2TextService(WhisperVoice2TextService())
-s2 = Voice2TextService(GoogleAPIVoice2TextService())
-
-s1.voice2text(file_path)
-s2.voice2text(file_path)
+voice2text_service = Voice2TextService(WhisperVoice2TextService())

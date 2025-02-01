@@ -5,6 +5,7 @@ from aiogram.types import Message
 from src.bot.handlers.pipelines.contact_delete import start_delete_contact_pipeline
 from src.bot.handlers.pipelines.contact_profile_get import start_get_profile_pipeline
 from src.bot.handlers.pipelines.contact_serach import search_contact_from_main_to_profile
+from src.bot.handlers.pipelines.gpt import start_gpt_pipeline
 from src.bot.handlers.pipelines.logs_get import start_get_logs_pipeline
 from src.bot.handlers.pipelines.logs_logging import start_logging
 from src.bot.keyboards import edit_contact_kb, contact_profile_kb, main_kb
@@ -85,6 +86,10 @@ async def delete_contact(message: Message, state: FSMContext):
 async def find_contact(message: Message, state: FSMContext):
     await state.clear()
     await search_contact_from_main_to_profile(message, state)
+
+@router.message(ContactProfileState.choose_action, F.text.lower().contains('gpt'))
+async def voice2text(message: Message, state: FSMContext):
+    await start_gpt_pipeline(message, state)
 
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('go to main menu'))

@@ -40,3 +40,6 @@ class DeleteContactState(StatesGroup):
 
 class StatsState(StatesGroup):
     menu = State()
+
+class Voice2TextState(StatesGroup):
+    waiting_for_voice = State()
