@@ -30,9 +30,13 @@ class ContactLogService:
         return contact.id
 
     def get_last_contacts(self) -> List[MContact]:
-        # TODO сделать так, чтобы получать последние созданные контакты, у которых пока 0 логов
-        ids = self.log_repository.get_last_contact_ids()
-        return self.contact_repository.get_by_contact_ids(ids)
+        ids, last_dates = self.log_repository.get_last_contact_ids()
+        id_to_last_date_dict = {id: last_date for id, last_date in zip(ids, last_dates)}
+
+        contacts = self.contact_repository.get_by_contact_ids(ids)
+        contacts = sorted(contacts, key=lambda c: id_to_last_date_dict[c.id], reverse=True)
+
+        return contacts
 
     def get_logs_by_contact_name(self, name: str, need_numbers: bool = False) -> List[MLog] | List[MLogWithNumbers]:
         contact = self.contact_repository.get_by_name(name)

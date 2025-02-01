@@ -21,7 +21,7 @@ class TelegramService:
         if len(logs) == 0:
             return f'👎🏻 There is no logs' if not name else f'👎🏻 There is no logs for {name}'
 
-        sorted(logs, key=lambda l: l.datetime)
+        logs = sorted(logs, key=lambda l: l.datetime)
 
         date_to_logs_list = {}
         for log in logs:

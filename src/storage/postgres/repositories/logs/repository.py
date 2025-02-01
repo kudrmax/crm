@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import List
+from typing import List, Tuple
 
 from sqlalchemy import Engine, text
 from sqlalchemy.exc import IntegrityError
@@ -78,7 +78,7 @@ class LogRepository:
             conn.commit()
             return bool(rows.rowcount)
 
-    def get_last_contact_ids(self, count: int = 5) -> List[int]:
+    def get_last_contact_ids(self, count: int = 5) -> Tuple[List[int], List[dt.datetime]]:
         with self.engine.connect() as conn:
             query = text('''
                 SELECT contact_id, max(datetime) AS last_date
@@ -88,8 +88,10 @@ class LogRepository:
                 LIMIT :count
             ''')
             rows = conn.execute(query, {'count': count})
+            rows = list(rows)
             contact_ids = [row[0] for row in rows]
-            return contact_ids
+            last_dates = [row[1] for row in rows]
+            return contact_ids, last_dates
 
     @staticmethod
     def __convert_row_to_model(row) -> MLog:
@@ -100,4 +102,3 @@ class LogRepository:
         return [MLog(*row) for row in rows]
 
 
-r = LogRepository(engine=engine)

@@ -27,7 +27,8 @@ async def start_search_contact_pipeline(
 
     last_contacts = contact_log_service.get_last_contacts()
     last_contacts_names = contact_log_service.get_names_from_models(
-        last_contacts)  # TODO добавить рядом с именем общее количество логов
+        last_contacts
+    )  # TODO добавить рядом с именем общее количество логов
     await state.update_data(last_contacts_names=set(last_contacts_names))
 
     await message.answer(

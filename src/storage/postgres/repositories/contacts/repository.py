@@ -30,7 +30,10 @@ class ContactRepository:
         if len(contact_ids) == 0:
             return []
         with self.engine.connect() as conn:
-            query = text('''SELECT * FROM contacts WHERE id IN :contact_ids''')
+            query = text('''
+            SELECT * FROM contacts 
+            WHERE id IN :contact_ids
+            ''')
             rows = conn.execute(query, {'contact_ids': tuple(contact_ids)}).all()
             return self.__convert_rows_to_models(rows)
 
