@@ -47,6 +47,20 @@ class TelegramService:
             rows.append(row)
         return "\n".join(sorted(rows))
 
+    def convert_str_to_date(self, date_str: str) -> dt.datetime:
+        """
+        input = 'YYYY-MM-DD'
+        output: dt.datetime.date (?)
+        """
+        pass
+
+    def convert_date_to_str(self, date: dt.datetime) -> str:
+        """
+        input = dt.datetime.date | dt.datetime.datetime
+        output: str
+        """
+        pass
+
     def __get_logs_with_dashes(self, logs: List[MLogWithNumbers] | List[MLog]) -> str:
         if isinstance(logs[0], MLogWithNumbers):
             log_texts_with_dashes = [f'{log.telegram_number}. {log.text}' for log in logs if log.text != ""]
