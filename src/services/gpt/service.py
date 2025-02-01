@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import dataclasses
 from typing import List, Any, Tuple
-import config
 
 from src.models.log.models import MLog
 
 from yandex_cloud_ml_sdk import YCloudML
 
-from src.services.voice2text.decorators import print_decorator
+from src.services.gpt import config
 
 
 @dataclasses.dataclass
@@ -30,11 +29,11 @@ class GPTService:
         text = result.alternatives[0].text
 
         return GPTResult(
-            output=text,
+            output=str(text),
             input=messages,
         )
 
-    def convert_text_to_bullet_logs(self, text: str) -> Tuple[str, GPTResult]:
+    def _get_bullet_list_from_text(self, text: str) -> Tuple[str, GPTResult]:
         messages = [
             {
                 "role": "system",
@@ -61,8 +60,12 @@ class GPTService:
         gpt_result = self._create_request(messages)
         return gpt_result.output, gpt_result
 
-    def get_logs_from_text(self, text: str) -> List[MLog]:
+    def _get_logs_from_bullet_list(self, text: str) -> List[MLog]:
         pass
+
+    def get_logs_from_text(self, text: str) -> List[MLog]:
+        bullet_list, _ = self._get_bullet_list_from_text(text)
+        return self._get_logs_from_bullet_list(bullet_list)
 
 
 gpt_service = GPTService()

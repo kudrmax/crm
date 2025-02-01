@@ -7,6 +7,7 @@ from aiogram.types import Message, InlineKeyboardMarkup
 from src.bot.handlers.pipelines.contact_profile_get import start_get_profile_pipeline
 from src.bot.keyboards import finish_kb
 from src.bot.states import Voice2TextState
+from src.services.gpt.service import gpt_service
 from src.services.voice2text.service import voice2text_service
 
 VOICE_DIR = "files/voice_messages"
@@ -41,7 +42,9 @@ async def voice(message: Message, state: FSMContext):
 
     text = voice2text_service.voice2text(file_path)
     await message.reply(text)
-
     # TODO удалять файл после
+
+    bullet_text, _ = gpt_service._get_bullet_list_from_text(text)
+    await message.reply(bullet_text)
 
 
