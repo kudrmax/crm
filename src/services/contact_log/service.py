@@ -44,6 +44,7 @@ class ContactLogService:
         if not need_numbers:
             return logs
 
+        logs = sorted(logs, key=lambda l: l.datetime)
         logs_with_numbers = [
             MLogWithNumbers(*dataclasses.astuple(logs[i]), i + 1)
             for i in range(len(logs))
