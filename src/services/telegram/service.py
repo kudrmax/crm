@@ -3,7 +3,7 @@ from typing import List
 
 from src.bot.keyboards import main_kb
 from src.models.contact.model import MContact
-from src.models.log.models import MLog, MLogWithNumbers
+from src.models.log.models import MLog, MLogWithNumbers, MLogCreate
 
 
 class MainMenuService:
@@ -46,6 +46,17 @@ class TelegramService:
                 row += f' ({contact.telegram})'
             rows.append(row)
         return "\n".join(sorted(rows))
+
+    def strip_log_text_list(self, logs_strs: List[str]) -> List[str]:
+        return [self.strip_log_text(log_str) for log_str in logs_strs]
+
+    def strip_log_text(self, log_str: str) -> str:
+        log_str = log_str.strip()
+        if len(log_str) == 0:
+            return ""
+        if log_str[0] == '-' or log_str[0] == '—' or log_str[0] == '–':
+            log_str = log_str[1:]
+        return log_str.strip()
 
     def convert_str_to_date(self, date_str: str) -> dt.datetime:
         """

@@ -14,7 +14,7 @@ class MLog:
 class MLogCreate:
     contact_id: int = None
     text: str = None
-    datetime: dt.datetime = None
+    datetime: dt.datetime = dt.datetime.now()
 
 
 @dataclasses.dataclass

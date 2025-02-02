@@ -11,6 +11,7 @@ from src.bot.states import AddLog
 from src.errors import ContactNotFoundError
 from src.models.log.models import MLogCreate
 from src.services.contact_log.service import contact_log_service
+from src.services.telegram.service import telegram_service
 
 router = Router()
 
@@ -66,15 +67,24 @@ async def stop_logging(message: Message, state: FSMContext):
 async def add_log(message: Message, state: FSMContext):
     data = await state.get_data()
 
-    log_text = message.text
     contact_id = contact_log_service.get_contact_id_by_name(data['name'])
     date = data['date'] if 'date' in data else None
 
-    contact_log_service.create_log(MLogCreate(
-        contact_id=contact_id,
-        text=log_text,
-        datetime=date,
-    ))
+    log_texts = message.text
+    log_text_list = log_texts.split('\n')
+    log_text_list = [
+        telegram_service.strip_log_text(l)
+        for l in log_text_list if l != ''
+    ]
+    for log_text in log_text_list:
+        contact_log_service.create_log(MLogCreate(
+            contact_id=contact_id,
+            text=log_text,
+            datetime=date,
+        ))
 
-    reply_text = '✅' if not date else f'✅ on {date}'
+    if len(log_text_list) == 1:
+        reply_text = f'✅' if not date else f'✅ on {date}'
+    else:
+        reply_text = f'✅x{len(log_text_list)}' if not date else f'✅x{len(log_text_list)} on {date}'
     await message.reply(reply_text)
