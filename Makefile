@@ -1,32 +1,16 @@
-DOCKER_COMPOSE_FILE = docker-compose.yaml
-BACKEND_CMD = uvicorn main:app --host $(SERVER_HOST) --port $(SERVER_PORT) --reload
-BOT_CMD = python3 bot.py
-VENV_CMD = source .venv/bin/activate
-
 include .env
-#export $(shell sed 's/=.*//' .env)
+export $(shell sed 's/=.*//' .env)
 
-up:
-	docker compose up -d
+DUMP_FILE ?= ./db_backup.sql
 
-down:
-	docker compose down
+dump:
+	pg_dump -U $(POSTGRES_USER) -h localhost -p $(POSTGRES_PORT) -d $(POSTGRES_DATABASE) > $(DUMP_FILE)
 
-db_up:
-	docker compose -f $(DOCKER_COMPOSE_FILE) up -d
+load_dumped:
+	psql -U $(POSTGRES_USER) -h localhost -p $(POSTGRES_PORT) -d $(POSTGRES_DATABASE) -f $(DUMP_FILE)
 
-db_down:
-	docker compose -f $(DOCKER_COMPOSE_FILE) down
-
-backend_up:
-	@echo "Starting FastAPI server..."
-	@sh -c 'source .venv/bin/activate && $(BACKEND_CMD)'
-
-bot_up:
-	@echo "Starting Telegram bot..."
-	@sh -c 'source .venv/bin/activate && $(BOT_CMD)'
-
-rebuild:
-	docker compose up -d api --build
-	docker compose up -d bot --build
+db:
 	docker compose up -d db
+
+bot:
+	docker compose up -d bot --build

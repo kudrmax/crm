@@ -42,7 +42,7 @@
     - Миграции базы данных через [Alembic](src/migrations).
     - Бекапы базы данных:
         - Автоматические бекапы через [docker compose](docker-compose.yaml).
-        - Ручные бекапы через [.sh скрипты](backup_scripts).
+        - Ручные бекапы через [.sh скрипты](src/scripts/backup_postgres).
     - Подключение к БД через переменные окружения и [pydantic-settings](src/settings/settings.py).
 
 ## Использование
