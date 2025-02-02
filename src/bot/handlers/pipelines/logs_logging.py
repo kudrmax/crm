@@ -8,8 +8,7 @@ from aiogram.types import Message
 from src.bot.handlers.pipelines.contact_serach import search_contact_from_main_to_profile
 from src.bot.keyboards import logging_kb
 from src.bot.states import AddLog
-from src.errors import ContactNotFoundError
-from src.models.log.models import MLogCreate
+from src.models.log import MLogCreate
 from src.services.contact_log.service import contact_log_service
 from src.services.telegram.service import telegram_service
 

@@ -1,10 +1,7 @@
 from aiogram import F, Router
-from aiogram.enums import ParseMode
-from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot.helper import Helper
 from src.bot.states import StatsState
 from src.services.contact_log.service import contact_log_service
 from src.services.telegram.service import telegram_service

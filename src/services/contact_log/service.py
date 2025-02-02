@@ -1,11 +1,11 @@
 import dataclasses
 import difflib
-from typing import List, Tuple, Any
+from typing import List
 
-from src.models.contact.model import MContact, MContactCreate, MContactUpdate
-from src.models.log.models import MLogUpdate, MLog, MLogCreate, MLogWithNumbers
+from src.models.contact import MContact, MContactCreate, MContactUpdate
+from src.models.log import MLogUpdate, MLog, MLogCreate, MLogWithNumbers
 from src.storage.postgres.connection.engine import engine
-from src.errors import ContactNotFoundErr, ContactAlreadyExistsErr
+from src.errors import ContactAlreadyExistsErr
 from src.storage.postgres.repositories.contacts.repository import ContactRepository
 from src.storage.postgres.repositories.logs.repository import LogRepository
 

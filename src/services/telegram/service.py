@@ -2,8 +2,8 @@ import datetime as dt
 from typing import List
 
 from src.bot.keyboards import main_kb
-from src.models.contact.model import MContact
-from src.models.log.models import MLog, MLogWithNumbers, MLogCreate
+from src.models.contact import MContact
+from src.models.log import MLog, MLogWithNumbers
 
 
 class MainMenuService:

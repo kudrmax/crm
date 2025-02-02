@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from src.bot.error_handlers import router as error_handlers
+from src.bot.handlers.errors import router as error_handlers
 
 from src.bot.handlers.menu_main import router as menu_main
 

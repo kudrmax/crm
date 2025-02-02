@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from typing import List, Any, Tuple
 
-from src.models.log.models import MLog
+from src.models.log import MLog
 
 from yandex_cloud_ml_sdk import YCloudML
 

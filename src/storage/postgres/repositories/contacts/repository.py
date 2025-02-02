@@ -3,9 +3,8 @@ from typing import List
 from sqlalchemy import Engine, text
 from sqlalchemy.exc import IntegrityError
 
-from src.models.contact.model import MContactCreate, MContact, MContactUpdate
+from src.models.contact import MContactCreate, MContact, MContactUpdate
 from src.errors import ContactNotFoundErr, ContactAlreadyExistsErr
-from src.storage.postgres.connection.engine import engine
 
 
 class ContactRepository:

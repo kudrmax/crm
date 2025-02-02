@@ -3,11 +3,11 @@ import asyncio
 from aiogram import Bot, Dispatcher
 
 from src.bot.routers import router
-from src.settings import settings
+from src.settings.settings import settings
 
 
 async def main():
-    bot = Bot(token=settings.telegram_bot.token)
+    bot = Bot(token=settings.bot.BOT_TOKEN)
     dp = Dispatcher()
     dp.include_router(router)
     await bot.delete_webhook(drop_pending_updates=True)

@@ -10,9 +10,8 @@ from src.bot.handlers.pipelines.logs_get import start_get_logs_pipeline
 from src.bot.handlers.pipelines.logs_logging import start_logging
 from src.bot.keyboards import edit_contact_kb, contact_profile_kb, main_kb
 from src.bot.states import ContactProfileState, EditContactState
-from src.errors import ContactNotFoundError
-from src.models.contact.model import MContactCreate
-from src.models.log.models import MLogCreate
+from src.models.contact import MContactCreate
+from src.models.log import MLogCreate
 from src.services.contact_log.service import contact_log_service
 
 router = Router()
@@ -54,17 +53,12 @@ async def add_log(message: Message, state: FSMContext):
 async def add_empty_log(message: Message, state: FSMContext):
     await state.update_data(logs_are_got=False)
     data = await state.get_data()
-    try:
-        contact = contact_log_service.get_contact_by_name(data['name'])
-        contact_log_service.create_log(MLogCreate(
-            contact_id=contact.id,
-            text="",
-        ))
-        # await Helper.add_empty_log(name=data['name'])
-        await message.answer('Interaction was added.')
-    except ContactNotFoundError:
-        await message.answer(f"Contact with name {data['name']} not found. Aborted.")
-        raise
+    contact = contact_log_service.get_contact_by_name(data['name'])
+    contact_log_service.create_log(MLogCreate(
+        contact_id=contact.id,
+        text="",
+    ))
+    await message.answer('Interaction was added.')
 
 
 @router.message(ContactProfileState.choose_action, F.text.lower().contains('edit contact'))

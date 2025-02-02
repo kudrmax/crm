@@ -5,7 +5,7 @@ from aiogram.types import ErrorEvent
 from requests.exceptions import ConnectionError
 
 from src.bot.keyboards import main_kb
-from src.errors import UnknownError, UnprocessableEntityError
+from src.errors import UnprocessableEntityError
 
 router = Router()
 
@@ -26,10 +26,10 @@ async def connection_error(event: ErrorEvent, state: FSMContext):
     await go_to_main_menu_after_error(event, state)
 
 
-@router.errors(ExceptionTypeFilter(UnknownError))
-async def unknown_error(event: ErrorEvent, state: FSMContext):
-    await event.update.message.answer(f"Unknown Error")
-    await go_to_main_menu_after_error(event, state)
+# @router.errors(ExceptionTypeFilter(UnknownError))
+# async def unknown_error(event: ErrorEvent, state: FSMContext):
+#     await event.update.message.answer(f"Unknown Error")
+#     await go_to_main_menu_after_error(event, state)
 
 
 @router.errors(ExceptionTypeFilter(UnprocessableEntityError))

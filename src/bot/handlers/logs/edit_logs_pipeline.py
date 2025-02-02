@@ -9,7 +9,7 @@ from src.bot.handlers.pipelines.logs_get import start_get_logs_pipeline
 from src.bot.keyboards import make_row_keyboard_by_list, edit_log_kb, contact_profile_kb
 from src.bot.states import EditLogsState, ContactProfileState
 from src.errors import UnprocessableEntityError
-from src.models.log.models import MLogWithNumbers, MLogUpdate
+from src.models.log import MLogWithNumbers, MLogUpdate
 from src.services.contact_log.service import contact_log_service
 
 router = Router()

@@ -43,7 +43,7 @@
     - Бекапы базы данных:
         - Автоматические бекапы через [docker compose](docker-compose.yaml).
         - Ручные бекапы через [.sh скрипты](backup_scripts).
-    - Подключение к БД через переменные окружения и [pydantic-settings](src/settings.py).
+    - Подключение к БД через переменные окружения и [pydantic-settings](src/settings/settings.py).
 
 ## Использование
 

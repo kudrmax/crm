@@ -5,8 +5,8 @@ from aiogram.types import Message
 from src.bot.keyboards import make_row_keyboard_by_list, contact_profile_kb
 from src.bot.states import AddContactState, ContactProfileState
 from src.errors import ContactAlreadyExistsErr
-from src.models.contact.model import MContactCreate
-from src.models.log.models import MLogCreate
+from src.models.contact import MContactCreate
+from src.models.log import MLogCreate
 from src.services.contact_log.service import contact_log_service
 from src.services.telegram.service import telegram_service
 

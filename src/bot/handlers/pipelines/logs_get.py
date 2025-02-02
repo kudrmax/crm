@@ -3,7 +3,7 @@ from typing import List
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardMarkup
 
-from src.models.log.models import MLogWithNumbers
+from src.models.log import MLogWithNumbers
 from src.services.contact_log.service import contact_log_service
 from src.services.telegram.service import telegram_service
 

@@ -4,9 +4,8 @@ from typing import List, Tuple
 from sqlalchemy import Engine, text
 from sqlalchemy.exc import IntegrityError
 
-from src.models.log.models import MLog, MLogCreate, MLogUpdate
-from src.storage.postgres.connection.engine import engine
-from src.errors import ContactNotFoundErr, ContactIdNotFoundErr
+from src.models.log import MLog, MLogCreate, MLogUpdate
+from src.errors import ContactIdNotFoundErr
 
 
 class LogRepository:

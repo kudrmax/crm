@@ -1,14 +1,12 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
-from sqlalchemy.orm.base import state_str
 
 from src.bot.handlers.pipelines.contact_profile_get import start_get_profile_pipeline
-from src.bot.keyboards import contact_profile_kb, edit_contact_kb
-from src.bot.states import ContactProfileState, EditContactState
-from src.errors import ContactNotFoundError, UnprocessableEntityError, AlreadyExistsError, NotFoundError, \
-    ContactAlreadyExistsErr
-from src.models.contact.model import MContactUpdate
+from src.bot.keyboards import edit_contact_kb
+from src.bot.states import EditContactState
+from src.errors import UnprocessableEntityError, ContactAlreadyExistsErr
+from src.models.contact import MContactUpdate
 from src.services.contact_log.service import contact_log_service
 
 router = Router()
