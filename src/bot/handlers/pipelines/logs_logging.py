@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
@@ -31,9 +31,35 @@ async def start_logging(
     await state.set_state(AddLog.logging)
 
 
+async def create_log(
+        message: Message,
+        state: FSMContext,
+        contact_id: int,
+        log_texts: str,
+        date: dt.datetime | None = None
+):
+    log_text_list = log_texts.split('\n')
+    log_text_list = [
+        telegram_service.strip_log_text(l)
+        for l in log_text_list if l != ''
+    ]
+    for log_text in log_text_list:
+        contact_log_service.create_log(MLogCreate(
+            contact_id=contact_id,
+            text=log_text,
+            datetime=date,
+        ))
+
+    if len(log_text_list) == 1:
+        reply_text = f'✅' if not date else f'✅ on {date}'
+    else:
+        reply_text = f'✅x{len(log_text_list)}' if not date else f'✅x{len(log_text_list)} on {date}'
+    await message.reply(reply_text)
+
+
 @router.message(AddLog.logging, F.text.lower().contains('set date to yesterday'))
 async def set_date_to_yesterday(message: Message, state: FSMContext):
-    date = datetime.date.today() - datetime.timedelta(days=1)
+    date = dt.date.today() - dt.timedelta(days=1)
     await state.update_data(date=date)
     await message.answer('Date was set to yesterday')
 
@@ -71,20 +97,5 @@ async def add_log(message: Message, state: FSMContext):
     date = data['date'] if 'date' in data else None
 
     log_texts = message.text
-    log_text_list = log_texts.split('\n')
-    log_text_list = [
-        telegram_service.strip_log_text(l)
-        for l in log_text_list if l != ''
-    ]
-    for log_text in log_text_list:
-        contact_log_service.create_log(MLogCreate(
-            contact_id=contact_id,
-            text=log_text,
-            datetime=date,
-        ))
 
-    if len(log_text_list) == 1:
-        reply_text = f'✅' if not date else f'✅ on {date}'
-    else:
-        reply_text = f'✅x{len(log_text_list)}' if not date else f'✅x{len(log_text_list)} on {date}'
-    await message.reply(reply_text)
+    await create_log(message, state, contact_id, log_texts, date)
