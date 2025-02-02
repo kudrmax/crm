@@ -41,7 +41,7 @@ class TelegramService:
     def get_all_contacts_post(self, contacts: List[MContact]):
         rows = []
         for contact in contacts:
-            row = f'— {contact.name}'
+            row = f'- {contact.name}'
             if contact.telegram:
                 row += f' ({contact.telegram})'
             rows.append(row)

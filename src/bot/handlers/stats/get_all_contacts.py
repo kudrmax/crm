@@ -16,7 +16,6 @@ router = Router()
 async def get_all_contacts(message: Message, state: FSMContext):
     contacts = contact_log_service.get_all_contacts()
     text = telegram_service.get_all_contacts_post(contacts)
-    # text = await Helper.get_all_contacts()
     await message.answer(
         text,
         # parse_mode=ParseMode.MARKDOWN_V2,
